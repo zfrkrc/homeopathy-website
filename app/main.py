@@ -1,5 +1,9 @@
 import os
 import uuid
+import json
+import logging
+import threading
+import httpx
 import markdown
 from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, send_file
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -415,34 +419,155 @@ def admin_change_password():
 def uploaded_file(filename):
     return send_file(os.path.join(UPLOAD_DIR, filename))
 
+AI_JOBS_DIR = os.path.join(UPLOAD_DIR, 'ai_jobs')
+os.makedirs(AI_JOBS_DIR, exist_ok=True)
+
+_gen_log = logging.getLogger('ai_gen')
+OLLAMA_HOST = "https://insightmap.tr"
+OLLAMA_VERIFY = False
+
+def _ollama_post(payload, timeout=180):
+    resp = httpx.post(f"{OLLAMA_HOST}/api/ollama/generate", json=payload, timeout=timeout, verify=OLLAMA_VERIFY)
+    resp.raise_for_status()
+    return resp.json()
+
+def _generate_content(job_id, topic, tone, length, url, file_path, orig_filename):
+    try:
+        context_parts = []
+        if url:
+            text = ""
+            try:
+                resp = httpx.post(f"{OLLAMA_HOST}/api/ollama/generate", json={
+                    "model": "reader-lm:latest",
+                    "prompt": url,
+                    "stream": False,
+                    "options": {"temperature": 0.1, "num_predict": 4096}
+                }, timeout=60, verify=OLLAMA_VERIFY)
+                if resp.status_code == 200:
+                    text = resp.json().get("response", "").strip()[:4000]
+            except:
+                pass
+            if not text:
+                try:
+                    jina_key = os.environ.get("JINA_API_KEY", "")
+                    if jina_key:
+                        resp = httpx.get(f"https://r.jina.ai/{url}", timeout=60,
+                            headers={"Authorization": f"Bearer {jina_key}"}, follow_redirects=True)
+                        if resp.status_code == 200:
+                            text = resp.text.strip()[:4000]
+                except Exception as e:
+                    _gen_log.error(f'url fetch jina error: {e}')
+            if not text:
+                try:
+                    resp = httpx.get(url, timeout=30, follow_redirects=True)
+                    if resp.status_code == 200:
+                        import re
+                        text = re.sub(r'<[^>]+>', '', resp.text)[:4000]
+                        text = '\n'.join(line for line in text.split('\n') if line.strip())[:4000]
+                except Exception as e:
+                    _gen_log.error(f'url fetch fallback error: {e}')
+            if text:
+                context_parts.append(f'[URL: {url}]\n{text}')
+
+        if file_path and os.path.exists(file_path):
+            try:
+                ext = file_path.rsplit('.', 1)[1].lower()
+                text = ''
+                if ext == 'pdf':
+                    import pdfplumber
+                    with pdfplumber.open(file_path) as pdf:
+                        text = '\n'.join(p.page_text or '' for p in pdf.pages)[:4000]
+                elif ext in ('jpg', 'jpeg', 'png', 'webp'):
+                    with open(file_path, 'rb') as imgf:
+                        b64 = __import__('base64').b64encode(imgf.read()).decode()
+                    data = _ollama_post({"model": "glm-ocr:latest", "prompt": "Bu gorseldeki metni oldugu gibi cikar.",
+                        "images": [b64], "options": {"temperature": 0.1}}, timeout=120)
+                    text = data.get("response", "").strip()[:4000]
+                if text:
+                    context_parts.append(f'[Dosya: {orig_filename}]\n{text}')
+                os.remove(file_path)
+            except Exception as e:
+                _gen_log.error(f'file error: {e}')
+
+        context_text = '\n\n---\n\n'.join(context_parts)[:8000]
+        sys_prompt = 'Sen profesyonel blog yazarisin. Turkce, akici, SEO uyumlu icerik uret. Baslik ve alt basliklar kullan.'
+        if context_text:
+            sys_prompt += f'\n\nIcerigini asagidaki kaynaktan yararlanarak olustur:\n{context_text[:6000]}'
+        prompt = f'{topic} hakkinda {tone} tonda, {length} kelimelik SEO uyumlu blog yazisi yaz.'
+
+        _gen_log.info(f'generating for: {topic[:40]}')
+        data = _ollama_post({'model': 'qwen2.5:14b', 'system': sys_prompt, 'prompt': prompt,
+            'stream': False, 'options': {'temperature': 0.7, 'num_predict': 2048}}, timeout=180)
+        result = data.get('response', '')
+        _gen_log.info(f'generated {len(result)} chars')
+    except Exception as e:
+        result = f'[HATA] {str(e)}'
+        _gen_log.error(f'failed: {e}', exc_info=True)
+
+    import json
+    with open(os.path.join(AI_JOBS_DIR, f'{job_id}.json'), 'w') as f:
+        json.dump({'status': 'done', 'result': result, 'topic': topic}, f)
+    _gen_log.info('job saved')
+
 @app.route('/admin/ai-content', methods=['GET', 'POST'])
 @login_required
 def admin_ai_content():
-    generated = ''
-    topic = ''
+    job_id = request.args.get('job', '')
+    if job_id:
+        job_file = os.path.join(AI_JOBS_DIR, f'{job_id}.json')
+        if os.path.exists(job_file):
+            with open(job_file) as f:
+                job = json.load(f)
+            if job['status'] == 'done':
+                return render_template('admin/ai_content.html', generated=job.get('result',''), topic=job.get('topic',''), processing=False, job_id='')
+        return render_template('admin/ai_content.html', processing=True, job_id=job_id, generated='', topic='')
+
     if request.method == 'POST':
         topic = request.form.get('topic', '').strip()
         tone = request.form.get('tone', 'profesyonel')
         length = request.form.get('length', '500')
-        if topic:
-            try:
-                import httpx
-                prompt = f'{topic} hakkında {tone} tonda, {length} kelimelik SEO uyumlu blog yazısı yaz.'
-                resp = httpx.post('https://insightmap.tr/api/ollama/generate', json={
-                    'model': 'qwen2.5:14b',
-                    'system': 'Sen profesyonel blog yazarısın. Türkçe, akıcı, SEO uyumlu içerik üret. Başlık ve alt başlıklar kullan.',
-                    'prompt': prompt,
-                    'stream': False,
-                    'options': {'temperature': 0.7, 'num_predict': 2048}
-                }, timeout=120, verify=False)
-                if resp.status_code == 200:
-                    data = resp.json()
-                    generated = data.get('response', '')
-                else:
-                    flash(f'API hatası: {resp.status_code}', 'error')
-            except Exception as e:
-                flash(f'Hata: {str(e)[:100]}', 'error')
-    return render_template('admin/ai_content.html', topic=topic, generated=generated)
+        url = request.form.get('url', '').strip()
+        uploaded_file = request.files.get('file')
+        job_id = uuid.uuid4().hex[:12]
+        file_path = None
+
+        if uploaded_file and uploaded_file.filename:
+            ext = uploaded_file.filename.rsplit('.', 1)[1].lower() if '.' in uploaded_file.filename else ''
+            file_path = os.path.join(UPLOAD_DIR, f'job_{job_id}.{ext}')
+            uploaded_file.save(file_path)
+
+        with open(os.path.join(AI_JOBS_DIR, f'{job_id}.json'), 'w') as f:
+            json.dump({'status': 'pending'}, f)
+
+        import threading
+        t = threading.Thread(target=_generate_content, args=(job_id, topic, tone, length, url, file_path, uploaded_file.filename if uploaded_file else ''))
+        t.daemon = True
+        t.start()
+        return render_template('admin/ai_content.html', processing=True, job_id=job_id, generated='', topic=topic)
+
+    history = []
+    try:
+        for f in sorted(os.listdir(AI_JOBS_DIR), reverse=True)[:20]:
+            fp = os.path.join(AI_JOBS_DIR, f)
+            if f.endswith('.json') and os.path.isfile(fp):
+                with open(fp) as jf:
+                    data = json.load(jf)
+                if data.get('status') == 'done':
+                    history.append({'id': f[:-5], 'topic': data.get('topic',''), 'preview': data.get('result','')[:100]})
+    except:
+        pass
+    return render_template('admin/ai_content.html', processing=False, generated='', job_id='', history=history)
+
+
+@app.route('/admin/ai-content/clear', methods=['POST'])
+@login_required
+def admin_ai_content_clear():
+    import shutil
+    if os.path.exists(AI_JOBS_DIR):
+        shutil.rmtree(AI_JOBS_DIR)
+        os.makedirs(AI_JOBS_DIR, exist_ok=True)
+    flash('Gecmis uretimler temizlendi.', 'success')
+    return redirect(url_for('admin_ai_content'))
 
 @app.route('/theme.css')
 def theme_css():
