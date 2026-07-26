@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ayarlar | {{ site_title }}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:sans-serif;background:#f8fafb;color:#333}
+    .admin-header{background:#3d6b4f;color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+    .admin-header h1{font-size:18px}
+    .admin-header a{color:#fff;text-decoration:none;font-size:13px;opacity:.8}
+    a:hover{opacity:1}
+    .admin-body{padding:24px;max-width:800px;margin:0 auto}
+    .flash{padding:10px 14px;border-radius:6px;margin-bottom:16px;font-size:13px}
+    .flash.error{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+    .flash.success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+    label{display:block;font-size:13px;color:#555;margin-bottom:4px;margin-top:16px}
+    input[type=text],input[type=password],input[type=color],select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px}
+    input[type=color]{height:44px;padding:4px;cursor:pointer}
+    input[type=file]{font-size:14px;padding:8px 0}
+    input:focus,select:focus{outline:none;border-color:#3d6b4f;box-shadow:0 0 0 2px rgba(61,107,79,.15)}
+    .btn{display:inline-block;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:500;border:none;cursor:pointer}
+    .btn-primary{background:#3d6b4f;color:#fff}
+    .btn-primary:hover{background:#2d4f3a}
+    .btn-secondary{background:#f0f0f0;color:#555;text-decoration:none}
+    .btn-secondary:hover{background:#e0e0e0}
+    .card{background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);margin-bottom:24px}
+    .card h2{font-size:16px;margin-bottom:16px;color:#333}
+    .help{font-size:11px;color:#aaa;margin-top:4px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .color-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:6px}
+    .color-swatch{display:block;height:32px;border-radius:4px;border:2px solid transparent;cursor:pointer;transition:.15s}
+    .color-swatch:hover,.color-swatch.active{border-color:#333;transform:scale(1.08)}
+    .logo-preview{max-width:200px;max-height:60px;margin-top:8px;border-radius:4px;border:1px solid #eee;padding:8px;background:#fafafa}
+    .section-divider{border:none;border-top:1px solid #eee;margin:16px 0}
+  </style>
+</head>
+<body>
+  <div class="admin-header">
+    <h1>⚙️ Site Ayarları</h1>
+    <a href="{{ url_for('admin_dashboard') }}">← Paneli Dön</a>
+  </div>
+  <div class="admin-body">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+      <div class="card">
+        <h2>📝 Site Bilgileri</h2>
+        <label>Site Başlığı</label>
+        <input type="text" name="site_title" value="{{ site_title_val }}">
+        <div class="help">Tarayıcı sekmesinde ve ana sayfada görünür</div>
+
+        <label>Site Açıklaması</label>
+        <input type="text" name="site_description" value="{{ site_description_val }}">
+        <div class="help">SEO meta description</div>
+
+        <hr class="section-divider">
+
+        <h2>🎨 Renk Paleti</h2>
+        <div class="form-row">
+          <div>
+            <label>Ana Renk</label>
+            <input type="color" name="primary_color" value="{{ primary_color_val }}">
+            <div class="color-grid">
+            {% for hex, name in color_presets %}
+              <div class="color-swatch" style="background:{{ hex }}" onclick="document.getElementsByName('primary_color')[0].value='{{ hex }}'" title="{{ name }}"></div>
+            {% endfor %}
+            </div>
+          </div>
+          <div>
+            <label>İkincil Renk</label>
+            <input type="color" name="secondary_color" value="{{ secondary_color_val }}">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Arkaplan Rengi</label>
+            <input type="color" name="bg_color" value="{{ bg_color_val }}">
+          </div>
+          <div>
+            <label>Yazı Rengi</label>
+            <input type="color" name="text_color" value="{{ text_color_val }}">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🔤 Yazı Tipleri</h2>
+        <div class="form-row">
+          <div>
+            <label>Başlık Fontu</label>
+            <select name="font_heading">
+              {% for val, label in default_fonts %}
+              <option value="{{ val }}" {% if font_heading_val == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label>Gövde Fontu</label>
+            <select name="font_body">
+              {% for val, label in default_fonts %}
+              <option value="{{ val }}" {% if font_body_val == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🖼️ Logo</h2>
+        <label>Logo Görseli (PNG/JPG/SVG, max 5MB)</label>
+        <input type="file" name="logo" accept="image/png,image/jpeg,image/svg+xml">
+        {% if logo_path_val %}
+        <div class="logo-preview"><img src="{{ url_for('uploaded_file', filename=logo_path_val) }}" style="max-width:100%;max-height:50px"></div>
+        <div class="help">Yeni logo yüklemek eskisini otomatik siler</div>
+        {% endif %}
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:24px">
+        <button type="submit" class="btn btn-primary">💾 Tüm Ayarları Kaydet</button>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">İptal</a>
+      </div>
+    </form>
+
+    <div class="card">
+      <h2>🔑 Şifre Değiştir</h2>
+      <form method="POST" action="{{ url_for('admin_change_password') }}">
+        <label>Yeni Şifre</label>
+        <input type="password" name="new_password" required minlength="4">
+        <div class="help">En az 4 karakter</div>
+        <div style="margin-top:16px">
+          <button type="submit" class="btn btn-primary">Şifreyi Değiştir</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

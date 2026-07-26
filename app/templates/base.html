@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{% block meta_description %}{{ site_description }}{% endblock %}">
+  <title>{% block title %}{{ site_title }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('theme_css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23{{ primary_color[1:] if primary_color else '3d6b4f' }}' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 6v6l4 2'/%3E%3C/svg%3E">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="{{ url_for('index') }}" class="logo">
+        {% if logo_path %}
+        <img src="{{ url_for('uploaded_file', filename=logo_path) }}" alt="{{ site_title }}" style="height:32px;vertical-align:middle">
+        {% else %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.2"/></svg>
+        {% endif %}
+        {{ site_title }}
+      </a>
+      <button class="nav-toggle" aria-label="Menü" onclick="toggleNav()"><span></span><span></span><span></span></button>
+      <div class="nav-links" id="navLinks">
+        <a href="{{ url_for('index') }}" class="nav-link">Blog</a>
+        <a href="{{ url_for('gallery') }}" class="nav-link">Galeri</a>
+        <a href="{{ url_for('about') }}" class="nav-link">Hakkımda</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 {{ site_title }}. Tüm hakları saklıdır.</p>
+    </div>
+  </footer>
+
+  <!-- Newsletter -->
+  <div style="position:fixed;bottom:20px;right:20px;z-index:999">
+    <div id="newsletterToggle" onclick="toggleNewsletter()" style="width:48px;height:48px;border-radius:50%;background:var(--primary,#3d6b4f);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,.2);font-size:20px" title="Abone Ol">✉️</div>
+    <div id="newsletterBox" style="display:none;position:absolute;bottom:56px;right:0;width:300px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.12);padding:20px">
+      <h4 style="font-size:14px;margin-bottom:4px;color:#333">📧 Bülten</h4>
+      <p style="font-size:11px;color:#888;margin-bottom:12px">Yeni yazılardan haberdar olun.</p>
+      <form action="{{ url_for('subscribe') }}" method="POST" style="display:flex;flex-direction:column;gap:8px">
+        <input type="email" name="email" placeholder="E-posta" required style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px">
+        <button type="submit" style="width:100%;padding:8px;background:var(--primary,#3d6b4f);color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">Abone Ol</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    function toggleNewsletter() {
+      var box = document.getElementById('newsletterBox');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+  </script>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

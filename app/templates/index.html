@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ site_title }} | {{ site_description }}{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-content">
+    <h1>{{ site_title }}</h1>
+    <p>{{ site_description }}</p>
+  </div>
+</section>
+
+<section class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="post-grid">
+    {% for post in posts %}
+    <a href="{{ url_for('post', slug=post.slug) }}" class="post-card">
+      <div class="post-thumb">
+        <span class="post-category">{{ post.category }}</span>
+      </div>
+      <div class="post-body">
+        <div class="post-date">{{ post.created_at[:10] }}</div>
+        <div class="post-title">{{ post.title }}</div>
+        <div class="post-excerpt">{{ post.excerpt }}</div>
+        <div class="post-read">Devamını Oku →</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  {% if total_pages > 1 %}
+  <div class="pagination">
+    {% if page > 1 %}
+    <a href="{{ url_for('index', page=page-1) }}" class="page-link">← Önceki</a>
+    {% endif %}
+    <span class="page-info">Sayfa {{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+    <a href="{{ url_for('index', page=page+1) }}" class="page-link">Sonraki →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

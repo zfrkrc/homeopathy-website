@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: homeopathy-flask
+    expose:
+      - "5000"
+    volumes:
+      - ./app/data:/app/app/data
+      - ./src:/app/src:ro
+    environment:
+      - SECRET_KEY=zeyna-homeopathy-secret-2026
+    restart: unless-stopped
+    networks:
+      - homeopathy-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: homeopathy-nginx
+    ports:
+      - "8023:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./src:/usr/share/nginx/html:ro
+    depends_on:
+      - flask
+    restart: unless-stopped
+    networks:
+      - homeopathy-net
+
+networks:
+  homeopathy-net:
+    driver: bridge

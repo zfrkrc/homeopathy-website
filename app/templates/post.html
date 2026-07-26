@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} | {{ site_title }}{% endblock %}
+{% block meta_description %}{{ post.excerpt }}{% endblock %}
+{% block content %}
+<article class="container post-article">
+  <div class="post-header">
+    <span class="post-category">{{ post.category }}</span>
+    <h1>{{ post.title }}</h1>
+    <div class="post-meta">{{ post.created_at[:10] }}</div>
+  </div>
+  <div class="post-content">
+    {{ post.content|safe }}
+  </div>
+  <div class="post-nav">
+    <a href="{{ url_for('index') }}" class="back-link">← Blog'a Dön</a>
+  </div>
+</article>
+{% endblock %}

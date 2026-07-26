@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mail Gönder | {{ site_title }}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:sans-serif;background:#f8fafb;color:#333}
+    .admin-header{background:#3d6b4f;color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+    .admin-header h1{font-size:18px}
+    .admin-header a{color:#fff;text-decoration:none;font-size:13px;opacity:.8}
+    .admin-body{padding:24px;max-width:700px;margin:0 auto}
+    .flash{padding:10px 14px;border-radius:6px;margin-bottom:16px;font-size:13px}
+    .flash.success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+    .card{background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);margin-bottom:24px}
+    .card h2{font-size:16px;margin-bottom:16px}
+    label{display:block;font-size:13px;color:#555;margin-bottom:4px;margin-top:16px}
+    input[type=text],textarea,select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px}
+    textarea{min-height:300px;font-family:monospace;font-size:13px;resize:vertical}
+    input:focus,textarea:focus{outline:none;border-color:#3d6b4f}
+    .btn{display:inline-block;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:500;border:none;cursor:pointer;text-decoration:none}
+    .btn-primary{background:#3d6b4f;color:#fff}
+    .btn-primary:hover{background:#2d4f3a}
+    .btn-secondary{background:#f0f0f0;color:#555}
+    .help{font-size:11px;color:#aaa;margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="admin-header">
+    <h1>📨 Toplu Mail Gönder</h1>
+    <a href="{{ url_for('admin_subscribers') }}">← Abonelere Dön</a>
+  </div>
+  <div class="admin-body">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}{% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}{% endif %}
+    {% endwith %}
+
+    <div class="card">
+      <h2>Yeni Mail</h2>
+      <form method="POST">
+        <label>Konu</label>
+        <input type="text" name="subject" required placeholder="Mail başlığı">
+
+        <label>Mesaj (HTML destekler)</label>
+        <div class="help">HTML kullanabilirsiniz. &lt;br&gt; satır sonu, &lt;b&gt; kalın, &lt;a&gt; link</div>
+        <textarea name="message" placeholder="Merhaba,&#10;&#10;Yeni blog yazımız yayında..."></textarea>
+
+        <label>Alıcılar</label>
+        <select name="send_to">
+          <option value="active">Sadece aktif aboneler</option>
+          <option value="all">Tüm aboneler (pasif dahil)</option>
+        </select>
+
+        <div style="margin-top:24px">
+          <button type="submit" class="btn btn-primary" onclick="return confirm('{{ count }} aboneye mail gönderilecek. Emin misin?')">📨 Gönder</button>
+          <a href="{{ url_for('admin_subscribers') }}" class="btn btn-secondary">İptal</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
