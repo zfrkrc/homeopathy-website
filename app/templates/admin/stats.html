@@ -1,56 +1,174 @@
-{% extends "base.html" %}
+{% extends "admin/admin_base.html" %}
 {% block title %}İstatistikler | {{ site_title }}{% endblock %}
-{% block content %}
-<div style="max-width:900px;margin:40px auto;padding:0 20px">
-  <h1 style="font-size:24px;margin-bottom:24px">📊 Site İstatistikleri</h1>
+{% block breadcrumb %}<strong>İstatistikler</strong>{% endblock %}
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px">
-    <div style="background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);text-align:center">
-      <div style="font-size:32px;font-weight:700;color:#3d6b4f">{{ stats.total }}</div>
-      <div style="font-size:12px;color:#888;margin-top:4px">Toplam Ziyaret</div>
+{% block content %}
+<div style="padding:8px 0 24px">
+
+  <!-- Stat Cards -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:32px">
+    <div style="background:#fff;padding:20px;border-radius:12px;box-shadow:0 1px 8px rgba(0,0,0,.06);border-left:4px solid #3d6b4f">
+      <div style="font-size:28px;font-weight:700;color:#3d6b4f">{{ stats.total }}</div>
+      <div style="font-size:12px;color:#888;margin-top:4px;font-weight:500">Toplam Ziyaret</div>
     </div>
-    <div style="background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);text-align:center">
-      <div style="font-size:32px;font-weight:700;color:#3d6b4f">{{ stats.recent }}</div>
-      <div style="font-size:12px;color:#888;margin-top:4px">Son 30 Gün</div>
+    <div style="background:#fff;padding:20px;border-radius:12px;box-shadow:0 1px 8px rgba(0,0,0,.06);border-left:4px solid #2e7d32">
+      <div style="font-size:28px;font-weight:700;color:#2e7d32">{{ stats.recent }}</div>
+      <div style="font-size:12px;color:#888;margin-top:4px;font-weight:500">Son 30 Gün</div>
     </div>
-    <div style="background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);text-align:center">
-      <div style="font-size:32px;font-weight:700;color:#3d6b4f">{{ sub_count }}</div>
-      <div style="font-size:12px;color:#888;margin-top:4px">E-posta Abonesi</div>
+    <div style="background:#fff;padding:20px;border-radius:12px;box-shadow:0 1px 8px rgba(0,0,0,.06);border-left:4px solid #1976d2">
+      <div style="font-size:28px;font-weight:700;color:#1976d2">{{ today_count }}</div>
+      <div style="font-size:12px;color:#888;margin-top:4px;font-weight:500">Bugün</div>
     </div>
-    <div style="background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);text-align:center">
-      <div style="font-size:32px;font-weight:700;color:#3d6b4f">{{ post_count }}</div>
-      <div style="font-size:12px;color:#888;margin-top:4px">Blog Yazısı</div>
+    <div style="background:#fff;padding:20px;border-radius:12px;box-shadow:0 1px 8px rgba(0,0,0,.06);border-left:4px solid #7b1fa2">
+      <div style="font-size:28px;font-weight:700;color:#7b1fa2">{{ unique_ips }}</div>
+      <div style="font-size:12px;color:#888;margin-top:4px;font-weight:500">Benzersiz IP</div>
+    </div>
+    <div style="background:#fff;padding:20px;border-radius:12px;box-shadow:0 1px 8px rgba(0,0,0,.06);border-left:4px solid #e65100">
+      <div style="font-size:28px;font-weight:700;color:#e65100">{{ sub_count }}</div>
+      <div style="font-size:12px;color:#888;margin-top:4px;font-weight:500">E-posta Abone</div>
+    </div>
+    <div style="background:#fff;padding:20px;border-radius:12px;box-shadow:0 1px 8px rgba(0,0,0,.06);border-left:4px solid #00796b">
+      <div style="font-size:28px;font-weight:700;color:#00796b">{{ post_count }}</div>
+      <div style="font-size:12px;color:#888;margin-top:4px;font-weight:500">Blog Yazısı</div>
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-    <div style="background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05)">
-      <h2 style="font-size:16px;margin-bottom:16px">En Çok Görüntülenen Sayfalar</h2>
-      {% if stats.top_pages %}
-      <table style="width:100%;font-size:13px;border-collapse:collapse">
-        {% for p in stats.top_pages %}
-        <tr><td style="padding:6px 0;border-bottom:1px solid #f0f0f0">{{ p.path }}</td><td style="padding:6px 0;text-align:right;color:#3d6b4f;font-weight:600">{{ p.cnt }}</td></tr>
-        {% endfor %}
-      </table>
-      {% else %}<div style="color:#888;text-align:center;padding:20px">Henüz veri yok</div>{% endif %}
-    </div>
+  <!-- Chart + Top Pages -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px">
 
-    <div style="background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05)">
-      <h2 style="font-size:16px;margin-bottom:16px">Son 30 Günlük Ziyaret</h2>
+    <!-- Son 30 Gün Grafik -->
+    <div style="background:#fff;padding:24px;border-radius:12px;box-shadow:0 1px 8px rgba(0,0,0,.06)">
+      <h2 style="font-size:15px;font-weight:600;margin:0 0 20px;color:#1a1a1a">📈 Son 30 Günlük Ziyaret</h2>
       {% if stats.daily %}
-      <div style="display:flex;flex-direction:column;gap:4px">
-        {% for d in stats.daily[:14] %}
-        <div style="display:flex;align-items:center;gap:8px;font-size:12px">
-          <span style="width:80px;color:#888">{{ d.day[5:] }}</span>
-          <div style="flex:1;height:20px;background:#f0f0f0;border-radius:4px;overflow:hidden">
-            <div style="height:100%;background:#3d6b4f;border-radius:4px;width:{{ (d.cnt / stats.daily[0].cnt * 100)|int if stats.daily[0].cnt > 0 else 0 }}%"></div>
-          </div>
-          <span style="width:30px;text-align:right;color:#3d6b4f;font-weight:600">{{ d.cnt }}</span>
+      <div id="daily-chart" style="display:flex;align-items:flex-end;gap:3px;height:120px;padding-bottom:4px">
+        {% set max_cnt = stats.daily | map(attribute='cnt') | max %}
+        {% for d in stats.daily | reverse %}
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0" title="{{ d.day }}: {{ d.cnt }} ziyaret">
+          <div style="width:100%;background:#3d6b4f;border-radius:3px 3px 0 0;height:{{ [(d.cnt / max_cnt * 100)|int, 4] | max }}%;transition:height .3s"></div>
         </div>
         {% endfor %}
       </div>
-      {% else %}<div style="color:#888;text-align:center;padding:20px">Henüz veri yok</div>{% endif %}
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:#bbb">
+        <span>{{ stats.daily[-1].day[5:] if stats.daily }}</span>
+        <span>{{ stats.daily[0].day[5:] if stats.daily }}</span>
+      </div>
+      {% else %}
+      <div style="text-align:center;color:#bbb;padding:40px 0;font-size:13px">Henüz veri yok</div>
+      {% endif %}
+    </div>
+
+    <!-- En Çok Görüntülenen Sayfalar -->
+    <div style="background:#fff;padding:24px;border-radius:12px;box-shadow:0 1px 8px rgba(0,0,0,.06)">
+      <h2 style="font-size:15px;font-weight:600;margin:0 0 20px;color:#1a1a1a">🔝 En Çok Görüntülenen</h2>
+      {% if stats.top_pages %}
+      <table style="width:100%;font-size:13px;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:6px 8px;font-size:11px;color:#888;font-weight:500;border-bottom:2px solid #f0f0f0">Sayfa</th>
+            <th style="text-align:right;padding:6px 8px;font-size:11px;color:#888;font-weight:500;border-bottom:2px solid #f0f0f0">Ziyaret</th>
+            <th style="text-align:right;padding:6px 8px;font-size:11px;color:#888;font-weight:500;border-bottom:2px solid #f0f0f0">%</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set max_page = stats.top_pages[0].cnt if stats.top_pages else 1 %}
+          {% for p in stats.top_pages %}
+          <tr style="border-bottom:1px solid #f8f8f8">
+            <td style="padding:8px;font-size:12px;color:#333;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.path }}</td>
+            <td style="padding:8px;text-align:right;font-weight:600;color:#3d6b4f">{{ p.cnt }}</td>
+            <td style="padding:8px;text-align:right">
+              <div style="background:#f0f7f2;border-radius:10px;height:6px;width:60px;margin-left:auto;overflow:hidden">
+                <div style="background:#3d6b4f;height:100%;width:{{ (p.cnt / max_page * 100)|int }}%;border-radius:10px"></div>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="text-align:center;color:#bbb;padding:40px 0;font-size:13px">Henüz veri yok</div>
+      {% endif %}
     </div>
   </div>
+
+  <!-- Top IPs + Recent Visits -->
+  <div style="display:grid;grid-template-columns:1fr 2fr;gap:24px">
+
+    <!-- Top IP'ler -->
+    <div style="background:#fff;padding:24px;border-radius:12px;box-shadow:0 1px 8px rgba(0,0,0,.06)">
+      <h2 style="font-size:15px;font-weight:600;margin:0 0 20px;color:#1a1a1a">🌐 En Aktif IP'ler</h2>
+      {% if top_ips %}
+      <table style="width:100%;font-size:13px;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:5px 8px;font-size:11px;color:#888;font-weight:500;border-bottom:2px solid #f0f0f0">#</th>
+            <th style="text-align:left;padding:5px 8px;font-size:11px;color:#888;font-weight:500;border-bottom:2px solid #f0f0f0">IP Adresi</th>
+            <th style="text-align:right;padding:5px 8px;font-size:11px;color:#888;font-weight:500;border-bottom:2px solid #f0f0f0">İstek</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ip in top_ips %}
+          <tr style="border-bottom:1px solid #f8f8f8" class="ip-row" data-ip="{{ ip.ip }}">
+            <td style="padding:7px 8px;color:#bbb;font-size:11px">{{ loop.index }}</td>
+            <td style="padding:7px 8px;font-family:monospace;font-size:12px;color:#444">
+              {{ ip.ip or '–' }}
+              <span class="ip-flag" style="font-size:11px;color:#888;margin-left:4px"></span>
+            </td>
+            <td style="padding:7px 8px;text-align:right;font-weight:600;color:#3d6b4f">{{ ip.cnt }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="text-align:center;color:#bbb;padding:40px 0;font-size:13px">Henüz veri yok</div>
+      {% endif %}
+    </div>
+
+    <!-- Son Ziyaretler -->
+    <div style="background:#fff;padding:24px;border-radius:12px;box-shadow:0 1px 8px rgba(0,0,0,.06)">
+      <h2 style="font-size:15px;font-weight:600;margin:0 0 20px;color:#1a1a1a">🕐 Son Ziyaretler</h2>
+      {% if recent_visits %}
+      <div style="overflow-x:auto">
+      <table style="width:100%;font-size:12px;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:5px 8px;font-size:11px;color:#888;font-weight:500;border-bottom:2px solid #f0f0f0">Zaman</th>
+            <th style="text-align:left;padding:5px 8px;font-size:11px;color:#888;font-weight:500;border-bottom:2px solid #f0f0f0">IP</th>
+            <th style="text-align:left;padding:5px 8px;font-size:11px;color:#888;font-weight:500;border-bottom:2px solid #f0f0f0">Sayfa</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for v in recent_visits %}
+          <tr style="border-bottom:1px solid #f8f8f8">
+            <td style="padding:7px 8px;color:#888;white-space:nowrap">{{ v.created_at[:16] if v.created_at else '–' }}</td>
+            <td style="padding:7px 8px;font-family:monospace;color:#555">{{ v.ip or '–' }}</td>
+            <td style="padding:7px 8px;color:#333;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ v.path }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+      {% else %}
+      <div style="text-align:center;color:#bbb;padding:40px 0;font-size:13px">Henüz veri yok</div>
+      {% endif %}
+    </div>
+
+  </div>
 </div>
+
+<script>
+// IP Geo lookup for public IPs
+document.querySelectorAll('.ip-row').forEach(function(row) {
+  var ip = row.dataset.ip;
+  if (!ip || ip.startsWith('172.') || ip.startsWith('10.') || ip.startsWith('192.168.') || ip === '127.0.0.1') return;
+  fetch('https://ipapi.co/' + ip + '/json/')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d && d.country_name) {
+        var flag = row.querySelector('.ip-flag');
+        if (flag) flag.textContent = (d.emoji_flag || '') + ' ' + d.country_name;
+      }
+    })
+    .catch(function(){});
+});
+</script>
 {% endblock %}

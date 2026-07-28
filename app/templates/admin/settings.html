@@ -1,110 +1,188 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ayarlar | {{ site_title }}</title>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:sans-serif;background:#f8fafb;color:#333}
-    .admin-header{background:#3d6b4f;color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
-    .admin-header h1{font-size:18px}
-    .admin-header a{color:#fff;text-decoration:none;font-size:13px;opacity:.8}
-    a:hover{opacity:1}
-    .admin-body{padding:24px;max-width:800px;margin:0 auto}
-    .flash{padding:10px 14px;border-radius:6px;margin-bottom:16px;font-size:13px}
-    .flash.error{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
-    .flash.success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
-    label{display:block;font-size:13px;color:#555;margin-bottom:4px;margin-top:16px}
-    input[type=text],input[type=password],input[type=color],select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px}
-    input[type=color]{height:44px;padding:4px;cursor:pointer}
-    input[type=file]{font-size:14px;padding:8px 0}
-    input:focus,select:focus{outline:none;border-color:#3d6b4f;box-shadow:0 0 0 2px rgba(61,107,79,.15)}
-    .btn{display:inline-block;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:500;border:none;cursor:pointer}
-    .btn-primary{background:#3d6b4f;color:#fff}
-    .btn-primary:hover{background:#2d4f3a}
-    .btn-secondary{background:#f0f0f0;color:#555;text-decoration:none}
-    .btn-secondary:hover{background:#e0e0e0}
-    .card{background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);margin-bottom:24px}
-    .card h2{font-size:16px;margin-bottom:16px;color:#333}
-    .help{font-size:11px;color:#aaa;margin-top:4px}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .color-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:6px}
-    .color-swatch{display:block;height:32px;border-radius:4px;border:2px solid transparent;cursor:pointer;transition:.15s}
-    .color-swatch:hover,.color-swatch.active{border-color:#333;transform:scale(1.08)}
-    .logo-preview{max-width:200px;max-height:60px;margin-top:8px;border-radius:4px;border:1px solid #eee;padding:8px;background:#fafafa}
-    .section-divider{border:none;border-top:1px solid #eee;margin:16px 0}
-  </style>
-</head>
-<body>
-  <div class="admin-header">
-    <h1>⚙️ Site Ayarları</h1>
-    <a href="{{ url_for('admin_dashboard') }}">← Paneli Dön</a>
+{% extends "admin/admin_base.html" %}
+{% block title %}Ayarlar{% endblock %}
+{% block breadcrumb %}Ayarlar{% endblock %}
+{% block topbar_actions %}
+  <a href="{{ url_for('admin_dashboard') }}" class="topbar-btn">← Geri</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <div>
+    <h1>Site Ayarları</h1>
+    <p>Renk, hero, düzen ve daha fazlasını özelleştirin</p>
   </div>
-  <div class="admin-body">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash {{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+</div>
 
-    <form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data">
+  <div class="section-layout">
+
+    <!-- SOL KOLON -->
+    <div>
+
+      <!-- Site Bilgileri -->
       <div class="card">
-        <h2>📝 Site Bilgileri</h2>
-        <label>Site Başlığı</label>
-        <input type="text" name="site_title" value="{{ site_title_val }}">
-        <div class="help">Tarayıcı sekmesinde ve ana sayfada görünür</div>
-
-        <label>Site Açıklaması</label>
-        <input type="text" name="site_description" value="{{ site_description_val }}">
-        <div class="help">SEO meta description</div>
-
-        <hr class="section-divider">
-
-        <h2>🎨 Renk Paleti</h2>
-        <div class="form-row">
-          <div>
-            <label>Ana Renk</label>
-            <input type="color" name="primary_color" value="{{ primary_color_val }}">
-            <div class="color-grid">
-            {% for hex, name in color_presets %}
-              <div class="color-swatch" style="background:{{ hex }}" onclick="document.getElementsByName('primary_color')[0].value='{{ hex }}'" title="{{ name }}"></div>
-            {% endfor %}
-            </div>
-          </div>
-          <div>
-            <label>İkincil Renk</label>
-            <input type="color" name="secondary_color" value="{{ secondary_color_val }}">
-          </div>
+        <div class="card-hd">
+          <h2>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Site Bilgileri
+          </h2>
         </div>
-        <div class="form-row">
-          <div>
-            <label>Arkaplan Rengi</label>
-            <input type="color" name="bg_color" value="{{ bg_color_val }}">
+        <div class="card-body">
+          <div class="f-group">
+            <label class="f-label">Site Başlığı</label>
+            <input type="text" name="site_title" class="f-input" value="{{ site_title_val }}">
           </div>
-          <div>
-            <label>Yazı Rengi</label>
-            <input type="color" name="text_color" value="{{ text_color_val }}">
+          <div class="f-group">
+            <label class="f-label">Site Açıklaması</label>
+            <input type="text" name="site_description" class="f-input" value="{{ site_description_val }}">
+            <div class="f-help">SEO meta description</div>
           </div>
         </div>
       </div>
 
+      <!-- Hero Bölümü -->
       <div class="card">
-        <h2>🔤 Yazı Tipleri</h2>
-        <div class="form-row">
-          <div>
-            <label>Başlık Fontu</label>
-            <select name="font_heading">
+        <div class="card-hd">
+          <h2>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+            Hero Bölümü
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="f-group">
+            <label class="f-label">Hero Başlığı <span style="color:#aaa;font-weight:400">(boşsa site başlığı)</span></label>
+            <input type="text" name="hero_title" class="f-input" value="{{ hero_title_val }}" placeholder="{{ site_title_val }}">
+          </div>
+          <div class="f-group">
+            <label class="f-label">Hero Alt Yazısı</label>
+            <input type="text" name="hero_subtitle" class="f-input" value="{{ hero_subtitle_val }}" placeholder="{{ site_description_val }}">
+          </div>
+          <div class="f-row f-group">
+            <div>
+              <label class="f-label">Gradient Başlangıç</label>
+              <input type="color" name="hero_color_start" class="f-input f-color" value="{{ hero_color_start_val }}">
+            </div>
+            <div>
+              <label class="f-label">Gradient Bitiş</label>
+              <input type="color" name="hero_color_end" class="f-input f-color" value="{{ hero_color_end_val }}">
+            </div>
+          </div>
+          <div class="f-group">
+            <label class="f-label">Hazır Temalar</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+              {% for g in hero_gradients %}
+              <div class="grad-preset"
+                style="background:linear-gradient(135deg,{{ g.start }},{{ g.end }})"
+                title="{{ g.name }}"
+                onclick="document.getElementsByName('hero_color_start')[0].value='{{ g.start }}';document.getElementsByName('hero_color_end')[0].value='{{ g.end }}'">
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blog Düzeni -->
+      <div class="card">
+        <div class="card-hd">
+          <h2>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+            Kart Stili
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="f-row f-group">
+            <div>
+              <label class="f-label">Köşe Yuvarlaklığı</label>
+              <select name="card_radius" class="f-input">
+                <option value="6px" {% if card_radius_val=='6px' %}selected{% endif %}>Keskin (6px)</option>
+                <option value="10px" {% if card_radius_val=='10px' %}selected{% endif %}>Hafif (10px)</option>
+                <option value="14px" {% if card_radius_val=='14px' or not card_radius_val %}selected{% endif %}>Yuvarlak (14px)</option>
+                <option value="20px" {% if card_radius_val=='20px' %}selected{% endif %}>Büyük (20px)</option>
+                <option value="28px" {% if card_radius_val=='28px' %}selected{% endif %}>Pill (28px)</option>
+              </select>
+            </div>
+            <div>
+              <label class="f-label">Kart Gölgesi</label>
+              <select name="card_shadow" class="f-input">
+                <option value="none" {% if card_shadow_val=='none' %}selected{% endif %}>Yok</option>
+                <option value="sm" {% if card_shadow_val=='sm' or not card_shadow_val %}selected{% endif %}>Hafif</option>
+                <option value="md" {% if card_shadow_val=='md' %}selected{% endif %}>Orta</option>
+                <option value="lg" {% if card_shadow_val=='lg' %}selected{% endif %}>Güçlü</option>
+              </select>
+            </div>
+          </div>
+          <div class="f-group">
+            <label class="f-label">Yazı Thumb Rengi (gradient başlangıç)</label>
+            <input type="color" name="thumb_color" class="f-input f-color" value="{{ thumb_color_val }}">
+            <div class="f-help">Blog yazı kartlarındaki thumbnail gradient rengi</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /SOL -->
+
+    <!-- SAĞ KOLON -->
+    <div>
+
+      <!-- Renk Paleti -->
+      <div class="card">
+        <div class="card-hd">
+          <h2>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10c0 2.76-1.12 5.26-2.93 7.07"/><path d="M12 2a10 10 0 0 0-10 10c0 2.76 1.12 5.26 2.93 7.07"/></svg>
+            Renk Paleti
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="f-row f-group">
+            <div>
+              <label class="f-label">Ana Renk</label>
+              <input type="color" name="primary_color" id="pc" class="f-input f-color" value="{{ primary_color_val }}">
+              <div class="swatch-row">
+                {% for hex, name in color_presets %}
+                <div class="swatch" style="background:{{ hex }}" title="{{ name }}"
+                  onclick="document.getElementById('pc').value='{{ hex }}'"></div>
+                {% endfor %}
+              </div>
+            </div>
+            <div>
+              <label class="f-label">İkincil Renk</label>
+              <input type="color" name="secondary_color" class="f-input f-color" value="{{ secondary_color_val }}">
+            </div>
+          </div>
+          <div class="f-row f-group">
+            <div>
+              <label class="f-label">Arkaplan</label>
+              <input type="color" name="bg_color" class="f-input f-color" value="{{ bg_color_val }}">
+            </div>
+            <div>
+              <label class="f-label">Yazı Rengi</label>
+              <input type="color" name="text_color" class="f-input f-color" value="{{ text_color_val }}">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Yazı Tipleri -->
+      <div class="card">
+        <div class="card-hd">
+          <h2>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+            Yazı Tipleri
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="f-group">
+            <label class="f-label">Başlık Fontu</label>
+            <select name="font_heading" class="f-input">
               {% for val, label in default_fonts %}
               <option value="{{ val }}" {% if font_heading_val == val %}selected{% endif %}>{{ label }}</option>
               {% endfor %}
             </select>
           </div>
-          <div>
-            <label>Gövde Fontu</label>
-            <select name="font_body">
+          <div class="f-group">
+            <label class="f-label">Gövde Fontu</label>
+            <select name="font_body" class="f-input">
               {% for val, label in default_fonts %}
               <option value="{{ val }}" {% if font_body_val == val %}selected{% endif %}>{{ label }}</option>
               {% endfor %}
@@ -113,33 +191,86 @@
         </div>
       </div>
 
+      <!-- Logo -->
       <div class="card">
-        <h2>🖼️ Logo</h2>
-        <label>Logo Görseli (PNG/JPG/SVG, max 5MB)</label>
-        <input type="file" name="logo" accept="image/png,image/jpeg,image/svg+xml">
-        {% if logo_path_val %}
-        <div class="logo-preview"><img src="{{ url_for('uploaded_file', filename=logo_path_val) }}" style="max-width:100%;max-height:50px"></div>
-        <div class="help">Yeni logo yüklemek eskisini otomatik siler</div>
-        {% endif %}
-      </div>
-
-      <div style="display:flex;gap:8px;margin-bottom:24px">
-        <button type="submit" class="btn btn-primary">💾 Tüm Ayarları Kaydet</button>
-        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">İptal</a>
-      </div>
-    </form>
-
-    <div class="card">
-      <h2>🔑 Şifre Değiştir</h2>
-      <form method="POST" action="{{ url_for('admin_change_password') }}">
-        <label>Yeni Şifre</label>
-        <input type="password" name="new_password" required minlength="4">
-        <div class="help">En az 4 karakter</div>
-        <div style="margin-top:16px">
-          <button type="submit" class="btn btn-primary">Şifreyi Değiştir</button>
+        <div class="card-hd">
+          <h2>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            Logo
+          </h2>
         </div>
-      </form>
-    </div>
+        <div class="card-body">
+          <div class="f-group">
+            <label class="f-label">Logo Görseli (PNG/JPG/SVG)</label>
+            <input type="file" name="logo" accept="image/png,image/jpeg,image/svg+xml" style="font-size:13px;padding:8px 0">
+          </div>
+          {% if logo_path_val %}
+          <div style="padding:12px;background:#f8f8f8;border-radius:8px;display:inline-block;margin-top:4px">
+            <img src="{{ url_for('uploaded_file', filename=logo_path_val) }}" style="max-height:44px;max-width:200px">
+          </div>
+          <div class="f-help" style="margin-top:8px">Yeni dosya yüklenirse otomatik güncellenir</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Sosyal / Telegram -->
+      <div class="card">
+        <div class="card-hd">
+          <h2>
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.94 8.19l-2.03 9.57c-.15.68-.55.84-1.11.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.61.3l.21-3.02 5.49-4.96c.24-.21-.05-.33-.37-.12L7.11 14.3l-2.96-.93c-.64-.2-.65-.64.14-.95l11.57-4.46c.53-.19 1 .13.08.23z"/></svg>
+            Telegram
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="f-group">
+            <label class="f-label">Telegram Kanal/Grup URL</label>
+            <input type="url" name="telegram_url" class="f-input" value="{{ telegram_url_val }}" placeholder="https://t.me/kanaladi">
+            <div class="f-help">Doldurulursa üst menüde Telegram butonu görünür</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Özel CSS -->
+      <div class="card">
+        <div class="card-hd">
+          <h2>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Özel CSS
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="f-group">
+            <textarea name="custom_css" class="f-input" rows="6" placeholder="/* ek CSS kuralları */">{{ custom_css_val }}</textarea>
+            <div class="f-help">Bu CSS tüm sayfalara eklenir; öncelik en yüksek</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /SAĞ -->
+  </div><!-- /grid -->
+
+  <div class="btn-row" style="margin:4px 0 28px">
+    <button type="submit" class="btn btn-primary">💾 Tüm Ayarları Kaydet</button>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-muted">İptal</a>
   </div>
-</body>
-</html>
+</form>
+
+<!-- Şifre -->
+<div class="card" style="max-width:440px">
+  <div class="card-hd">
+    <h2>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Şifre Değiştir
+    </h2>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{{ url_for('admin_change_password') }}">
+      <div class="f-group">
+        <label class="f-label">Yeni Şifre</label>
+        <input type="password" name="new_password" required minlength="4" class="f-input">
+      </div>
+      <button type="submit" class="btn btn-primary">Şifreyi Değiştir</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

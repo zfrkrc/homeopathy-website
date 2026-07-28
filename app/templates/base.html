@@ -6,7 +6,7 @@
   <meta name="description" content="{% block meta_description %}{{ site_description }}{% endblock %}">
   <title>{% block title %}{{ site_title }}{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('theme_css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="/static/css/style.css?v=3">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23{{ primary_color[1:] if primary_color else '3d6b4f' }}' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 6v6l4 2'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -26,6 +26,7 @@
         <a href="{{ url_for('gallery') }}" class="nav-link">Galeri</a>
         <a href="{{ url_for("about") }}" class="nav-link">Hakkimda</a>
         <a href="{{ url_for("portal.login") }}" class="nav-link">Portal</a>
+        {% if telegram_url %}<a href="{{ telegram_url }}" class="nav-link" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.94 8.19l-2.03 9.57c-.15.68-.55.84-1.11.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.61.3l.21-3.02 5.49-4.96c.24-.21-.05-.33-.37-.12L7.11 14.3l-2.96-.93c-.64-.2-.65-.64.14-.95l11.57-4.46c.53-.19 1 .13.08.23z"/></svg> Telegram</a>{% endif %}
         <a href="{{ url_for("admin_login") }}" class="nav-link" style="color:var(--primary)">Panel</a>
       </div>
     </div>

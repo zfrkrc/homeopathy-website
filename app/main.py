@@ -174,7 +174,9 @@ def inject_settings():
         'custom_css': get_setting('custom_css', ''),
         'hero_title': get_setting('hero_title', ''),
         'hero_description': get_setting('hero_description', ''),
+        'hero_subtitle': get_setting('hero_subtitle', ''),
         'footer_text': get_setting('footer_text', ''),
+        'telegram_url': get_setting('telegram_url', ''),
         'weather_data': fetch_weather(get_setting('weather_location', 'İstanbul')),
         'homepage_sections': __import__('json').loads(get_setting('homepage_sections', '[]')) if get_setting('homepage_sections', '[]') else [],
     }
@@ -233,7 +235,8 @@ def admin_logout():
 @login_required
 def admin_dashboard():
     posts, total = get_posts(page=1, per_page=999, published_only=False)
-    return render_template('admin/dashboard.html', posts=posts, total=total)
+    subscriber_count = get_subscriber_count()
+    return render_template('admin/dashboard.html', posts=posts, total=total, subscriber_count=subscriber_count)
 
 @app.route('/gallery')
 def gallery():
@@ -418,8 +421,25 @@ def admin_stats():
     sub_count = get_subscriber_count()
     conn = get_db()
     post_count = conn.execute('SELECT COUNT(*) FROM posts WHERE published=1').fetchone()[0]
+    unique_ips = conn.execute('SELECT COUNT(DISTINCT ip) FROM pageviews').fetchone()[0]
+    today_count = conn.execute(
+        "SELECT COUNT(*) FROM pageviews WHERE DATE(created_at) = DATE('now')"
+    ).fetchone()[0]
+    top_ips = conn.execute(
+        'SELECT ip, COUNT(*) as cnt FROM pageviews GROUP BY ip ORDER BY cnt DESC LIMIT 10'
+    ).fetchall()
+    recent_visits = conn.execute(
+        'SELECT path, ip, created_at FROM pageviews ORDER BY created_at DESC LIMIT 20'
+    ).fetchall()
+    weekly_daily = conn.execute(
+        "SELECT DATE(created_at) as day, COUNT(*) as cnt FROM pageviews WHERE created_at > datetime('now','-7 days') GROUP BY day ORDER BY day DESC"
+    ).fetchall()
     conn.close()
-    return render_template('admin/stats.html', stats=stats, sub_count=sub_count, post_count=post_count)
+    return render_template('admin/stats.html',
+        stats=stats, sub_count=sub_count, post_count=post_count,
+        unique_ips=unique_ips, today_count=today_count,
+        top_ips=top_ips, recent_visits=recent_visits,
+        weekly_daily=weekly_daily)
 
 @app.route('/admin/post/new', methods=['GET', 'POST'])
 @login_required
@@ -472,7 +492,10 @@ def admin_settings():
             'weather_location', 'show_weather',
             'social_instagram', 'social_twitter', 'social_facebook', 'social_youtube', 'show_social',
             'sidebar_position', 'posts_per_page', 'custom_css',
-            'hero_title', 'hero_description', 'footer_text',
+            'hero_title', 'hero_description', 'hero_subtitle', 'footer_text',
+            'hero_color_start', 'hero_color_end',
+            'card_radius', 'card_shadow', 'thumb_color',
+            'telegram_url',
         ]
         for key in keys:
             val = request.form.get(key, '')
@@ -511,12 +534,31 @@ def admin_settings():
         show_social_val=get_setting('show_social', '1'),
         sidebar_position_val=get_setting('sidebar_position', 'right'),
         posts_per_page_val=get_setting("posts_per_page", "12"),
-        custom_css_val=get_setting('custom_css', ''),
         hero_title_val=get_setting('hero_title', ''),
         hero_description_val=get_setting('hero_description', ''),
+        hero_subtitle_val=get_setting('hero_subtitle', ''),
         footer_text_val=get_setting('footer_text', ''),
+        hero_color_start_val=get_setting('hero_color_start', '#1e5631'),
+        hero_color_end_val=get_setting('hero_color_end', '#74c69d'),
+        card_radius_val=get_setting('card_radius', '14px'),
+        card_shadow_val=get_setting('card_shadow', 'sm'),
+        thumb_color_val=get_setting('thumb_color', '#2d6a4f'),
+        telegram_url_val=get_setting('telegram_url', ''),
+        custom_css_val=get_setting('custom_css', ''),
         color_presets=COLOR_PRESETS,
         default_fonts=DEFAULT_FONTS,
+        hero_gradients=[
+            {'name': 'Orman Yeşili', 'start': '#1e5631', 'end': '#74c69d'},
+            {'name': 'Derin Yeşil', 'start': '#0a3d20', 'end': '#2d6a4f'},
+            {'name': 'Deniz Mavisi', 'start': '#1a3c5e', 'end': '#4a90d9'},
+            {'name': 'Gün Batımı', 'start': '#c0392b', 'end': '#f39c12'},
+            {'name': 'Mor Gece', 'start': '#2c1654', 'end': '#7b2ff7'},
+            {'name': 'Sahil', 'start': '#1d6fa4', 'end': '#48cae4'},
+            {'name': 'Güz', 'start': '#7d3c10', 'end': '#d4ac0d'},
+            {'name': 'Gül', 'start': '#8e0a3d', 'end': '#e91e8c'},
+            {'name': 'Antrasit', 'start': '#1a1a2e', 'end': '#4a4a72'},
+            {'name': 'Zeytin', 'start': '#3b4a1a', 'end': '#8fa839'},
+        ],
     )
 
 @app.route('/admin/change-password', methods=['POST'])
@@ -702,6 +744,12 @@ def theme_css():
     font_h = get_setting('font_heading', 'Georgia, serif')
     font_b = get_setting('font_body', 'sans-serif')
     custom = get_setting('custom_css', '')
+    hero_start = get_setting('hero_color_start', '#1e5631')
+    hero_end = get_setting('hero_color_end', '#74c69d')
+    card_radius = get_setting('card_radius', '14px')
+    card_shadow_map = {'none': 'none', 'sm': '0 2px 10px rgba(0,0,0,.06)', 'md': '0 4px 20px rgba(0,0,0,.10)', 'lg': '0 8px 32px rgba(0,0,0,.15)'}
+    card_shadow = card_shadow_map.get(get_setting('card_shadow', 'sm'), '0 2px 10px rgba(0,0,0,.06)')
+    thumb_color = get_setting('thumb_color', '#2d6a4f')
     css = f'''/* Dynamic theme */
 :root {{
   --primary: {primary};
@@ -712,13 +760,22 @@ def theme_css():
   --font-body: {font_b};
   --green: {primary};
   --green-dark: {secondary};
+  --hero-start: {hero_start};
+  --hero-end: {hero_end};
+  --card-radius: {card_radius};
+  --card-shadow: {card_shadow};
+  --thumb-color: {thumb_color};
 }}
 body {{ font-family: var(--font-body); color: var(--text); background: var(--bg); }}
-h1, h2, h3, h4, h5, h6, .logo, .post-title, .hero h1 {{ font-family: var(--font-heading); }}
+h1, h2, h3, h4, h5, h6, .logo, .post-title, .hero h1, .hero-content h1 {{ font-family: var(--font-heading); }}
 a {{ color: var(--primary); }}
+.hero {{ background: linear-gradient(135deg, var(--hero-start) 0%, var(--hero-end) 100%); }}
+.post-card {{ border-radius: var(--card-radius); box-shadow: var(--card-shadow); }}
 .post-card:hover {{ border-color: var(--primary); }}
 .post-read {{ color: var(--primary); }}
+.post-thumb {{ background: linear-gradient(135deg, var(--thumb-color), var(--green-dark, {secondary})); }}
 .site-footer {{ background: var(--secondary); }}
+.btn-newsletter {{ background: var(--primary); }}
 {custom}
 '''
     return Response(css, mimetype='text/css')
