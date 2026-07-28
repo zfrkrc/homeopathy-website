@@ -1,0 +1,27 @@
+{% extends "admin/dashboard.html" %}
+{% block title %}Musteri Yonetimi - {{ site_title }}{% endblock %}
+{% block content %}
+<div class="admin-body">
+  <h1 style="font-size:20px;margin-bottom:20px">Musteri Yonetimi</h1>
+  <table>
+    <thead><tr><th>Kod</th><th>Domain</th><th>Port</th><th>Durum</th><th></th></tr></thead>
+    <tbody>
+      {% for t in tenants %}
+      <tr>
+        <td><strong>{{ t.code }}</strong></td>
+        <td>{{ t.domain }}</td>
+        <td>{{ t.port }}</td>
+        <td><span class="badge badge-{{ "active" if t.status == "active" else "inactive" }}">{{ t.status }}</span></td>
+        <td>
+          <form method="POST" action="/admin/tenants/{{ t.id }}/delete" style="display:inline" onsubmit="return confirm("Emin misiniz?")">
+            <button class="btn btn-sm btn-del">Sil</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="empty">Henuz musteri yok.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

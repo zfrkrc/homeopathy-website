@@ -24,9 +24,7 @@
       <div class="nav-links" id="navLinks">
         <a href="{{ url_for('index') }}" class="nav-link">Blog</a>
         <a href="{{ url_for('gallery') }}" class="nav-link">Galeri</a>
-        <a href="{{ url_for("about") }}" class="nav-link">Hakkimda</a>
-        <a href="{{ url_for("portal.login") }}" class="nav-link">Portal</a>
-        <a href="{{ url_for("admin_login") }}" class="nav-link" style="color:var(--primary)">Panel</a>
+        <a href="{{ url_for('about') }}" class="nav-link">Hakkımda</a>
       </div>
     </div>
   </nav>

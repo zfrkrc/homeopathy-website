@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Profil - {{ site_title }}{% endblock %}
+{% block content %}
+<div class="container-narrow" style="padding:40px 0">
+  <a href="{{ url_for("portal.dashboard") }}" style="color:var(--text-muted,#888);font-size:13px;text-decoration:none">← Paneli Don</a>
+  <h1 style="font-size:24px;color:var(--brown,#4a3f35);margin:16px 0 24px">Profilim</h1>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}{% for cat, msg in msgs %}
+      <div class="flash {{ cat }}">{{ msg }}</div>
+    {% endfor %}{% endif %}
+  {% endwith %}
+
+  <div style="background:#fff;border:1px solid var(--border,#e8e4df);border-radius:12px;padding:24px;max-width:500px">
+    <form method="POST">
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">Ad Soyad</label>
+        <input type="text" name="full_name" value="{{ portal_user.full_name }}" required style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px">
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">E-posta (degistirilemez)</label>
+        <input type="email" value="{{ portal_user.email }}" disabled style="width:100%;padding:10px 12px;border:1px solid #eee;border-radius:6px;font-size:14px;background:#f9f9f9;color:#888">
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">Telefon</label>
+        <input type="text" name="phone" value="{{ portal_user.phone or "" }}" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px">
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">Sirket / Klinik</label>
+        <input type="text" name="company" value="{{ portal_user.company or "" }}" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px">
+      </div>
+      <div style="margin-bottom:20px;padding:12px;background:#f0fdf4;border-radius:6px;font-size:12px;color:#2e7d32">
+        2FA simdilik devre disi. Yakinda eklenecek.
+      </div>
+      <button type="submit" style="padding:10px 24px;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer">Kaydet</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

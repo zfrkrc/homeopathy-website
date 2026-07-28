@@ -1,0 +1,36 @@
+{% extends "admin/dashboard.html" %}
+{% block title %}Portal Kullanicilar - {{ site_title }}{% endblock %}
+{% block content %}
+<div class="admin-body">
+  <h1 style="font-size:20px;margin-bottom:20px">Portal Kullanicilari</h1>
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}{% for cat, msg in msgs %}
+      <div class="flash {{ cat }}">{{ msg }}</div>
+    {% endfor %}{% endif %}
+  {% endwith %}
+  <table>
+    <thead><tr><th>ID</th><th>Ad Soyad</th><th>E-posta</th><th>Telefon</th><th>Sirket</th><th>2FA</th><th>Kayit</th><th>Son Giris</th><th></th></tr></thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.id }}</td>
+        <td>{{ u.full_name }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.phone or '-' }}</td>
+        <td>{{ u.company or '-' }}</td>
+        <td>{% if u.two_factor_enabled %}✅{% else %}❌{% endif %}</td>
+        <td>{{ u.created_at[:10] if u.created_at else '-' }}</td>
+        <td>{{ u.last_login[:10] if u.last_login else '-' }}</td>
+        <td>
+          <form method="POST" action="/admin/portal-user/{{ u.id }}/delete" onsubmit="return confirm('Emin misiniz?')">
+            <button class="btn btn-sm btn-del">Sil</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="9" class="empty">Henuz kullanici yok.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}PulseCare - {{ site_title }}{% endblock %}
+{% block content %}
+<div class="container-narrow" style="padding:40px 0">
+  <a href="{{ url_for("portal.dashboard") }}" style="color:var(--text-muted,#888);font-size:13px;text-decoration:none">← Paneli Don</a>
+  <h1 style="font-size:24px;color:var(--brown,#4a3f35);margin:16px 0 8px">PulseCare Hasta Takip</h1>
+  <p style="color:var(--text-muted,#888);margin-bottom:24px">Hasta kayit, randevu, tedavi ve iletisim yonetimi</p>
+
+  <div style="display:grid;gap:16px">
+    <div style="background:#fff;border:1px solid var(--border,#e8e4df);border-radius:12px;padding:24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <div style="font-size:40px">🏥</div>
+      <div style="flex:1">
+        <h2 style="font-size:16px;margin-bottom:4px">Hasta Yonetimi</h2>
+        <p style="font-size:13px;color:#888">Hasta kaydi olusturun, duzenleyin, gecmisi goruntuleyin.</p>
+      </div>
+      <a href="https://we.zk.net.tr/patients" target="_blank" style="padding:10px 20px;background:var(--primary);color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:500">Hastalara Git →</a>
+    </div>
+
+    <div style="background:#fff;border:1px solid var(--border,#e8e4df);border-radius:12px;padding:24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <div style="font-size:40px">📅</div>
+      <div style="flex:1">
+        <h2 style="font-size:16px;margin-bottom:4px">Randevu Takvimi</h2>
+        <p style="font-size:13px;color:#888">Randevu olusturun, takvimden goruntuleyin, hatirlatmalar gonderin.</p>
+      </div>
+      <a href="https://we.zk.net.tr/appointments/calendar" target="_blank" style="padding:10px 20px;background:var(--primary);color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:500">Takvime Git →</a>
+    </div>
+
+    <div style="background:#fff;border:1px solid var(--border,#e8e4df);border-radius:12px;padding:24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <div style="font-size:40px">🤖</div>
+      <div style="flex:1">
+        <h2 style="font-size:16px;margin-bottom:4px">AI Destek</h2>
+        <p style="font-size:13px;color:#888">AI ile remedy onerisi, tedavi analizi ve hasta raporu.</p>
+      </div>
+      <a href="https://we.zk.net.tr/ai/remedy-suggest" target="_blank" style="padding:10px 20px;background:var(--primary);color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:500">AI Kullan →</a>
+    </div>
+
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:20px;font-size:13px;color:#2e7d32">
+      <strong>Entegrasyon:</strong> Telegram botu aktif. Hastalariniz @insightabi_bot uzerinden size ulasabilir.
+    </div>
+
+    <div style="background:#fff3e0;border:1px solid #ffe0b2;border-radius:12px;padding:20px;font-size:13px;color:#e65100">
+      <strong>Yakinda:</strong> WhatsApp entegrasyonu ile hastalarinizla WhatsApp uzerinden iletisim.
+    </div>
+  </div>
+</div>
+{% endblock %}

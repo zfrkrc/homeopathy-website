@@ -1,12 +1,43 @@
 {% extends "base.html" %}
 {% block title %}{{ site_title }} | {{ site_description }}{% endblock %}
 {% block content %}
+
+{% if homepage_sections %}
+{% for s in homepage_sections %}
+{% if s.type == 'hero' %}
 <section class="hero">
   <div class="hero-content">
-    <h1>{{ site_title }}</h1>
-    <p>{{ site_description }}</p>
+    <h1>{{ s.title or site_title }}</h1>
+    <p>{{ s.content or site_description }}</p>
   </div>
 </section>
+{% elif s.type == 'cta' %}
+<section class="container" style="padding:32px 0">
+  <div class="newsletter" style="text-align:center">
+    <h3>{{ s.title }}</h3>
+    <p>{{ s.content }}</p>
+  </div>
+</section>
+{% elif s.type == 'features' %}
+<section class="container" style="padding:32px 0;text-align:center">
+  <h2 style="font-size:28px;color:var(--brown,#4a3f35);margin-bottom:12px">{{ s.title }}</h2>
+  <p style="color:var(--text-muted,#888);max-width:600px;margin:0 auto">{{ s.content }}</p>
+</section>
+{% else %}
+<section class="container" style="padding:24px 0">
+  <h2 style="font-size:22px;color:var(--brown,#4a3f35);margin-bottom:12px">{{ s.title }}</h2>
+  <div style="font-size:15px;line-height:1.8;color:#555">{{ s.content }}</div>
+</section>
+{% endif %}
+{% endfor %}
+{% else %}
+<section class="hero">
+  <div class="hero-content">
+    <h1>{{ hero_title or site_title }}</h1>
+    <p>{{ hero_description or site_description }}</p>
+  </div>
+</section>
+{% endif %}
 
 <section class="container">
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -27,7 +58,7 @@
         <div class="post-date">{{ post.created_at[:10] }}</div>
         <div class="post-title">{{ post.title }}</div>
         <div class="post-excerpt">{{ post.excerpt }}</div>
-        <div class="post-read">Devamını Oku →</div>
+        <div class="post-read">Devamini Oku →</div>
       </div>
     </a>
     {% endfor %}
@@ -36,7 +67,7 @@
   {% if total_pages > 1 %}
   <div class="pagination">
     {% if page > 1 %}
-    <a href="{{ url_for('index', page=page-1) }}" class="page-link">← Önceki</a>
+    <a href="{{ url_for('index', page=page-1) }}" class="page-link">← Onceki</a>
     {% endif %}
     <span class="page-info">Sayfa {{ page }} / {{ total_pages }}</span>
     {% if page < total_pages %}

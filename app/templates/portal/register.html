@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Kayit - {{ site_title }}{% endblock %}
+{% block content %}
+<div class="container-narrow" style="padding:60px 0">
+  <div class="card" style="max-width:440px;margin:0 auto;padding:32px">
+    <h1 style="text-align:center;font-size:24px;margin-bottom:24px;color:var(--primary)">Hesap Olustur</h1>
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% if msgs %}{% for cat, msg in msgs %}
+        <div class="flash {{ cat }}">{{ msg }}</div>
+      {% endfor %}{% endif %}
+    {% endwith %}
+    <form method="POST">
+      <div style="margin-bottom:12px">
+        <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">Ad Soyad *</label>
+        <input type="text" name="full_name" required style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px">
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">E-posta *</label>
+        <input type="email" name="email" required style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px">
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">Sifre * (en az 6 karakter)</label>
+        <input type="password" name="password" required minlength="6" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px">
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">Telefon</label>
+        <input type="text" name="phone" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px">
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">Sirket / Klinik</label>
+        <input type="text" name="company" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px">
+      </div>
+      <button type="submit" style="width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:15px;cursor:pointer">Kayit Ol</button>
+    </form>
+    <p style="text-align:center;margin-top:16px;font-size:13px;color:#888">
+      Zaten hesabiniz var mi? <a href="{{ url_for("portal.login") }}" style="color:var(--primary)">Giris Yap</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

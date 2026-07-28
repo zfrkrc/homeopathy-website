@@ -1,0 +1,50 @@
+{% extends "admin/dashboard.html" %}
+{% block title %}Ana Sayfa Editoru - {{ site_title }}{% endblock %}
+{% block content %}
+<div class="admin-body" style="max-width:800px">
+  <h1 style="font-size:20px;margin-bottom:20px">Ana Sayfa Editoru</h1>
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}{% for cat, msg in msgs %}
+      <div class="flash {{ cat }}">{{ msg }}</div>
+    {% endfor %}{% endif %}
+  {% endwith %}
+  <form method="POST">
+    <div id="sections">
+      {% for s in sections %}
+      <div class="card" style="margin-bottom:12px;padding:16px">
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input type="text" name="section_title[]" value="{{ s.title }}" placeholder="Baslik" style="flex:1;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px">
+          <select name="section_type[]" style="padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px">
+            <option value="text" {% if s.type == 'text' %}selected{% endif %}>Metin</option>
+            <option value="hero" {% if s.type == 'hero' %}selected{% endif %}>Hero</option>
+            <option value="cta" {% if s.type == 'cta' %}selected{% endif %}>Harekete Gec</option>
+            <option value="features" {% if s.type == 'features' %}selected{% endif %}>Ozellikler</option>
+          </select>
+          <button type="button" onclick="this.parentElement.parentElement.remove()" style="padding:8px 12px;background:#fef2f2;color:#c62828;border:none;border-radius:6px;cursor:pointer">X</button>
+        </div>
+        <textarea name="section_content[]" rows="3" style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit">{{ s.content }}</textarea>
+      </div>
+      {% endfor %}
+    </div>
+    <button type="button" onclick="addSection()" style="padding:8px 16px;background:#f0f0f0;color:#555;border:1px dashed #ccc;border-radius:6px;cursor:pointer;width:100%;margin-bottom:16px">+ Bolum Ekle</button>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a href="/admin" class="btn btn-secondary">Iptal</a>
+  </form>
+</div>
+<script>
+function addSection() {
+  var d = document.getElementById('sections');
+  var html = '<div class="card" style="margin-bottom:12px;padding:16px">' +
+    '<div style="display:flex;gap:8px;margin-bottom:8px">' +
+    '<input type="text" name="section_title[]" placeholder="Baslik" style="flex:1;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px">' +
+    '<select name="section_type[]" style="padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px">' +
+    '<option value="text">Metin</option><option value="hero">Hero</option><option value="cta">Harekete Gec</option><option value="features">Ozellikler</option>' +
+    '</select>' +
+    '<button type="button" onclick="this.parentElement.parentElement.remove()" style="padding:8px 12px;background:#fef2f2;color:#c62828;border:none;border-radius:6px;cursor:pointer">X</button>' +
+    '</div>' +
+    '<textarea name="section_content[]" rows="3" style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit"></textarea>' +
+    '</div>';
+  d.insertAdjacentHTML('beforeend', html);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Kullanim Rehberi - {{ site_title }}{% endblock %}
+{% block content %}
+<div class="container-narrow" style="padding:40px 0">
+  <a href="{{ url_for("portal.dashboard") }}" style="color:var(--text-muted,#888);font-size:13px;text-decoration:none">← Paneli Don</a>
+  <h1 style="font-size:28px;color:var(--brown,#4a3f35);margin:16px 0 8px">Kullanim Rehberi</h1>
+  <p style="color:var(--text-muted,#888);margin-bottom:32px">PulseCare hasta takip sistemini kullanmaya baslamak icin adim adim kilavuz</p>
+
+  <div style="display:grid;gap:20px">
+    <div style="background:#fff;border:1px solid var(--border,#e8e4df);border-radius:12px;padding:24px">
+      <h2 style="font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="background:var(--primary);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">1</span> Hesap Olusturma</h2>
+      <p style="font-size:14px;color:#555;line-height:1.7">Kayit sayfasindan e-posta adresiniz ve sifreniz ile hesap olusturun. Profilinizi tamamlayarak iletisim bilgilerinizi girin.</p>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border,#e8e4df);border-radius:12px;padding:24px">
+      <h2 style="font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="background:var(--primary);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">2</span> Hasta Kaydi</h2>
+      <p style="font-size:14px;color:#555;line-height:1.7">PulseCare paneline giderek yeni hasta kaydi olusturun. Hasta bilgilerini (ad, iletisim, sikayet) eksiksiz girin.</p>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border,#e8e4df);border-radius:12px;padding:24px">
+      <h2 style="font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="background:var(--primary);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">3</span> Randevu Yonetimi</h2>
+      <p style="font-size:14px;color:#555;line-height:1.7">Takvim uzerinden randevu olusturun. Randevular otomatik olarak hastalariniza Telegram uzerinden hatirlatma gonderecektir.</p>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border,#e8e4df);border-radius:12px;padding:24px">
+      <h2 style="font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="background:var(--primary);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">4</span> Tedavi Takibi</h2>
+      <p style="font-size:14px;color:#555;line-height:1.7">Her hastaya ozel remedy, potency ve dozaj bilgilerini kaydedin. AI destekli remedy onerisi alin.</p>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border,#e8e4df);border-radius:12px;padding:24px">
+      <h2 style="font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="background:var(--primary);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">5</span> Iletisim Kanallari</h2>
+      <p style="font-size:14px;color:#555;line-height:1.7"><strong>Telegram:</strong> Hastalariniz Telegram botu uzerinden size mesaj gonderebilir. Randevu hatirlatmalari otomatik gonderilir.<br>
+      <strong>WhatsApp:</strong> (Yakinda) WhatsApp uzerinden de hastalarinizla iletisim kurabileceksiniz.</p>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border,#e8e4df);border-radius:12px;padding:24px">
+      <h2 style="font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="background:var(--primary);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">6</span> AI Destekli Oneriler</h2>
+      <p style="font-size:14px;color:#555;line-height:1.7">Hasta sikayetlerine gore AI destekli remedy onerileri alin. Tedavi surecini AI ile analiz ettirin ve hasta raporlari olusturun.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
