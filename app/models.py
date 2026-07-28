@@ -63,12 +63,10 @@ def init_db():
             value TEXT NOT NULL
         );
     ''')
-    # Default admin user
     existing = conn.execute('SELECT id FROM users WHERE username=?', ('admin',)).fetchone()
     if not existing:
         conn.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)',
                      ('admin', generate_password_hash('admin123')))
-    # Default categories
     existing_cats = conn.execute('SELECT COUNT(*) FROM categories').fetchone()[0]
     if existing_cats == 0:
         default_cats = ['Bilim & Kanıtlar', 'Kronik Sağlık', 'Çocuk Sağlığı', 'Duygusal Sağlık', 'Beslenme']
@@ -86,6 +84,19 @@ def init_db():
         ('font_heading', 'Georgia, serif'),
         ('font_body', 'sans-serif'),
         ('logo_path', ''),
+        ('weather_location', 'İstanbul'),
+        ('show_weather', '1'),
+        ('social_instagram', ''),
+        ('social_twitter', ''),
+        ('social_facebook', ''),
+        ('social_youtube', ''),
+        ('show_social', '1'),
+        ('sidebar_position', 'right'),
+        ('posts_per_page', '12'),
+        ('custom_css', ''),
+        ('hero_title', ''),
+        ('hero_description', ''),
+        ('footer_text', ''),
     ]
     for k, v in defaults:
         conn.execute('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)', (k, v))
@@ -123,6 +134,21 @@ def get_posts(page=1, per_page=10, published_only=True):
     posts = conn.execute(
         f'SELECT * FROM posts {where} ORDER BY created_at DESC LIMIT ? OFFSET ?',
         (per_page, offset)
+    ).fetchall()
+    conn.close()
+    return posts, total
+
+def search_posts(query, page=1, per_page=20):
+    conn = get_db()
+    offset = (page - 1) * per_page
+    like = f'%{query}%'
+    total = conn.execute(
+        'SELECT COUNT(*) FROM posts WHERE published=1 AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)',
+        (like, like, like)
+    ).fetchone()[0]
+    posts = conn.execute(
+        'SELECT * FROM posts WHERE published=1 AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?) ORDER BY created_at DESC LIMIT ? OFFSET ?',
+        (like, like, like, per_page, offset)
     ).fetchall()
     conn.close()
     return posts, total
@@ -177,6 +203,12 @@ def set_setting(key, value):
     conn.commit()
     conn.close()
 
+def get_all_settings():
+    conn = get_db()
+    rows = conn.execute('SELECT key, value FROM settings').fetchall()
+    conn.close()
+    return {row['key']: row['value'] for row in rows}
+
 def slugify(text):
     import re
     text = text.lower().strip()
@@ -189,8 +221,6 @@ def slugify(text):
     text = re.sub(r'[^a-z0-9\s-]', '', text)
     text = re.sub(r'[\s-]+', '-', text).strip('-')
     return text
-
-# --- Categories ---
 
 def get_categories():
     conn = get_db()
@@ -224,14 +254,6 @@ def delete_category(id):
     conn.commit()
     conn.close()
 
-def get_category_count():
-    conn = get_db()
-    count = conn.execute('SELECT COUNT(*) FROM categories').fetchone()[0]
-    conn.close()
-    return count
-
-# --- Gallery ---
-
 def get_gallery_images(page=1, per_page=50):
     conn = get_db()
     offset = (page - 1) * per_page
@@ -264,8 +286,6 @@ def delete_gallery_image(id):
         return img['filename']
     conn.close()
     return None
-
-# --- Subscribers ---
 
 def get_subscribers(page=1, per_page=50, active_only=True):
     conn = get_db()
@@ -313,8 +333,6 @@ def get_subscriber_count():
     conn.close()
     return total
 
-# --- Pageviews ---
-
 def record_pageview(path, ip='', user_agent=''):
     conn = get_db()
     conn.execute(
@@ -327,7 +345,7 @@ def record_pageview(path, ip='', user_agent=''):
 def get_pageview_stats(days=30):
     conn = get_db()
     total = conn.execute('SELECT COUNT(*) FROM pageviews').fetchone()[0]
-    from datetime import datetime, timedelta
+    from datetime import timedelta
     cutoff = (datetime.now() - timedelta(days=days)).isoformat()
     recent = conn.execute('SELECT COUNT(*) FROM pageviews WHERE created_at > ?', (cutoff,)).fetchone()[0]
     top_pages = conn.execute(
