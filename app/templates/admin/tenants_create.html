@@ -1,41 +1,43 @@
-{% extends "admin/dashboard.html" %}
-{% block title %}Yeni Musteri - {{ site_title }}{% endblock %}
+{% extends "admin/admin_base.html" %}
+{% block title %}Yeni Müşteri - {{ site_title }}{% endblock %}
+{% block breadcrumb %}<a href="{{ url_for('admin_tenants_list') }}" style="color:inherit;text-decoration:none">Müşteriler</a> / Yeni{% endblock %}
+{% block head %}
+<style>
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;color:#555;margin-bottom:4px;font-weight:500}
+.form-group input{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px}
+.form-group .help{font-size:11px;color:#aaa;margin-top:4px}
+.form-card{background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);max-width:600px}
+</style>
+{% endblock %}
 {% block content %}
-<div class="admin-body" style="max-width:600px">
-  <a href="/admin/tenants" style="color:#888;font-size:13px">← Musterilere Don</a>
-  <h1 style="font-size:20px;margin:16px 0 24px">Yeni Musteri Olustur</h1>
-  {% with msgs = get_flashed_messages(with_categories=true) %}
-    {% if msgs %}
-      {% for cat, msg in msgs %}
-        <div class="flash {{ cat }}">{{ msg }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-  <form method="POST" style="background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05)">
-    <div style="margin-bottom:14px">
-      <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">Musteri Kodu *</label>
-      <input type="text" name="code" required style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px" placeholder="musteri1">
-      <div style="font-size:11px;color:#aaa;margin-top:4px">Subdomain olarak kullanilacak: <strong>musteri1.zeyna.zk.net.tr</strong></div>
+<div class="form-card">
+  <form method="POST">
+    <div class="form-group">
+      <label>Müşteri Kodu *</label>
+      <input type="text" name="code" required placeholder="musteri1">
+      <div class="help">Subdomain olarak kullanılacak: <strong>musteri1.zeyna.zk.net.tr</strong></div>
     </div>
-    <div style="margin-bottom:14px">
-      <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">Domain *</label>
-      <input type="text" name="domain" required style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px" placeholder="musteri1.zeyna.zk.net.tr">
-      <div style="font-size:11px;color:#aaa;margin-top:4px">Musterinin kendi domaini veya alt domaini</div>
+    <div class="form-group">
+      <label>Domain *</label>
+      <input type="text" name="domain" required placeholder="musteri1.zeyna.zk.net.tr">
+      <div class="help">Müşterinin kendi domaini veya alt domaini</div>
     </div>
-    <div style="margin-bottom:14px">
-      <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">E-posta</label>
-      <input type="email" name="email" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px" placeholder="musteri@email.com">
-      <div style="font-size:11px;color:#aaa;margin-top:4px">Bildirimler ve giris icin kullanilacak</div>
+    <div class="form-group">
+      <label>E-posta</label>
+      <input type="email" name="email" placeholder="musteri@email.com">
+      <div class="help">Bildirimler ve giriş için kullanılacak</div>
     </div>
-    <div style="margin-bottom:14px">
-      <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">Musteri Adi</label>
-      <input type="text" name="name" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px" placeholder="Musteri Firma Adi">
+    <div class="form-group">
+      <label>Müşteri Adı</label>
+      <input type="text" name="name" placeholder="Müşteri Firma Adı">
     </div>
-    <div style="margin-bottom:20px">
-      <label style="display:block;font-size:13px;color:#555;margin-bottom:4px">Telegram Bot Token (opsiyonel)</label>
-      <input type="text" name="telegram_token" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px" placeholder="123456:ABCdef...">
+    <div class="form-group">
+      <label>Telegram Bot Token (opsiyonel)</label>
+      <input type="text" name="telegram_token" placeholder="123456:ABCdef...">
     </div>
-    <button type="submit" style="padding:12px 32px;background:var(--primary,#3d6b4f);color:#fff;border:none;border-radius:6px;font-size:15px;cursor:pointer">Musteri Olustur</button>
+    <button type="submit" class="btn btn-primary">Müşteri Oluştur</button>
+    <a href="{{ url_for('admin_tenants_list') }}" class="btn btn-muted">İptal</a>
   </form>
 </div>
 {% endblock %}

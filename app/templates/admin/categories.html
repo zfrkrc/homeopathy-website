@@ -1,71 +1,43 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kategoriler | {{ site_title }}</title>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:sans-serif;background:#f8fafb;color:#333}
-    .admin-header{background:#3d6b4f;color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
-    .admin-header h1{font-size:18px}
-    .admin-header a{color:#fff;text-decoration:none;font-size:13px;opacity:.8}
-    .admin-body{padding:24px;max-width:700px;margin:0 auto}
-    .flash{padding:10px 14px;border-radius:6px;margin-bottom:16px;font-size:13px}
-    .flash.success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
-    .card{background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);margin-bottom:24px}
-    .card h2{font-size:16px;margin-bottom:16px}
-    .btn{display:inline-block;padding:9px 18px;border-radius:6px;font-size:13px;font-weight:500;border:none;cursor:pointer;text-decoration:none}
-    .btn-primary{background:#3d6b4f;color:#fff}
-    .btn-sm{padding:4px 10px;font-size:11px}
-    .btn-edit{background:#e8f5e9;color:#2e7d32}
-    .btn-del{background:#fef2f2;color:#c62828}
-    .cat-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0}
-    .cat-item:last-child{border:none}
-    .cat-name{font-size:14px;font-weight:500}
-    .cat-actions{display:flex;gap:4px}
-    .inline-form{display:inline}
-    input[type=text]{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;width:250px}
-    input:focus{outline:none;border-color:#3d6b4f}
-    .add-row{display:flex;gap:8px;margin-bottom:16px}
-    .empty{text-align:center;padding:40px;color:#888;font-size:14px}
-  </style>
-</head>
-<body>
-  <div class="admin-header">
-    <h1>📂 Kategoriler</h1>
-    <a href="{{ url_for('admin_dashboard') }}">← Paneli Dön</a>
-  </div>
-  <div class="admin-body">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}{% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}{% endif %}
-    {% endwith %}
+{% extends "admin/admin_base.html" %}
+{% block title %}Kategoriler | {{ site_title }}{% endblock %}
+{% block breadcrumb %}Kategoriler{% endblock %}
+{% block head %}
+<style>
+.card{background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);margin-bottom:24px}
+.card h2{font-size:16px;margin-bottom:16px}
+.cat-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0}
+.cat-item:last-child{border:none}
+.cat-name{font-size:14px;font-weight:500}
+.cat-actions{display:flex;gap:4px}
+input[type=text]{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;width:250px}
+.add-row{display:flex;gap:8px;margin-bottom:16px}
+.empty{text-align:center;padding:40px;color:#888;font-size:14px}
+</style>
+{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>➕ Yeni Kategori</h2>
+  <form method="POST" action="{{ url_for('admin_category_new') }}" class="add-row">
+    <input type="text" name="name" placeholder="Kategori adı" required autofocus>
+    <button class="btn btn-primary">Ekle</button>
+  </form>
 
-    <div class="card">
-      <h2>➕ Yeni Kategori</h2>
-      <form method="POST" action="{{ url_for('admin_category_new') }}" class="add-row">
-        <input type="text" name="name" placeholder="Kategori adı" required autofocus>
-        <button class="btn btn-primary">Ekle</button>
+  <h2 style="margin-top:24px">📋 Mevcut Kategoriler</h2>
+  {% for cat in cats %}
+  <div class="cat-item">
+    <span class="cat-name">{{ cat.name }}</span>
+    <div class="cat-actions">
+      <form method="POST" action="{{ url_for('admin_category_edit', id=cat.id) }}" style="display:flex;gap:4px">
+        <input type="text" name="name" value="{{ cat.name }}" required>
+        <button class="btn btn-muted" style="padding:4px 10px;font-size:11px">✏️</button>
       </form>
-
-      <h2 style="margin-top:24px">📋 Mevcut Kategoriler</h2>
-      {% for cat in cats %}
-      <div class="cat-item">
-        <span class="cat-name">{{ cat.name }}</span>
-        <div class="cat-actions">
-          <form method="POST" action="{{ url_for('admin_category_edit', id=cat.id) }}" class="inline-form" style="display:flex;gap:4px">
-            <input type="text" name="name" value="{{ cat.name }}" required>
-            <button class="btn btn-sm btn-edit">✏️</button>
-          </form>
-          <form method="POST" action="{{ url_for('admin_category_delete', id=cat.id) }}" class="inline-form" onsubmit="return confirm('Emin misin?')">
-            <button class="btn btn-sm btn-del">🗑️</button>
-          </form>
-        </div>
-      </div>
-      {% else %}
-      <div class="empty">Henüz kategori yok.</div>
-      {% endfor %}
+      <form method="POST" action="{{ url_for('admin_category_delete', id=cat.id) }}" onsubmit="return confirm('Emin misin?')" style="display:inline">
+        <button class="btn btn-muted" style="padding:4px 10px;font-size:11px;color:#c62828">🗑️</button>
+      </form>
     </div>
   </div>
-</body>
-</html>
+  {% else %}
+  <div class="empty">Henüz kategori yok.</div>
+  {% endfor %}
+</div>
+{% endblock %}

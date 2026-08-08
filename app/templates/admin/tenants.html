@@ -1,27 +1,34 @@
-{% extends "admin/dashboard.html" %}
-{% block title %}Musteri Yonetimi - {{ site_title }}{% endblock %}
+{% extends "admin/admin_base.html" %}
+{% block title %}Müşteri Yönetimi - {{ site_title }}{% endblock %}
+{% block breadcrumb %}Müşteriler{% endblock %}
+{% block topbar_actions %}<a href="/admin/tenants/create" class="topbar-btn">➕ Yeni Müşteri</a>{% endblock %}
+{% block head %}
+<style>
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #f0f0f0}
+th{color:#666;font-weight:600}
+.empty{text-align:center;padding:40px;color:#888}
+</style>
+{% endblock %}
 {% block content %}
-<div class="admin-body">
-  <h1 style="font-size:20px;margin-bottom:20px">Musteri Yonetimi</h1>
-  <table>
-    <thead><tr><th>Kod</th><th>Domain</th><th>Port</th><th>Durum</th><th></th></tr></thead>
-    <tbody>
-      {% for t in tenants %}
-      <tr>
-        <td><strong>{{ t.code }}</strong></td>
-        <td>{{ t.domain }}</td>
-        <td>{{ t.port }}</td>
-        <td><span class="badge badge-{{ "active" if t.status == "active" else "inactive" }}">{{ t.status }}</span></td>
-        <td>
-          <form method="POST" action="/admin/tenants/{{ t.id }}/delete" style="display:inline" onsubmit="return confirm("Emin misiniz?")">
-            <button class="btn btn-sm btn-del">Sil</button>
-          </form>
-        </td>
-      </tr>
-      {% else %}
-      <tr><td colspan="5" class="empty">Henuz musteri yok.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+<table>
+  <thead><tr><th>Kod</th><th>Domain</th><th>Port</th><th>Durum</th><th></th></tr></thead>
+  <tbody>
+    {% for t in tenants %}
+    <tr>
+      <td><strong>{{ t.code }}</strong></td>
+      <td>{{ t.domain }}</td>
+      <td>{{ t.port }}</td>
+      <td><span class="badge badge-{{ "active" if t.status == "active" else "inactive" }}">{{ t.status }}</span></td>
+      <td>
+        <form method="POST" action="/admin/tenants/{{ t.id }}/delete" style="display:inline" onsubmit="return confirm("Emin misiniz?")">
+          <button class="btn btn-muted" style="padding:4px 10px;font-size:11px;color:#c62828">Sil</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="empty">Henüz müşteri yok.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}

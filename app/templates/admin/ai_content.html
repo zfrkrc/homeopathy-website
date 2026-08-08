@@ -1,131 +1,102 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Icerik Uret | {{ site_title }}</title>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:sans-serif;background:#f8fafb;color:#333}
-    .admin-header{background:#3d6b4f;color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
-    .admin-header h1{font-size:18px}
-    .admin-header a{color:#fff;text-decoration:none;font-size:13px;opacity:.8}
-    .admin-body{padding:24px;max-width:900px;margin:0 auto}
-    .flash{padding:10px 14px;border-radius:6px;margin-bottom:16px;font-size:13px}
-    .flash.success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
-    .flash.error{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
-    .card{background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);margin-bottom:24px}
-    .card h2{font-size:16px;margin-bottom:16px}
-    label{display:block;font-size:13px;color:#555;margin-bottom:4px;margin-top:16px}
-    input[type=text],input[type=url],textarea,select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px}
-    textarea{min-height:300px;font-family:monospace;font-size:13px;line-height:1.6;resize:vertical}
-    input:focus,textarea:focus{outline:none;border-color:#3d6b4f}
-    .btn{display:inline-block;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:500;border:none;cursor:pointer;text-decoration:none}
-    .btn-primary{background:#3d6b4f;color:#fff}
-    .btn-secondary{background:#f0f0f0;color:#555}
-    .form-row{display:flex;gap:16px}
-    .form-row>div{flex:1}
-    .help{font-size:11px;color:#aaa;margin-top:4px}
-    .result-box{background:#f8fafb;border:1px solid #e0e0e0;border-radius:8px;padding:20px;margin-top:16px;white-space:pre-wrap;font-size:14px;line-height:1.7}
-    .context-preview{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:12px;margin:12px 0;font-size:12px;max-height:200px;overflow:auto;white-space:pre-wrap}
-  </style>
-</head>
-<body>
-  <div class="admin-header">
-    <h1>AI Icerik Uret</h1>
-    <a href="{{ url_for('admin_dashboard') }}">Panele Don</a>
+{% extends "admin/admin_base.html" %}
+{% block title %}AI İçerik Üret | {{ site_title }}{% endblock %}
+{% block breadcrumb %}AI İçerik Üret{% endblock %}
+{% block head %}
+<style>
+.card{background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);margin-bottom:24px}
+.card h2{font-size:16px;margin-bottom:16px}
+input[type=text],input[type=url],textarea,select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px}
+textarea{min-height:300px;font-family:monospace;font-size:13px;line-height:1.6;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:#3d6b4f}
+.form-row{display:flex;gap:16px}.form-row>div{flex:1}
+.help{font-size:11px;color:#aaa;margin-top:4px}
+.result-box{background:#f8fafb;border:1px solid #e0e0e0;border-radius:8px;padding:20px;margin-top:16px;white-space:pre-wrap;font-size:14px;line-height:1.7}
+.context-preview{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:12px;margin:12px 0;font-size:12px;max-height:200px;overflow:auto;white-space:pre-wrap}
+</style>
+{% endblock %}
+{% block content %}
+<form method="POST" enctype="multipart/form-data" action="{{ url_for('admin_ai_content') }}">
+  <label>Blog Konusu</label>
+  <input type="text" name="topic" value="{{ topic }}" placeholder="Örn: Homeopati ile migren tedavisi">
+
+  <label>URL (isteğe bağlı)</label>
+  <input type="url" name="url" placeholder="https://ornek.com/makale" value="">
+  <div class="help">ReaderLM ile sayfa içeriği otomatik alınır.</div>
+
+  <label>Dosya (isteğe bağlı - PDF / resim)</label>
+  <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.webp">
+  <div class="help">PDF: metin çıkarılır. Görsel: OCR ile metin çıkarılır.</div>
+
+  {% if context %}
+  <div class="context-preview">{{ context[:500] }}{% if context|length > 500 %}...{% endif %}</div>
+  {% endif %}
+
+  <div class="form-row" style="margin-top:16px">
+    <div>
+      <label>Ton</label>
+      <select name="tone">
+        <option value="profesyonel">Profesyonel</option>
+        <option value="samimi">Samimi / Kişisel</option>
+        <option value="bilimsel">Bilimsel</option>
+        <option value="egitici">Eğitici</option>
+      </select>
+    </div>
+    <div>
+      <label>Uzunluk</label>
+      <select name="length">
+        <option value="300">Kısa (300 kelime)</option>
+        <option value="500" selected>Orta (500 kelime)</option>
+        <option value="1000">Uzun (1000 kelime)</option>
+        <option value="1500">Detaylı (1500 kelime)</option>
+      </select>
+    </div>
   </div>
-  <div class="admin-body">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}{% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}{% endif %}
-    {% endwith %}
 
-    <div class="card">
-      <form method="POST" enctype="multipart/form-data" action="{{ url_for('admin_ai_content') }}">
-        <label>Blog Konusu</label>
-        <input type="text" name="topic" value="{{ topic }}" placeholder="Orn: Homeopati ile migren tedavisi">
-
-        <label>URL (istege bagli)</label>
-        <input type="url" name="url" placeholder="https://ornek.com/makale" value="">
-        <div class="help">ReaderLM ile sayfa icerigi otomatik alinir.</div>
-
-        <label>Dosya (istege bagli - PDF / resim)</label>
-        <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.webp">
-        <div class="help">PDF: metin cikarilir. Gorsel: OCR ile metin cikarilir.</div>
-
-        {% if context %}
-        <div class="context-preview">{{ context[:500] }}{% if context|length > 500 %}...{% endif %}</div>
-        {% endif %}
-
-        <div class="form-row" style="margin-top:16px">
-          <div>
-            <label>Ton</label>
-            <select name="tone">
-              <option value="profesyonel">Profesyonel</option>
-              <option value="samimi">Samimi / Kisisel</option>
-              <option value="bilimsel">Bilimsel</option>
-              <option value="egitici">Egitici</option>
-            </select>
-          </div>
-          <div>
-            <label>Uzunluk</label>
-            <select name="length">
-              <option value="300">Kisa (300 kelime)</option>
-              <option value="500" selected>Orta (500 kelime)</option>
-              <option value="1000">Uzun (1000 kelime)</option>
-              <option value="1500">Detayli (1500 kelime)</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="margin-top:20px">
-          <button type="submit" class="btn btn-primary" onclick="this.form.submit();this.disabled=true;document.getElementById('spinner').style.display='block'">AI Icerik Uret</button>
-        </div>
-      </form>
-
-      <div id="spinner" class="spinner" style="display:none;text-align:center;padding:20px">
-        <div style="font-size:24px;margin-bottom:8px">Yukleniyor...</div>
-        <div style="color:#888;font-size:14px">Yapay zeka icerik uretiyor... Bu islem 30-60 saniye surebilir.</div>
-      </div>
-    </div>
-
-    {% if processing %}
-    <div class="card" style="text-align:center;padding:40px">
-      <h2>Icerik Uretiliyor...</h2>
-      <div style="font-size:48px;margin:20px 0">Yukleniyor</div>
-      <p style="color:#888">Yapay zeka iceriginizi hazirliyor.</p>
-      <p style="color:#aaa;font-size:12px;margin-top:12px">Sayfa otomatik yenilenecek...</p>
-    </div>
-    <script>setTimeout(function(){window.location.href='?job={{ job_id }}'},3000);</script>
-    {% endif %}
-
-    {% if generated %}
-    <div class="card">
-      <h2>Uretilen Icerik</h2>
-      <div class="result-box">{{ generated }}</div>
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.querySelector('.result-box').textContent)">Kopyala</button>
-        <a href="{{ url_for('admin_post_new') }}" class="btn btn-secondary">Yeni Yazi Olustur</a>
-      </div>
-    </div>
-    {% endif %}
-
-    {% if history %}
-    <div class="card">
-      <h2 style="display:flex;justify-content:space-between;align-items:center">
-        Gecmis Uretimler
-        <form method="POST" action="{{ url_for('admin_ai_content_clear') }}" style="display:inline" onsubmit="return confirm('Tum gecmis uretimler silinsin mi?')">
-          <button class="btn btn-secondary" style="font-size:12px;padding:4px 12px">Temizle</button>
-        </form>
-      </h2>
-      {% for h in history %}
-      <div style="padding:8px 0;border-bottom:1px solid #eee;font-size:13px">
-        <a href="?job={{ h.id }}" style="color:#3d6b4f;text-decoration:none">{{ h.topic or '(konusuz)' }}</a>
-        <div style="color:#999;font-size:11px;margin-top:2px">{{ h.preview }}...</div>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
+  <div style="margin-top:20px">
+    <button type="submit" class="btn btn-primary" onclick="this.form.submit();this.disabled=true;document.getElementById('spinner').style.display='block'">🤖 AI İçerik Üret</button>
   </div>
-</body>
-</html>
+</form>
+
+<div id="spinner" style="display:none;text-align:center;padding:20px">
+  <div style="font-size:24px;margin-bottom:8px">Yükleniyor...</div>
+  <div style="color:#888;font-size:14px">Yapay zeka içerik üretiyor... Bu işlem 30-60 saniye sürebilir.</div>
+</div>
+
+{% if processing %}
+<div class="card" style="text-align:center;padding:40px">
+  <h2>İçerik Üretiliyor...</h2>
+  <div style="font-size:48px;margin:20px 0">⏳</div>
+  <p style="color:#888">Yapay zeka içeriğinizi hazırlıyor.</p>
+  <p style="color:#aaa;font-size:12px;margin-top:12px">Sayfa otomatik yenilenecek...</p>
+</div>
+<script>setTimeout(function(){window.location.href='?job={{ job_id }}'},3000);</script>
+{% endif %}
+
+{% if generated %}
+<div class="card">
+  <h2>Üretilen İçerik</h2>
+  <div class="result-box">{{ generated }}</div>
+  <div style="margin-top:12px;display:flex;gap:8px">
+    <button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.querySelector('.result-box').textContent)">📋 Kopyala</button>
+    <a href="{{ url_for('admin_post_new') }}" class="btn btn-muted">➕ Yeni Yazı Oluştur</a>
+  </div>
+</div>
+{% endif %}
+
+{% if history %}
+<div class="card">
+  <h2 style="display:flex;justify-content:space-between;align-items:center">
+    Geçmiş Üretimler
+    <form method="POST" action="{{ url_for('admin_ai_content_clear') }}" style="display:inline" onsubmit="return confirm('Tüm geçmiş üretimler silinsin mi?')">
+      <button class="btn btn-muted" style="font-size:12px;padding:4px 12px">Temizle</button>
+    </form>
+  </h2>
+  {% for h in history %}
+  <div style="padding:8px 0;border-bottom:1px solid #eee;font-size:13px">
+    <a href="?job={{ h.id }}" style="color:#3d6b4f;text-decoration:none">{{ h.topic or '(konusuz)' }}</a>
+    <div style="color:#999;font-size:11px;margin-top:2px">{{ h.preview }}...</div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

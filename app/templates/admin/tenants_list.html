@@ -1,22 +1,17 @@
-{% extends "admin/dashboard.html" %}
-{% block title %}Musteri Yonetimi - {{ site_title }}{% endblock %}
+{% extends "admin/admin_base.html" %}
+{% block title %}Müşteri Yönetimi - {{ site_title }}{% endblock %}
+{% block breadcrumb %}Müşteriler{% endblock %}
+{% block topbar_actions %}<a href="/admin/tenants/create" class="topbar-btn">➕ Yeni Müşteri</a>{% endblock %}
+{% block head %}
+<style>
+.empty{text-align:center;padding:40px;color:#888}
+</style>
+{% endblock %}
 {% block content %}
-<div class="admin-body">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-    <h1 style="font-size:20px">Musteri Yonetimi</h1>
-    <a href="/admin/tenants/create" class="btn btn-primary">+ Yeni Musteri</a>
-  </div>
-  {% with msgs = get_flashed_messages(with_categories=true) %}
-    {% if msgs %}
-      {% for cat, msg in msgs %}
-        <div class="flash {{ cat }}">{{ msg }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-  <div id="tenantList">
-    <p class="empty">Musteri listesi yukleniyor...</p>
-  </div>
+<div id="tenantList">
+  <p class="empty">Müşteri listesi yükleniyor...</p>
 </div>
+
 <script>
 fetch('http://172.16.16.215:8004/admin/tenants')
   .then(r => r.text())
@@ -25,8 +20,8 @@ fetch('http://172.16.16.215:8004/admin/tenants')
     var doc = parser.parseFromString(html, 'text/html');
     var table = doc.querySelector('table');
     if (table) document.getElementById('tenantList').innerHTML = table.outerHTML;
-    else document.getElementById('tenantList').innerHTML = '<p class="empty">Henuz musteri yok.</p>';
+    else document.getElementById('tenantList').innerHTML = '<p class="empty">Henüz müşteri yok.</p>';
   })
-  .catch(e => document.getElementById('tenantList').innerHTML = '<p class="empty">Liste yuklenemedi.</p>');
+  .catch(e => document.getElementById('tenantList').innerHTML = '<p class="empty">Liste yüklenemedi.</p>');
 </script>
 {% endblock %}

@@ -1,36 +1,37 @@
-{% extends "admin/dashboard.html" %}
-{% block title %}Portal Kullanicilar - {{ site_title }}{% endblock %}
+{% extends "admin/admin_base.html" %}
+{% block title %}Portal Kullanıcıları - {{ site_title }}{% endblock %}
+{% block breadcrumb %}Portal Kullanıcıları{% endblock %}
+{% block head %}
+<style>
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #f0f0f0}
+th{color:#666;font-weight:600;background:#f8fafb}
+.empty{text-align:center;padding:40px;color:#888}
+</style>
+{% endblock %}
 {% block content %}
-<div class="admin-body">
-  <h1 style="font-size:20px;margin-bottom:20px">Portal Kullanicilari</h1>
-  {% with msgs = get_flashed_messages(with_categories=true) %}
-    {% if msgs %}{% for cat, msg in msgs %}
-      <div class="flash {{ cat }}">{{ msg }}</div>
-    {% endfor %}{% endif %}
-  {% endwith %}
-  <table>
-    <thead><tr><th>ID</th><th>Ad Soyad</th><th>E-posta</th><th>Telefon</th><th>Sirket</th><th>2FA</th><th>Kayit</th><th>Son Giris</th><th></th></tr></thead>
-    <tbody>
-      {% for u in users %}
-      <tr>
-        <td>{{ u.id }}</td>
-        <td>{{ u.full_name }}</td>
-        <td>{{ u.email }}</td>
-        <td>{{ u.phone or '-' }}</td>
-        <td>{{ u.company or '-' }}</td>
-        <td>{% if u.two_factor_enabled %}✅{% else %}❌{% endif %}</td>
-        <td>{{ u.created_at[:10] if u.created_at else '-' }}</td>
-        <td>{{ u.last_login[:10] if u.last_login else '-' }}</td>
-        <td>
-          <form method="POST" action="/admin/portal-user/{{ u.id }}/delete" onsubmit="return confirm('Emin misiniz?')">
-            <button class="btn btn-sm btn-del">Sil</button>
-          </form>
-        </td>
-      </tr>
-      {% else %}
-      <tr><td colspan="9" class="empty">Henuz kullanici yok.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+<table>
+  <thead><tr><th>ID</th><th>Ad Soyad</th><th>E-posta</th><th>Telefon</th><th>Şirket</th><th>2FA</th><th>Kayıt</th><th>Son Giriş</th><th></th></tr></thead>
+  <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.id }}</td>
+      <td>{{ u.full_name }}</td>
+      <td>{{ u.email }}</td>
+      <td>{{ u.phone or '-' }}</td>
+      <td>{{ u.company or '-' }}</td>
+      <td>{% if u.two_factor_enabled %}✅{% else %}❌{% endif %}</td>
+      <td>{{ u.created_at[:10] if u.created_at else '-' }}</td>
+      <td>{{ u.last_login[:10] if u.last_login else '-' }}</td>
+      <td>
+        <form method="POST" action="/admin/portal-user/{{ u.id }}/delete" onsubmit="return confirm('Emin misiniz?')">
+          <button class="btn btn-muted" style="padding:4px 10px;font-size:11px;color:#c62828">Sil</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="9" class="empty">Henüz kullanıcı yok.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
