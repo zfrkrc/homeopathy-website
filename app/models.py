@@ -63,6 +63,16 @@ def init_db():
             value TEXT NOT NULL
         );
     ''')
+    # Lightweight migrations for existing databases
+    for ddl in [
+        "ALTER TABLE posts ADD COLUMN image TEXT DEFAULT ''",
+        "ALTER TABLE posts ADD COLUMN views INTEGER DEFAULT 0",
+    ]:
+        try:
+            conn.execute(ddl)
+        except sqlite3.OperationalError:
+            pass  # column already exists
+    # Default admin user
     existing = conn.execute('SELECT id FROM users WHERE username=?', ('admin',)).fetchone()
     if not existing:
         conn.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)',
@@ -126,14 +136,25 @@ class User(UserMixin):
             return User(u['id'], u['username'])
         return None
 
-def get_posts(page=1, per_page=10, published_only=True):
+def get_posts(page=1, per_page=10, published_only=True, search='', category=''):
     conn = get_db()
     offset = (page - 1) * per_page
-    where = 'WHERE published=1' if published_only else ''
-    total = conn.execute(f'SELECT COUNT(*) FROM posts {where}').fetchone()[0]
+    clauses = []
+    params = []
+    if published_only:
+        clauses.append('published=1')
+    if search:
+        clauses.append('(title LIKE ? OR excerpt LIKE ? OR content LIKE ?)')
+        like = f'%{search}%'
+        params.extend([like, like, like])
+    if category:
+        clauses.append('category=?')
+        params.append(category)
+    where = ('WHERE ' + ' AND '.join(clauses)) if clauses else ''
+    total = conn.execute(f'SELECT COUNT(*) FROM posts {where}', params).fetchone()[0]
     posts = conn.execute(
         f'SELECT * FROM posts {where} ORDER BY created_at DESC LIMIT ? OFFSET ?',
-        (per_page, offset)
+        (*params, per_page, offset)
     ).fetchall()
     conn.close()
     return posts, total
@@ -165,25 +186,46 @@ def get_post_by_id(id):
     conn.close()
     return post
 
-def create_post(title, slug, category, content, excerpt, published=1):
+def create_post(title, slug, category, content, excerpt, published=1, image=''):
     conn = get_db()
     now = datetime.now().isoformat()
     conn.execute(
-        'INSERT INTO posts (title, slug, category, content, excerpt, published, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)',
-        (title, slug, category, content, excerpt, published, now, now)
+        'INSERT INTO posts (title, slug, category, content, excerpt, published, image, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?)',
+        (title, slug, category, content, excerpt, published, image, now, now)
     )
     conn.commit()
     conn.close()
 
-def update_post(id, title, slug, category, content, excerpt, published=1):
+def update_post(id, title, slug, category, content, excerpt, published=1, image=''):
     conn = get_db()
     now = datetime.now().isoformat()
     conn.execute(
-        'UPDATE posts SET title=?, slug=?, category=?, content=?, excerpt=?, published=?, updated_at=? WHERE id=?',
-        (title, slug, category, content, excerpt, published, now, id)
+        'UPDATE posts SET title=?, slug=?, category=?, content=?, excerpt=?, published=?, image=?, updated_at=? WHERE id=?',
+        (title, slug, category, content, excerpt, published, image, now, id)
     )
     conn.commit()
     conn.close()
+
+def increment_post_views(id):
+    conn = get_db()
+    conn.execute('UPDATE posts SET views = COALESCE(views, 0) + 1 WHERE id=?', (id,))
+    conn.commit()
+    conn.close()
+
+def get_related_posts(category, exclude_id, limit=3):
+    conn = get_db()
+    posts = conn.execute(
+        'SELECT * FROM posts WHERE published=1 AND category=? AND id!=? ORDER BY created_at DESC LIMIT ?',
+        (category, exclude_id, limit)
+    ).fetchall()
+    if len(posts) < limit:
+        fill = conn.execute(
+            'SELECT * FROM posts WHERE published=1 AND category!=? AND id!=? ORDER BY created_at DESC LIMIT ?',
+            (category, exclude_id, limit - len(posts))
+        ).fetchall()
+        posts = list(posts) + list(fill)
+    conn.close()
+    return posts
 
 def delete_post(id):
     conn = get_db()

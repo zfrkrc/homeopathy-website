@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 {% block title %}{{ site_title }} | {{ site_description }}{% endblock %}
+{% block json_ld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": {{ site_title|tojson }},
+  "description": {{ site_description|tojson }},
+  "url": {{ request.url_root|tojson }}
+}
+</script>
+{% endblock %}
 {% block content %}
 
 {% if homepage_sections %}
@@ -9,6 +20,19 @@
   <div class="hero-content">
     <h1>{{ s.title or site_title }}</h1>
     <p>{{ s.content or site_description }}</p>
+    {% if categories %}
+    <div class="hero-tags">
+      <a href="{{ url_for('index') }}" class="tag {% if not active_category %}tag-active{% endif %}">Tümü</a>
+      {% for cat in categories %}
+      <a href="{{ url_for('index', category=cat.name) }}" class="tag {% if active_category == cat.name %}tag-active{% endif %}">{{ cat.name }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <form class="search-form" method="get" action="{{ url_for('index') }}">
+      {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
+      <input type="search" name="q" value="{{ q }}" placeholder="Yazılarda ara..." aria-label="Ara">
+      <button type="submit">Ara</button>
+    </form>
   </div>
 </section>
 {% elif s.type == 'cta' %}
@@ -35,6 +59,19 @@
   <div class="hero-content">
     <h1>{{ hero_title or site_title }}</h1>
     <p>{{ hero_description or site_description }}</p>
+    {% if categories %}
+    <div class="hero-tags">
+      <a href="{{ url_for('index') }}" class="tag {% if not active_category %}tag-active{% endif %}">Tümü</a>
+      {% for cat in categories %}
+      <a href="{{ url_for('index', category=cat.name) }}" class="tag {% if active_category == cat.name %}tag-active{% endif %}">{{ cat.name }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <form class="search-form" method="get" action="{{ url_for('index') }}">
+      {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
+      <input type="search" name="q" value="{{ q }}" placeholder="Yazılarda ara..." aria-label="Ara">
+      <button type="submit">Ara</button>
+    </form>
   </div>
 </section>
 {% endif %}
@@ -48,10 +85,25 @@
     {% endif %}
   {% endwith %}
 
+  {% if q or active_category %}
+  <div class="filter-info">
+    {{ total }} sonuç bulundu
+    {% if active_category %} — <strong>{{ active_category }}</strong>{% endif %}
+    {% if q %} — "<strong>{{ q }}</strong>"{% endif %}
+    <a href="{{ url_for('index') }}" class="filter-clear">Filtreyi temizle ✕</a>
+  </div>
+  {% endif %}
+
+  {% if posts %}
   <div class="post-grid">
     {% for post in posts %}
-    <a href="{{ url_for('post', slug=post.slug) }}" class="post-card">
+    <a href="{{ url_for('post', slug=post.slug) }}" class="post-card reveal">
       <div class="post-thumb">
+        {% if post.image %}
+        <img src="{{ url_for('uploaded_file', filename=post.image) }}" alt="{{ post.title }}" loading="lazy">
+        {% else %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22c4-4 8-7.6 8-12a8 8 0 1 0-16 0c0 4.4 4 8 8 12z"/><path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
+        {% endif %}
         <span class="post-category">{{ post.category }}</span>
       </div>
       <div class="post-body">
@@ -63,15 +115,21 @@
     </a>
     {% endfor %}
   </div>
+  {% else %}
+  <div class="empty-state">
+    <p>😕 Sonuç bulunamadı.</p>
+    <a href="{{ url_for('index') }}" class="tag">Tüm yazılara dön</a>
+  </div>
+  {% endif %}
 
   {% if total_pages > 1 %}
   <div class="pagination">
     {% if page > 1 %}
-    <a href="{{ url_for('index', page=page-1) }}" class="page-link">← Onceki</a>
+    <a href="{{ url_for('index', page=page-1, q=q, category=active_category) }}" class="page-link">← Önceki</a>
     {% endif %}
     <span class="page-info">Sayfa {{ page }} / {{ total_pages }}</span>
     {% if page < total_pages %}
-    <a href="{{ url_for('index', page=page+1) }}" class="page-link">Sonraki →</a>
+    <a href="{{ url_for('index', page=page+1, q=q, category=active_category) }}" class="page-link">Sonraki →</a>
     {% endif %}
   </div>
   {% endif %}
