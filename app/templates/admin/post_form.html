@@ -38,7 +38,7 @@
     <a href="{{ url_for('admin_dashboard') }}">← Paneli Dön</a>
   </div>
   <div class="admin-body">
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
       <label>Başlık</label>
       <input type="text" name="title" value="{{ post.title if post else '' }}" required>
 
@@ -60,6 +60,19 @@
 
       <label>Özet (excerpt)</label>
       <input type="text" name="excerpt" value="{{ post.excerpt if post else '' }}" placeholder="Kısa açıklama...">
+
+      <label>Kapak Görseli</label>
+      {% if post and post.image %}
+      <div style="margin-bottom:8px">
+        <img src="{{ url_for('uploaded_file', filename=post.image) }}" alt="Kapak" style="max-width:240px;border-radius:6px;border:1px solid #ddd">
+      </div>
+      <div class="checkbox-row" style="margin-top:0;margin-bottom:8px">
+        <input type="checkbox" name="remove_image" id="remove_image">
+        <label for="remove_image">Kapağı kaldır</label>
+      </div>
+      {% endif %}
+      <input type="file" name="cover_image" accept="image/*">
+      <div class="help">Yeni dosya seçerseniz mevcut kapak değiştirilir. (jpg, png, webp — maks 5MB)</div>
 
       <label>İçerik (Markdown destekler)</label>
       <div class="help">**kalın**, *italik*, - liste, # başlık, [link](url), ![resim](url)</div>

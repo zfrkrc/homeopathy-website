@@ -10,6 +10,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from app.models import init_db, User, get_posts, get_post, get_post_by_id
 from app.models import create_post, update_post, delete_post
 from app.models import get_setting, set_setting, slugify, get_categories
+from app.models import increment_post_views, get_related_posts
 from app.models import get_category, create_category, update_category, delete_category
 from app.models import get_gallery_images, add_gallery_image, delete_gallery_image
 from app.models import get_subscribers, add_subscriber, toggle_subscriber, delete_subscriber, get_subscriber_count
@@ -17,6 +18,25 @@ from app.models import get_pageview_stats, record_pageview
 
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), 'data', 'uploads')
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+ALLOWED_IMAGE_EXT = {'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'}
+
+def save_upload(file, prefix):
+    """Save an uploaded image and return its stored filename ('' on failure)."""
+    if not file or not file.filename:
+        return ''
+    ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else ''
+    if ext not in ALLOWED_IMAGE_EXT:
+        return ''
+    fname = f'{prefix}_{uuid.uuid4().hex[:12]}.{ext}'
+    file.save(os.path.join(UPLOAD_DIR, fname))
+    return fname
+
+def delete_upload(fname):
+    if fname:
+        path = os.path.join(UPLOAD_DIR, fname)
+        if os.path.exists(path):
+            os.remove(path)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'zeyna-homeopathy-secret-2026')
@@ -80,9 +100,12 @@ def inject_settings():
 @app.route('/')
 def index():
     page = request.args.get('page', 1, type=int)
-    posts, total = get_posts(page=page, per_page=20)
+    q = request.args.get('q', '').strip()
+    active_category = request.args.get('category', '').strip()
+    posts, total = get_posts(page=page, per_page=20, search=q, category=active_category)
     total_pages = (total + 19) // 20
-    return render_template('index.html', posts=posts, page=page, total_pages=total_pages)
+    return render_template('index.html', posts=posts, page=page, total_pages=total_pages,
+                           q=q, active_category=active_category, total=total)
 
 @app.route('/post/<slug>')
 def post(slug):
@@ -90,8 +113,14 @@ def post(slug):
     if not post:
         flash('Yazı bulunamadı.', 'error')
         return redirect(url_for('index'))
+    if not current_user.is_authenticated:
+        increment_post_views(post['id'])
     post = dict(post)
-    return render_template('post.html', post=post)
+    post['views'] = (post.get('views') or 0) + 1
+    word_count = len((post.get('content') or '').split())
+    read_time = max(1, round(word_count / 200))
+    related = get_related_posts(post.get('category', ''), post['id'], limit=3)
+    return render_template('post.html', post=post, read_time=read_time, related=related)
 
 @app.route('/about')
 def about():
@@ -150,7 +179,7 @@ def subscribe():
 def track_pageview():
     if request.path.startswith('/static') or request.path.startswith('/uploads') or request.path.startswith('/admin'):
         return
-    if request.path == '/theme.css':
+    if request.path == '/theme.css' or request.path in ('/robots.txt', '/sitemap.xml'):
         return
     record_pageview(request.path, request.remote_addr or '', request.user_agent.string if request.user_agent else '')
 
@@ -331,7 +360,8 @@ def admin_post_new():
         content = request.form['content']
         excerpt = request.form.get('excerpt', '')
         published = 1 if request.form.get('published') else 0
-        create_post(title, slug, category, content, excerpt, published)
+        image = save_upload(request.files.get('cover_image'), 'cover')
+        create_post(title, slug, category, content, excerpt, published, image=image)
         flash('Yazı oluşturuldu.', 'success')
         return redirect(url_for('admin_dashboard'))
     return render_template('admin/post_form.html', post=None)
@@ -350,7 +380,15 @@ def admin_post_edit(id):
         content = request.form['content']
         excerpt = request.form.get('excerpt', '')
         published = 1 if request.form.get('published') else 0
-        update_post(id, title, slug, category, content, excerpt, published)
+        image = post['image'] if 'image' in post.keys() else ''
+        new_image = save_upload(request.files.get('cover_image'), 'cover')
+        if new_image:
+            delete_upload(image)
+            image = new_image
+        elif request.form.get('remove_image'):
+            delete_upload(image)
+            image = ''
+        update_post(id, title, slug, category, content, excerpt, published, image=image)
         flash('Yazı güncellendi.', 'success')
         return redirect(url_for('admin_dashboard'))
     return render_template('admin/post_form.html', post=post)
@@ -358,6 +396,9 @@ def admin_post_edit(id):
 @app.route('/admin/post/<int:id>/delete', methods=['POST'])
 @login_required
 def admin_post_delete(id):
+    post = get_post_by_id(id)
+    if post and 'image' in post.keys():
+        delete_upload(post['image'])
     delete_post(id)
     flash('Yazı silindi.', 'success')
     return redirect(url_for('admin_dashboard'))
@@ -568,6 +609,39 @@ def admin_ai_content_clear():
         os.makedirs(AI_JOBS_DIR, exist_ok=True)
     flash('Gecmis uretimler temizlendi.', 'success')
     return redirect(url_for('admin_ai_content'))
+
+@app.route('/robots.txt')
+def robots_txt():
+    from flask import Response
+    lines = [
+        'User-agent: *',
+        'Allow: /',
+        'Disallow: /admin',
+        f'Sitemap: {request.url_root.rstrip("/")}/sitemap.xml',
+    ]
+    return Response('\n'.join(lines) + '\n', mimetype='text/plain')
+
+@app.route('/sitemap.xml')
+def sitemap_xml():
+    from flask import Response
+    base = request.url_root.rstrip('/')
+    posts, _ = get_posts(page=1, per_page=10000)
+    urls = [
+        (f'{base}/', ''),
+        (f'{base}/about', ''),
+        (f'{base}/gallery', ''),
+    ]
+    for p in posts:
+        lastmod = (p['updated_at'] or '')[:10]
+        urls.append((f'{base}/post/{p["slug"]}', lastmod))
+    items = []
+    for loc, lastmod in urls:
+        lm = f'<lastmod>{lastmod}</lastmod>' if lastmod else ''
+        items.append(f'<url><loc>{loc}</loc>{lm}</url>')
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+           + ''.join(items) + '</urlset>')
+    return Response(xml, mimetype='application/xml')
 
 @app.route('/theme.css')
 def theme_css():
