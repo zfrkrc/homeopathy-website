@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Hakkımda | {{ site_title }}{% endblock %}
+{% block title %}{{ about_title or 'Hakkımda' }} | {{ site_title }}{% endblock %}
 {% block content %}
 <div class="container">
   <div class="about-hero">
@@ -7,17 +7,8 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     </div>
     <div class="about-text">
-      <h1>Merhaba, Ben Bir Homeopati Öğrencisiyim</h1>
-      <p>İngiltere'de homeopati eğitimimin 4. sınıfındayım. İki çocuk annesiyim ve 5 yıldır ailemle birlikte homeopati tedavisini aktif olarak kullanıyoruz. Bu süreçte hem teorik bilgimi hem de pratik deneyimlerimi bir araya getirerek, homeopatiyi doğru şekilde tanıtmak istiyorum.</p>
-      <p>Ailemizdeki kronik ve genetik sağlık sorunları, bizi 5 yıl önce homeopatiyle tanıştırdı. O günden bu yana, hem kendi sağlığımızda hem de çocuklarımızın sağlığında gözle görülür değişimler yaşadık. Bu deneyim, beni homeopati okumaya ve bu bilgiyi başkalarıyla paylaşmaya yöneltti.</p>
-      <p>Bu blogu kurma amacım, Türkiye'deki homeopatiyle ilgili ön yargıları bilimsel kanıtlarla kırmak. "İçinde hiçbir şey yok", "plasebo etkisi" gibi yaygın yanılgıları, nanopartikül araştırmaları, klinik çalışmalar ve kişisel deneyimlerimle çürütmek istiyorum.</p>
-      <p>Yazılarımda okulda öğrendiklerimi, klinik gözlemlerimi, ailemin 5 yıllık deneyiminden çıkardığım dersleri ve bilimsel kaynakları paylaşıyorum. Homeopati sadece bir tedavi yöntemi değil; vücudun kendi kendini iyileştirme gücüne inanan bir felsefe. Ve bu felsefeyi daha fazla insanla paylaşmak istiyorum.</p>
-      <div class="about-stats">
-        <div class="about-stat"><div class="about-stat-num">4</div><div class="about-stat-label">Sınıf Öğrencisi</div></div>
-        <div class="about-stat"><div class="about-stat-num">2</div><div class="about-stat-label">Çocuk Annesi</div></div>
-        <div class="about-stat"><div class="about-stat-num">5</div><div class="about-stat-label">Yıllık Aile Deneyimi</div></div>
-        <div class="about-stat"><div class="about-stat-num">6+</div><div class="about-stat-label">Blog Yazısı</div></div>
-      </div>
+      <h1>{{ about_title or 'Hakkımda' }}</h1>
+      <div style="font-size:15px;line-height:1.8;color:var(--ink-2,#39473b);white-space:pre-line">{{ about_content or '' }}</div>
     </div>
   </div>
 </div>

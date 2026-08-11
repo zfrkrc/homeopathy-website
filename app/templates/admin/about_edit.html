@@ -1,0 +1,18 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Hakkımda Düzenle{% endblock %}
+{% block content %}
+<h2 style="margin-bottom:20px">✏️ Hakkımda Sayfası</h2>
+<form method="POST" style="max-width:700px">
+  <div class="f-group">
+    <label class="f-label">Başlık</label>
+    <input name="about_title" class="f-input" value="{{ about_title }}" placeholder="Hakkımda başlığı">
+  </div>
+  <div class="f-group">
+    <label class="f-label">İçerik</label>
+    <textarea name="about_content" class="f-input" rows="16" placeholder="Hakkımda yazısı... Her paragraf arasına boş satır bırakın." style="font-size:14px;line-height:1.6">{{ about_content }}</textarea>
+    <p class="f-help">Paragraflar arası boş satır bırakın. Kaydedince yayına alınır.</p>
+  </div>
+  <button type="submit" class="btn btn-primary" style="padding:10px 28px">💾 Kaydet</button>
+  <a href="/about" target="_blank" class="btn btn-muted" style="margin-left:8px">Önizleme ↗</a>
+</form>
+{% endblock %}

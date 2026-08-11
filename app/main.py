@@ -241,7 +241,9 @@ def search():
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('about.html',
+        about_title=get_setting('about_title', 'Hakkımda'),
+        about_content=get_setting('about_content', ''))
 
 @app.route('/vaka-kayit')
 def vaka_kayit():
@@ -1073,3 +1075,17 @@ def custom_page(slug):
     page = dict(page)
     blocks = json.loads(page['blocks_json']) if page['blocks_json'] else []
     return render_template('custom_page.html', page=page, blocks=blocks)
+
+
+# ── Hakkımda düzenleme ─────────────────────────────────────────────────────
+@app.route('/admin/about', methods=['GET', 'POST'])
+@login_required
+def admin_about():
+    if request.method == 'POST':
+        set_setting('about_title', request.form.get('about_title', '').strip())
+        set_setting('about_content', request.form.get('about_content', '').strip())
+        flash('Hakkımda sayfası güncellendi.', 'success')
+        return redirect(url_for('admin_about'))
+    return render_template('admin/about_edit.html',
+        about_title=get_setting('about_title', 'Hakkımda'),
+        about_content=get_setting('about_content', ''))
