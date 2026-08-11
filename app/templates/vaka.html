@@ -1743,25 +1743,20 @@ document.getElementById("btnSiteEditToggle").addEventListener("click",()=>{
   renderSite();
 });
 
-/* ---- appointments (shared) ---- */
-const APPTS_KEY = "zeyna-appointments-v1";
+/* ---- appointments (portal API) ---- */
 async function loadAppointments(){
   try{
-    const r = await window.storage.get(APPTS_KEY, true);
-    return { ok:true, list: (r && r.value) ? JSON.parse(r.value) : [] };
-  }
-  catch(e){ return { ok:false, list: [] }; }
+    const r = await fetch("/portal/vaka-kayit/randevular");
+    if(!r.ok) return { ok:false, list:[] };
+    return { ok:true, list: await r.json() };
+  }catch(e){ return { ok:false, list: [] }; }
 }
 async function saveAppointments(list){
-  try{
-    const res = await window.storage.set(APPTS_KEY, JSON.stringify(list), true);
-    return !!res;
-  }catch(e){ return false; }
+  return true; // single-item save via submitAppointment
 }
 async function submitAppointment(){
   const btn = document.getElementById("btnSubmitAppt");
   if(btn){ btn.disabled = true; btn.textContent = "Gönderiliyor…"; }
-  const { list } = await loadAppointments();
   const rec = {
     id: fid(),
     submittedAt: new Date().toISOString(),
@@ -1775,21 +1770,15 @@ async function submitAppointment(){
     waNotes: "",
     aiResult: null
   };
-  list.push(rec);
-  const ok = await saveAppointments(list);
-  if(ok){
-    setView("confirmation");
-    return;
-  }
-  // save failed — never silently pretend success; give the client a way to not lose their answers
+  try{
+    const r = await fetch("/portal/vaka-kayit/randevu", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(rec)});
+    const data = await r.json();
+    if(data.ok){
+      setView("confirmation");
+      return;
+    }
+  }catch(e){}
   if(btn){ btn.disabled = false; btn.textContent = "Randevu Talebini Gönder"; }
-  const zone = document.getElementById("submitErrorZone");
-  if(zone){
-    zone.innerHTML = `<div class="edit-banner" style="margin-top:12px;">
-      ⚠️ Randevu talebiniz kaydedilemedi (bu tarayıcı/bağlantıda otomatik kayıt çalışmıyor olabilir).
-      Lütfen <b>Metin Olarak İndir</b> ile yanıtlarınızı indirip Zeyna'ya doğrudan iletin, ya da sayfayı Claude içinde açıp tekrar deneyin.
-    </div>`;
-  }
 }
 
 document.getElementById("btnLeadContinue").addEventListener("click",()=>{

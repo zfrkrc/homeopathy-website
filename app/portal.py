@@ -292,9 +292,51 @@ def set_homepage_sections(sections):
     set_setting("homepage_sections", json.dumps(sections))
 
 
-print("Portal module loaded")
+@portal_bp.route("/vaka-kayit/randevu", methods=["POST"])
+def vaka_randevu_kaydet():
+    """Save vaka appointment. Public endpoint."""
+    data = request.get_json(force=True, silent=True) or {}
+    if not data:
+        return {"ok": False, "msg": "Veri gerekli"}, 400
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO vaka_kayitlari (user_id, data_json, durum) VALUES (?, ?, 'pending')",
+        (None, json.dumps(data)),
+    )
+    conn.commit()
+    conn.close()
+    return {"ok": True}
 
-# ── Vaka Kayıt API ──────────────────────────────────────────────────────────
+@portal_bp.route("/vaka-kayit/randevular", methods=["GET"])
+@portal_login_required
+def vaka_randevular():
+    """List vaka appointments (admin)."""
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT id, durum, created_at, data_json FROM vaka_kayitlari ORDER BY created_at DESC"
+    ).fetchall()
+    conn.close()
+    items = []
+    for r in rows:
+        d = json.loads(r["data_json"]) if r["data_json"] else {}
+        items.append({
+            "id": r["id"],
+            "status": r["durum"],
+            "created_at": r["created_at"],
+            "lead": d.get("lead", {}),
+            "answers": d.get("answers", {}),
+        })
+    return items
+
+@portal_bp.route("/vaka-kayit/randevu/<int:id>/durum", methods=["POST"])
+@portal_login_required
+def vaka_randevu_durum(id):
+    durum = request.form.get("durum", "pending")
+    conn = get_db()
+    conn.execute("UPDATE vaka_kayitlari SET durum=?, updated_at=CURRENT_TIMESTAMP WHERE id=?", (durum, id))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
 
 @portal_bp.route("/vaka-kayit/kaydet", methods=["POST"])
 def vaka_kayit_kaydet():
