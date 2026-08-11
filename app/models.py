@@ -110,6 +110,18 @@ def init_db():
     ]
     for k, v in defaults:
         conn.execute('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)', (k, v))
+    conn.executescript("""
+        CREATE TABLE IF NOT EXISTS custom_pages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            slug TEXT UNIQUE NOT NULL,
+            title TEXT NOT NULL,
+            description TEXT DEFAULT '',
+            blocks_json TEXT DEFAULT '[]',
+            is_published INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
     conn.commit()
     conn.close()
 
