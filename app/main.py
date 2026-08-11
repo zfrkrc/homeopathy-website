@@ -243,6 +243,10 @@ def search():
 def about():
     return render_template('about.html')
 
+@app.route('/vaka-kayit')
+def vaka_kayit():
+    return render_template('vaka.html')
+
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if current_user.is_authenticated:
