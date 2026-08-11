@@ -85,18 +85,22 @@
   <aside class="sidebar">
     <div class="sidebar-logo">🌿 {{ site_title }}</div>
     <nav class="sidebar-nav">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6b8f7a;padding:8px 12px 4px">İçerik</div>
       <a href="{{ url_for('admin_dashboard') }}">📋 Yazılar</a>
       <a href="{{ url_for('admin_post_new') }}">➕ Yeni Yazı</a>
       <a href="{{ url_for('admin_categories') }}">📂 Kategoriler</a>
       <a href="{{ url_for('admin_gallery') }}">🖼️ Galeri</a>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6b8f7a;padding:8px 12px 4px;margin-top:8px">Sayfalar</div>
+      <a href="{{ url_for('admin_homepage') }}">🏠 Ana Sayfa</a>
+      <a href="{{ url_for('admin_sayfalar') }}">📄 Özel Sayfalar</a>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6b8f7a;padding:8px 12px 4px;margin-top:8px">İletişim</div>
       <a href="{{ url_for('admin_subscribers') }}">📧 Aboneler</a>
       <a href="{{ url_for('admin_newsletter') }}">📨 Mail Gönder</a>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6b8f7a;padding:8px 12px 4px;margin-top:8px">Sistem</div>
       <a href="{{ url_for('admin_ai_content') }}">🤖 AI İçerik</a>
-      <a href="{{ url_for('admin_stats') }}">📊 İstatistikler</a>
       <a href="{{ url_for('admin_portal_users') }}">👥 Portal</a>
-      <a href="{{ url_for('admin_homepage') }}">🏠 Ana Sayfa</a>
-      <a href="{{ url_for('admin_sayfalar') }}">📄 Sayfalar</a>
       <a href="{{ url_for('admin_tenants_list') }}">🏢 Müşteriler</a>
+      <a href="{{ url_for('admin_stats') }}">📊 İstatistikler</a>
       <a href="{{ url_for('admin_settings') }}">⚙️ Ayarlar</a>
     </nav>
     <div class="sidebar-foot">

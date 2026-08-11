@@ -1001,7 +1001,7 @@ def admin_sayfa_yeni():
         conn.execute("INSERT INTO custom_pages (slug, title) VALUES (?, ?)", (slug, title))
         conn.commit()
         conn.close()
-        return redirect(url_for('admin_sayfa_edit', id=conn.execute("SELECT last_insert_rowid()").fetchone()[0] if False else slug, _method='GET'))
+        return redirect(url_for('admin_sayfa_edit', slug=slug))
     return render_template('admin/sayfa_form.html', page=None)
 
 @app.route('/admin/sayfalar/<slug>/edit')
