@@ -1247,9 +1247,9 @@ function render(){
     </div>`;
   }
   if(totalBatches > 1){
-    const dots = Array.from({length:totalBatches},(_,i)=>`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;margin:0 4px;background:${i===Math.floor(start/BATCH_SIZE)?'var(--gold)':'var(--line)'}"></span>`).join("");
+    const currentBatch = Math.floor(start/BATCH_SIZE)+1;
     html += `<div style="text-align:center;padding:28px 0 12px;border-top:1px dashed var(--line);margin-top:20px">
-      <div style="margin-bottom:10px">${dots}</div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:10px">${start+1}–${end} / ${totalFields} soru</div>
       ${start > 0 ? `<button type="button" class="btn ghost" onclick="batchOffset-=${BATCH_SIZE};render();document.getElementById('content').scrollTop=0" style="margin-right:12px">← Öncekiler</button>` : ''}
       ${end < sec.fields.length ? `<button type="button" class="btn gold" onclick="batchOffset+=${BATCH_SIZE};render();document.getElementById('content').scrollTop=0">Sonrakiler →</button>` : ''}
     </div>`;
