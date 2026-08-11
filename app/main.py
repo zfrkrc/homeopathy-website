@@ -248,12 +248,12 @@ def about():
 @app.route('/anlati')
 def anlati():
     resp = make_response(render_template('anlati.html'))
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return resp
 
 @app.route('/vaka-kayit')
 def vaka_kayit_redirect():
     return redirect('/anlati')
-    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    return resp
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
