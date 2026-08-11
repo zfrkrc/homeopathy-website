@@ -1963,8 +1963,12 @@ document.body.addEventListener("click",(e)=>{
   await loadTemplate();
   await loadSite();
   if(new URLSearchParams(location.search).get('edit')==='1'){ editMode=true; }
+  // Show sidebar immediately so page isn't blank while heavy render runs
+  document.getElementById('app').classList.add('active');
+  document.getElementById('content').innerHTML = '<div style="text-align:center;padding:80px 20px;color:var(--muted);font-family:var(--serif)"><div style="font-size:48px;margin-bottom:16px">🌿</div><p>Anlatı formu yükleniyor…</p></div>';
+  // Defer heavy render to next frame so browser can paint first
+  await new Promise(r => setTimeout(r, 20));
   render();
-  // Dogrudan formu ac, landing sayfasini gosterme (ana site zaten landing)
   currentStep = 0;
   setView("form");
 })();

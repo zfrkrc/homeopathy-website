@@ -354,8 +354,9 @@ def vaka_template_get():
 
 
 @portal_bp.route("/anlati/template", methods=["POST"])
+@portal_login_required
 def vaka_template_save():
-    """Save the shared form template (public)."""
+    """Save the shared form template (admin only)."""
     data = request.get_json(force=True, silent=True) or {}
     conn = get_db()
     conn.execute("DELETE FROM vaka_template")
