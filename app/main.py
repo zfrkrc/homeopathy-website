@@ -199,6 +199,7 @@ def inject_settings():
         'telegram_url': get_setting('telegram_url', ''),
         'weather_data': fetch_weather(get_setting('weather_location', 'İstanbul')),
         'homepage_sections': __import__('json').loads(get_setting('homepage_sections', '[]')) if get_setting('homepage_sections', '[]') else [],
+        'gallery_count': len(get_gallery_images(page=1, per_page=1)[0]) if get_setting('show_gallery', '1') == '1' else 0,
     }
 
 @app.route('/')
