@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }}{% endblock %}
+{% block content %}
+{% for b in blocks %}
+  {% if b.type == 'hero' %}
+  <section style="padding:60px 0 40px;text-align:center">
+    <div class="container">
+      {% if b.title %}<h1 style="font-size:36px;margin-bottom:16px">{{ b.title }}</h1>{% endif %}
+      {% if b.desc %}<p style="font-size:18px;color:#555;max-width:600px;margin:0 auto 24px;line-height:1.6">{{ b.desc }}</p>{% endif %}
+      {% if b.btn %}<a href="{{ b.url or '#' }}" class="btn" style="background:var(--primary);color:#fff;padding:12px 30px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:600">{{ b.btn }}</a>{% endif %}
+    </div>
+  </section>
+  {% elif b.type == 'text' %}
+  <section style="padding:20px 0">
+    <div class="container" style="max-width:800px">
+      {% if b.title %}<h2 style="margin-bottom:12px">{{ b.title }}</h2>{% endif %}
+      {% if b.body %}<div style="font-size:16px;line-height:1.8;color:#444;white-space:pre-line">{{ b.body }}</div>{% endif %}
+    </div>
+  </section>
+  {% elif b.type == 'cards' %}
+  <section style="padding:30px 0">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+        {% for c in b.cards %}
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+          {% if c.title %}<h3 style="margin-bottom:8px">{{ c.title }}</h3>{% endif %}
+          {% if c.body %}<p style="font-size:14px;color:#666;line-height:1.6;white-space:pre-line">{{ c.body }}</p>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% elif b.type == 'cta' %}
+  <section style="background:var(--primary);padding:50px 0;text-align:center">
+    <div class="container">
+      {% if b.title %}<h2 style="color:#fff;font-size:28px;margin-bottom:20px">{{ b.title }}</h2>{% endif %}
+      {% if b.btn %}<a href="{{ b.url or '#' }}" style="background:#fff;color:var(--primary);padding:14px 36px;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px">{{ b.btn }}</a>{% endif %}
+    </div>
+  </section>
+  {% elif b.type == 'image' %}
+  <section style="padding:10px 0">
+    <div class="container" style="text-align:center">
+      <img src="{{ b.url }}" alt="{{ b.alt }}" style="max-width:100%;border-radius:12px">
+    </div>
+  </section>
+  {% elif b.type == 'divider' %}
+  <hr style="margin:40px 0;border:none;border-top:1px solid #eee">
+  {% endif %}
+{% endfor %}
+{% endblock %}

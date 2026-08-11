@@ -1,0 +1,163 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}{{ page.title }} — Düzenle{% endblock %}
+{% block admin_content %}
+<div id="app">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div>
+      <a href="{{ url_for('admin_sayfalar') }}" style="color:var(--primary);text-decoration:none;font-size:13px">← Sayfalara dön</a>
+      <input id="titleInput" value="{{ page.title }}" style="margin-left:12px;font-size:20px;font-weight:700;border:none;border-bottom:2px dashed #ddd;padding:4px 8px;width:300px" onchange="saveTitle()">
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="/s/{{ page.slug }}" target="_blank" style="font-size:12px;color:#888;text-decoration:none">Önizleme ↗</a>
+      <button id="btnPublish" onclick="togglePublish()" style="padding:8px 16px;border-radius:6px;border:1px solid #16a34a;background:#f0fdf4;color:#16a34a;cursor:pointer;font-size:13px;font-weight:600">{{ 'Yayından Kaldır' if page.is_published else 'Yayınla ✓' }}</button>
+      <button onclick="saveAll()" style="padding:8px 16px;background:var(--primary);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">Kaydet</button>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:20px">
+    <!-- block palette -->
+    <div style="width:220px;flex-shrink:0">
+      <div style="position:sticky;top:20px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px">
+        <h3 style="font-size:14px;margin:0 0 12px">Blok Ekle</h3>
+        {% set block_types = [
+          ('hero', 'Kahraman', 'Başlık + açıklama + buton'),
+          ('text', 'Metin', 'Zengin metin alanı'),
+          ('cards', 'Kartlar', '2-3 kart grid'),
+          ('cta', 'CTA', 'Harekete geçirici'),
+          ('image', 'Görsel', 'Tam genişlik görsel'),
+          ('divider', 'Ayraç', 'Boşluk / çizgi')
+        ] %}
+        {% for type, label, desc in block_types %}
+        <button onclick="addBlock('{{ type }}')" style="display:block;width:100%;text-align:left;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer;margin-bottom:6px;font-size:13px;transition:.15s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='#e5e7eb'">
+          <strong>{{ label }}</strong><br><span style="font-size:11px;color:#888">{{ desc }}</span>
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- canvas -->
+    <div style="flex:1;min-height:400px">
+      <div id="canvas" style="display:flex;flex-direction:column;gap:8px;min-height:200px">
+        <!-- blocks rendered here -->
+      </div>
+      <p id="emptyHint" style="text-align:center;color:#aaa;padding:60px 0">Soldan blok ekleyerek sayfanı oluştur ↑</p>
+    </div>
+  </div>
+</div>
+
+<style>
+.block-wrapper { background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:0; position:relative; transition:border-color .15s }
+.block-wrapper:hover { border-color: var(--primary) }
+.block-wrapper.dragging { opacity:0.5 }
+.block-toolbar { display:flex; gap:4px; padding:8px 12px; border-bottom:1px solid #f0f0f0; background:#fafafa; border-radius:10px 10px 0 0 }
+.block-toolbar button { background:none; border:none; cursor:pointer; font-size:12px; color:#888; padding:2px 8px; border-radius:4px }
+.block-toolbar button:hover { background:#eee; color:#333 }
+.block-toolbar .drag-handle { cursor:grab; margin-right:auto; font-size:14px }
+.block-body { padding:16px 20px }
+.block-body input, .block-body textarea { width:100%; border:1px dashed #ddd; border-radius:6px; padding:8px 12px; font-size:14px; font-family:inherit; resize:vertical }
+.block-body textarea.ta-large { min-height:120px }
+.block-body input:focus, .block-body textarea:focus { outline:none; border-color:var(--primary); border-style:solid }
+.card-editor { display:grid; grid-template-columns:1fr 1fr; gap:10px }
+.card-editor .card-item { background:#fafafa; border:1px solid #eee; border-radius:8px; padding:12px }
+@media (max-width:600px) { .card-editor { grid-template-columns:1fr } }
+</style>
+
+<script>
+const BLOCKS = JSON.parse('{{ page.blocks_json or "[]" | tojson | safe }}');
+let dragIdx = -1;
+const SLUG = '{{ page.slug }}';
+
+function render(){
+  const c = document.getElementById('canvas');
+  const h = document.getElementById('emptyHint');
+  h.style.display = BLOCKS.length ? 'none' : 'block';
+  c.innerHTML = BLOCKS.map((b,i) => `
+    <div class="block-wrapper" draggable="true" data-idx="${i}"
+      ondragstart="dragIdx=${i};this.classList.add('dragging')"
+      ondragend="this.classList.remove('dragging')"
+      ondragover="event.preventDefault();this.style.borderColor='var(--primary)'"
+      ondragleave="this.style.borderColor='#e5e7eb'"
+      ondrop="dropBlock(${i})">
+      <div class="block-toolbar">
+        <span class="drag-handle">⋮⋮</span>
+        <strong style="font-size:11px;color:#666">${blockLabel(b.type)}</strong>
+        <button onclick="moveBlock(${i},-1)" title="Yukarı">↑</button>
+        <button onclick="moveBlock(${i},1)" title="Aşağı">↓</button>
+        <button onclick="removeBlock(${i})" title="Sil" style="color:#dc2626">✕</button>
+      </div>
+      <div class="block-body">${blockEditor(b,i)}</div>
+    </div>
+  `).join('');
+}
+function blockLabel(t){
+  return {hero:'Kahraman',text:'Metin',cards:'Kartlar',cta:'CTA',image:'Görsel',divider:'Ayraç'}[t]||t;
+}
+function blockEditor(b,i){
+  switch(b.type){
+    case 'hero': return `
+      <input value="${esc(b.title||'')}" placeholder="Başlık" onchange="updateBlock(${i},'title',this.value)">
+      <textarea class="ta-large" style="margin-top:6px" placeholder="Açıklama metni" onchange="updateBlock(${i},'desc',this.value)">${esc(b.desc||'')}</textarea>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input value="${esc(b.btn||'')}" placeholder="Buton yazısı" style="flex:1" onchange="updateBlock(${i},'btn',this.value)">
+        <input value="${esc(b.url||'')}" placeholder="Buton linki" style="flex:1" onchange="updateBlock(${i},'url',this.value)">
+      </div>`;
+    case 'text': return `
+      <input value="${esc(b.title||'')}" placeholder="Başlık (opsiyonel)" onchange="updateBlock(${i},'title',this.value)">
+      <textarea class="ta-large" style="margin-top:6px" placeholder="Metin içeriği..." onchange="updateBlock(${i},'body',this.value)">${esc(b.body||'')}</textarea>`;
+    case 'cards': 
+      const cards = b.cards||[{title:'',body:''},{title:'',body:''}];
+      return `<div class="card-editor">${cards.map((c,ci)=>`
+        <div class="card-item">
+          <input value="${esc(c.title||'')}" placeholder="Kart başlığı" onchange="updateCard(${i},${ci},'title',this.value)">
+          <textarea style="margin-top:4px;min-height:80px" placeholder="Kart içeriği" onchange="updateCard(${i},${ci},'body',this.value)">${esc(c.body||'')}</textarea>
+          ${cards.length>2?`<button onclick="removeCard(${i},${ci})" style="font-size:10px;color:#dc2626;border:none;background:none;cursor:pointer;margin-top:4px">kaldır</button>`:''}
+        </div>`).join('')}
+        <button onclick="addCard(${i})" style="grid-column:1/-1;padding:6px;border:1px dashed #ddd;border-radius:6px;background:none;cursor:pointer;font-size:12px;color:#888">+ Kart Ekle</button>
+      </div>`;
+    case 'cta': return `
+      <input value="${esc(b.title||'')}" placeholder="CTA başlığı" onchange="updateBlock(${i},'title',this.value)">
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input value="${esc(b.btn||'')}" placeholder="Buton yazısı" style="flex:1" onchange="updateBlock(${i},'btn',this.value)">
+        <input value="${esc(b.url||'')}" placeholder="Buton linki" style="flex:1" onchange="updateBlock(${i},'url',this.value)">
+      </div>`;
+    case 'image': return `
+      <input value="${esc(b.url||'')}" placeholder="Görsel URL'i" onchange="updateBlock(${i},'url',this.value)">
+      <input value="${esc(b.alt||'')}" placeholder="Alt metin" style="margin-top:6px" onchange="updateBlock(${i},'alt',this.value)">`;
+    case 'divider': return `<p style="color:#aaa;font-size:13px;margin:0">Boşluk / ayraç</p>`;
+    default: return '';
+  }
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function addBlock(type){
+  const defs = {hero:{title:'',desc:'',btn:'',url:''},text:{title:'',body:''},cards:{cards:[{title:'',body:''},{title:'',body:''}]},cta:{title:'',btn:'',url:''},image:{url:'',alt:''},divider:{}};
+  BLOCKS.push({type,...defs[type]||defs.hero});
+  render();
+}
+function removeBlock(i){ BLOCKS.splice(i,1); render(); }
+function moveBlock(i,dir){ const ni=i+dir; if(ni>=0&&ni<BLOCKS.length){[BLOCKS[i],BLOCKS[ni]]=[BLOCKS[ni],BLOCKS[i]]; render(); } }
+function dropBlock(i){ if(dragIdx>=0&&dragIdx!==i){ const b=BLOCKS.splice(dragIdx,1)[0]; BLOCKS.splice(i,0,b); } dragIdx=-1; render(); }
+function updateBlock(i,key,val){ BLOCKS[i][key]=val; }
+function addCard(bi){ if(!BLOCKS[bi].cards) BLOCKS[bi].cards=[]; BLOCKS[bi].cards.push({title:'',body:''}); render(); }
+function removeCard(bi,ci){ BLOCKS[bi].cards.splice(ci,1); render(); }
+function updateCard(bi,ci,key,val){ BLOCKS[bi].cards[ci][key]=val; }
+
+async function saveAll(){
+  const title = document.getElementById('titleInput').value;
+  const res = await fetch(`/admin/sayfalar/${SLUG}/save`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,blocks:BLOCKS,is_published:{{ page.is_published }}})});
+  if(res.ok){ showToast('Kaydedildi ✓'); }
+}
+function saveTitle(){ saveAll(); }
+async function togglePublish(){
+  const pub = {{ page.is_published }} ? 0 : 1;
+  const title = document.getElementById('titleInput').value;
+  await fetch(`/admin/sayfalar/${SLUG}/save`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,blocks:BLOCKS,is_published:pub})});
+  location.reload();
+}
+function showToast(msg){
+  const t=document.createElement('div'); t.textContent=msg; t.style.cssText='position:fixed;bottom:20px;right:20px;background:#333;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999';
+  document.body.appendChild(t); setTimeout(()=>t.remove(),2000);
+}
+
+render();
+</script>
+{% endblock %}

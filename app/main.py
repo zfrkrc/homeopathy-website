@@ -10,7 +10,7 @@ import asyncio
 import markdown
 import shutil
 import base64
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, send_file, Response
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, send_file, Response, abort
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
 from app.models import init_db, User, get_posts, get_post, get_post_by_id, search_posts
@@ -977,3 +977,75 @@ def api_reset_password():
     conn.commit()
     conn.close()
     return {'ok': True}
+
+# ── Custom Pages (görsel sayfa oluşturucu) ──────────────────────────────────
+
+@app.route('/admin/sayfalar')
+@login_required
+def admin_sayfalar():
+    conn = get_db()
+    pages = conn.execute("SELECT * FROM custom_pages ORDER BY updated_at DESC").fetchall()
+    conn.close()
+    return render_template('admin/sayfalar.html', pages=[dict(p) for p in pages])
+
+@app.route('/admin/sayfalar/yeni', methods=['GET', 'POST'])
+@login_required
+def admin_sayfa_yeni():
+    if request.method == 'POST':
+        slug = request.form.get('slug', '').strip()
+        title = request.form.get('title', '').strip()
+        if not slug or not title:
+            flash('Slug ve başlık zorunlu', 'error')
+            return redirect(url_for('admin_sayfa_yeni'))
+        conn = get_db()
+        conn.execute("INSERT INTO custom_pages (slug, title) VALUES (?, ?)", (slug, title))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('admin_sayfa_edit', id=conn.execute("SELECT last_insert_rowid()").fetchone()[0] if False else slug, _method='GET'))
+    return render_template('admin/sayfa_form.html', page=None)
+
+@app.route('/admin/sayfalar/<slug>/edit')
+@login_required
+def admin_sayfa_edit(slug):
+    conn = get_db()
+    page = conn.execute("SELECT * FROM custom_pages WHERE slug=?", (slug,)).fetchone()
+    conn.close()
+    if not page:
+        flash('Sayfa bulunamadı', 'error')
+        return redirect(url_for('admin_sayfalar'))
+    return render_template('admin/sayfa_editor.html', page=dict(page))
+
+@app.route('/admin/sayfalar/<slug>/save', methods=['POST'])
+@login_required
+def admin_sayfa_save(slug):
+    data = request.get_json() or {}
+    blocks = json.dumps(data.get('blocks', []))
+    title = data.get('title', '')
+    published = data.get('is_published', 0)
+    conn = get_db()
+    conn.execute("UPDATE custom_pages SET blocks_json=?, title=?, is_published=?, updated_at=CURRENT_TIMESTAMP WHERE slug=?",
+                 (blocks, title, int(published), slug))
+    conn.commit()
+    conn.close()
+    return {'ok': True}
+
+@app.route('/admin/sayfalar/<slug>/delete', methods=['POST'])
+@login_required
+def admin_sayfa_delete(slug):
+    conn = get_db()
+    conn.execute("DELETE FROM custom_pages WHERE slug=?", (slug,))
+    conn.commit()
+    conn.close()
+    flash('Sayfa silindi', 'success')
+    return redirect(url_for('admin_sayfalar'))
+
+@app.route('/s/<slug>')
+def custom_page(slug):
+    conn = get_db()
+    page = conn.execute("SELECT * FROM custom_pages WHERE slug=? AND is_published=1", (slug,)).fetchone()
+    conn.close()
+    if not page:
+        abort(404)
+    page = dict(page)
+    blocks = json.loads(page['blocks_json']) if page['blocks_json'] else []
+    return render_template('custom_page.html', page=page, blocks=blocks)
