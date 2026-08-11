@@ -831,34 +831,56 @@ def theme_css():
     card_shadow_map = {'none': 'none', 'sm': '0 2px 10px rgba(0,0,0,.06)', 'md': '0 4px 20px rgba(0,0,0,.10)', 'lg': '0 8px 32px rgba(0,0,0,.15)'}
     card_shadow = card_shadow_map.get(get_setting('card_shadow', 'sm'), '0 2px 10px rgba(0,0,0,.06)')
     thumb_color = get_setting('thumb_color', '#2d6a4f')
-    css = f'''/* Dynamic theme */
+    css = f'''/* Zeyna Dynamic Theme — premium paper aesthetic */
 :root {{
   --primary: {primary};
   --secondary: {secondary};
   --bg: {bg};
   --text: {text};
-  --font-heading: {font_h};
-  --font-body: {font_b};
-  --green: {primary};
-  --green-dark: {secondary};
-  --hero-start: {hero_start};
-  --hero-end: {hero_end};
+  --font-heading: \{font_h};
+  --font-body: \{font_b};
+  --gold: #b08d57;
+  --gold-soft: #e7d9bc;
+  --ink: #202b22;
+  --ink-2: #39473b;
+  --paper: #f4efe1;
+  --paper-2: #fffdf7;
+  --line: #dcd4bd;
+  --muted: #726f5e;
+  --sage: #74906f;
   --card-radius: {card_radius};
-  --card-shadow: {card_shadow};
-  --thumb-color: {thumb_color};
 }}
-body {{ font-family: var(--font-body); color: var(--text); background: var(--bg); }}
-h1, h2, h3, h4, h5, h6, .logo, .post-title, .hero h1, .hero-content h1 {{ font-family: var(--font-heading); }}
-a {{ color: var(--primary); }}
-.hero {{ background: linear-gradient(135deg, var(--hero-start) 0%, var(--hero-end) 100%); }}
-.post-card {{ border-radius: var(--card-radius); box-shadow: var(--card-shadow); }}
-.post-card:hover {{ border-color: var(--primary); }}
-.post-read {{ color: var(--primary); }}
-.post-thumb {{ background: linear-gradient(135deg, var(--thumb-color), var(--green-dark, {secondary})); }}
-.site-footer {{ background: var(--secondary); }}
-.btn-newsletter {{ background: var(--primary); }}
-{custom}
-'''
+body {{ font-family: var(--font-body); color: var(--ink); background: linear-gradient(180deg, #f8f5ee 0%, #f4efe1 100%); background-attachment: fixed; -webkit-font-smoothing: antialiased; }}
+h1, h2, h3, h4, h5, h6, .logo, .post-title, .hero h1, .hero-content h1 {{ font-family: var(--font-heading); letter-spacing: -.02em; }}
+a {{ color: var(--gold); }}
+.nav {{ background: rgba(244,239,225,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }}
+.nav-link {{ color: var(--ink-2); font-size: 13.5px; font-weight: 500; }}
+.nav-link:hover {{ color: var(--gold); }}
+.hero {{ background: linear-gradient(135deg, var(--gold) 0%, var(--sage) 100%); }}
+.hero h1, .hero p {{ color: #fff; }}
+.hero-content {{ padding: 80px 0; }}
+.tag {{ background: rgba(255,255,255,.15); color: rgba(255,255,255,.85); border: 1px solid rgba(255,255,255,.25); }}
+.tag-active {{ background: #fff; color: var(--ink); }}
+.post-card {{ background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--card-radius); box-shadow: 0 2px 12px rgba(0,0,0,.04); transition: transform .2s, box-shadow .2s; }}
+.post-card:hover {{ transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.08); border-color: var(--gold); }}
+.post-read {{ color: var(--gold); }}
+.post-thumb {{ background: linear-gradient(135deg, var(--gold-soft), var(--sage)); }}
+.site-footer {{ background: var(--ink); color: #a9a58f; }}
+.btn-newsletter {{ background: var(--gold); }}
+.tag:hover {{ background: rgba(255,255,255,.25); }}
+.nav-links a {{ border-radius: 8px; transition: background .15s; }}
+.nav-links a:hover {{ background: rgba(176,141,87,.08); }}
+.flash {{ border-radius: 10px; }}
+.flash.error {{ background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }}
+.flash.success {{ background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }}
+.flash.info {{ background: var(--gold-soft); color: #6b5220; border: 1px solid var(--gold); }}
+.card {{ background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--card-radius); }}
+.newsletter {{ background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--card-radius); }}
+input, textarea, select {{ font-family: var(--font-body); border: 1px solid var(--line); border-radius: 10px; background: var(--paper-2); padding: 10px 14px; }}
+input:focus, textarea:focus, select:focus {{ outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(176,141,87,.12); }}
+.search-form input {{ border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.12); color: #fff; }}
+.search-form input::placeholder {{ color: rgba(255,255,255,.5); }}
+.custom_css_placeholder'''
     return Response(css, mimetype='text/css')
 
 @app.route('/static/<path:path>')

@@ -1964,7 +1964,9 @@ document.body.addEventListener("click",(e)=>{
   await loadSite();
   if(new URLSearchParams(location.search).get('edit')==='1'){ editMode=true; }
   render();
-  setView("landing");
+  // Dogrudan formu ac, landing sayfasini gosterme (ana site zaten landing)
+  currentStep = 0;
+  setView("form");
 })();
 </script>
 </body>
