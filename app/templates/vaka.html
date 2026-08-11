@@ -1197,10 +1197,13 @@ function updateProgress(){
 
 function goStep(i){
   currentStep = Math.max(0, Math.min(SECTIONS.length-1, i));
+  visibleCount = 5; // her bölümde 5 soru göster, tıkla çoğalsın
   render();
   document.getElementById("content").scrollTop=0;
   window.scrollTo({top:0,behavior:"smooth"});
 }
+
+let visibleCount = 5;
 
 function render(){
   const sec = SECTIONS[currentStep];
@@ -1212,7 +1215,13 @@ function render(){
   if(editMode && sec.id!=="review"){
     html += `<div class="edit-banner">✎ Düzenleme modu — değişiklikler kaydedilir ve formu açan herkese görünür.</div>`;
   }
+  let shown = 0;
+  let remaining = 0;
   sec.fields.forEach(f=>{
+    // complex widgets always show
+    const isComplex = f.type==="bodymap" || f.type==="reviewpane" || f.type==="definitions";
+    if(!isComplex && shown >= visibleCount){ remaining++; return; }
+    shown++;
     if(f.type==="heading"){
       html += editMode
         ? `<div class="edit-row heading-edit"><input class="edit-label-input" data-fid="${f._fid}" value="${escapeHtml(f.label)}"><button type="button" class="field-del" data-delfid="${f._fid}" title="Başlığı sil">🗑</button></div>`
@@ -1234,6 +1243,14 @@ function render(){
     html += `<div class="edit-addbar">
       <button type="button" class="btn ghost" id="btnAddQuestion">+ Soru Ekle</button>
       <button type="button" class="btn ghost" id="btnAddHeading">+ Alt Başlık Ekle</button>
+    </div>`;
+  }
+  if(remaining > 0){
+    html += `<div style="text-align:center;padding:36px 0 20px">
+      <button type="button" class="btn ghost" onclick="visibleCount+=5;render();document.getElementById('content').scrollTop=document.getElementById('content').scrollHeight" 
+        style="font-family:var(--serif);font-size:15px;padding:14px 36px;border-color:var(--gold-soft);color:var(--ink-2)">
+        ↓ Devam et — ${remaining} soru daha var ↓
+      </button>
     </div>`;
   }
   c.innerHTML = `<div class="block">${html}</div>`;
