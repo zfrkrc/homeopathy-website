@@ -34,6 +34,19 @@ def init_portal_db():
             expires_at TIMESTAMP,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+        CREATE TABLE IF NOT EXISTS vaka_kayitlari (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            data_json TEXT NOT NULL,
+            durum TEXT DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE IF NOT EXISTS vaka_template (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            data_json TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
     """)
     conn.commit()
     conn.close()
@@ -301,3 +314,89 @@ def set_homepage_sections(sections):
 
 
 print("Portal module loaded")
+
+# ── Vaka Kayıt API ──────────────────────────────────────────────────────────
+
+@portal_bp.route("/vaka-kayit/kaydet", methods=["POST"])
+def vaka_kayit_kaydet():
+    """Save vaka form data. Public endpoint — no login required."""
+    data = request.get_json(force=True, silent=True) or {}
+    lead_name = (data.get("lead", {}) or {}).get("name", "").strip()
+    user_id = None
+    if lead_name:
+        conn = get_db()
+        conn.execute(
+            "INSERT INTO vaka_kayitlari (user_id, data_json, durum) VALUES (?, ?, 'pending')",
+            (user_id, json.dumps(data)),
+        )
+        conn.commit()
+        conn.close()
+        return {"ok": True, "msg": "Kaydedildi"}
+    return {"ok": False, "msg": "Isim zorunlu"}, 400
+
+
+@portal_bp.route("/vaka-kayit/template", methods=["GET"])
+def vaka_template_get():
+    """Get the shared form template (editable by admin)."""
+    conn = get_db()
+    row = conn.execute(
+        "SELECT data_json FROM vaka_template ORDER BY id DESC LIMIT 1"
+    ).fetchone()
+    conn.close()
+    if row:
+        return json.loads(row["data_json"])
+    return {}
+
+
+@portal_bp.route("/vaka-kayit/template", methods=["POST"])
+@portal_login_required
+def vaka_template_save():
+    """Save the shared form template."""
+    data = request.get_json(force=True, silent=True) or {}
+    conn = get_db()
+    conn.execute("DELETE FROM vaka_template")
+    conn.execute("INSERT INTO vaka_template (data_json) VALUES (?)", (json.dumps(data),))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+
+@portal_bp.route("/vaka-kayit/list", methods=["GET"])
+@portal_login_required
+def vaka_list():
+    user = get_session_user()
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT id, user_id, durum, created_at FROM vaka_kayitlari ORDER BY created_at DESC"
+    ).fetchall()
+    conn.close()
+    items = []
+    for r in rows:
+        items.append(dict(r))
+    return render_template("portal/vaka_list.html", items=items, portal_user=user)
+
+
+@portal_bp.route("/vaka-kayit/<int:id>", methods=["GET"])
+@portal_login_required
+def vaka_detail(id):
+    user = get_session_user()
+    conn = get_db()
+    row = conn.execute("SELECT * FROM vaka_kayitlari WHERE id=?", (id,)).fetchone()
+    conn.close()
+    if not row:
+        flash("Kayit bulunamadi.", "error")
+        return redirect(url_for("portal.vaka_list"))
+    data = json.loads(row["data_json"])
+    return render_template("portal/vaka_detail.html", item=dict(row), data=data, portal_user=user)
+
+
+@portal_bp.route("/vaka-kayit/<int:id>/durum", methods=["POST"])
+@portal_login_required
+def vaka_durum(id):
+    durum = request.form.get("durum", "pending")
+    conn = get_db()
+    conn.execute("UPDATE vaka_kayitlari SET durum=? WHERE id=?", (durum, id))
+    conn.commit()
+    conn.close()
+    flash("Durum guncellendi.", "success")
+    return redirect(url_for("portal.vaka_list"))

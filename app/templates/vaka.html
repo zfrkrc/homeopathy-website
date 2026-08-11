@@ -754,17 +754,43 @@ let SECTIONS = [
 ];
 
 /* =====================================================================
-   STATE + STORAGE
+   STATE + STORAGE (portal API backed)
    ===================================================================== */
 const STORAGE_KEY = "zeyna-vaka-formu-v1";
 let state = { answers:{}, pins:{front:[],back:[]}, rep:{}, chips:{}, rated:{}, traits:{} };
 let saveTimer=null;
+let CURRENT_USER_ID = null;
+
+// polyfill window.storage — use portal API + localStorage fallback
+if(!window.storage){
+  window.storage = {
+    _prefix: "vaka_",
+    async set(key, value, shared){
+      const str = typeof value === "string" ? value : JSON.stringify(value);
+      try{ localStorage.setItem(this._prefix + key, str); }catch(e){}
+      if(shared && key === STORAGE_KEY && value.answers && Object.keys(value.answers).length > 2){
+        try{
+          await fetch("/portal/vaka-kayit/kaydet", {method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(value)});
+        }catch(e){}
+      }
+    },
+    async get(key, shared){
+      if(!shared){
+        try{
+          const v = localStorage.getItem(this._prefix + key);
+          if(v) return { value: v };
+        }catch(e){}
+      }
+      return { value: null };
+    }
+  };
+}
 
 async function loadState(){
   try{
-    const r = await window.storage.get(STORAGE_KEY,false);
-    if(r && r.value){ state = Object.assign(state, JSON.parse(r.value)); }
-  }catch(e){ /* no persistence available — fine, stays in memory */ }
+    const raw = localStorage.getItem("vaka_" + STORAGE_KEY);
+    if(raw){ state = Object.assign(state, JSON.parse(raw)); }
+  }catch(e){}
 }
 function scheduleSave(){
   const hint=document.getElementById("saveHint");
@@ -772,7 +798,7 @@ function scheduleSave(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async ()=>{
     try{
-      await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+      localStorage.setItem("vaka_" + STORAGE_KEY, JSON.stringify(state));
       if(hint) hint.textContent="taslak kaydedildi ✓";
     }catch(e){
       if(hint) hint.textContent="taslak bu oturumda tutuluyor";
@@ -780,26 +806,26 @@ function scheduleSave(){
   },500);
 }
 
-/* ---- editable question/answer template (shared across everyone who opens the form) ---- */
+/* ---- editable question/answer template ---- */
 const TEMPLATE_KEY = "zeyna-form-template-v1";
 let editMode = false;
 let templateSaveTimer = null;
 
 async function loadTemplate(){
   try{
-    const r = await window.storage.get(TEMPLATE_KEY, true);
-    if(r && r.value){
-      const parsed = JSON.parse(r.value);
-      if(Array.isArray(parsed) && parsed.length) SECTIONS = parsed;
+    const resp = await fetch("/portal/vaka-kayit/template");
+    if(resp.ok){
+      const parsed = await resp.json();
+      if(parsed && Array.isArray(parsed) && parsed.length) SECTIONS = parsed;
     }
-  }catch(e){ /* no persistence available — defaults stay in memory */ }
+  }catch(e){}
 }
 function scheduleTemplateSave(){
   const hint=document.getElementById("saveHint");
   clearTimeout(templateSaveTimer);
   templateSaveTimer=setTimeout(async ()=>{
     try{
-      await window.storage.set(TEMPLATE_KEY, JSON.stringify(SECTIONS), true);
+      await fetch("/portal/vaka-kayit/template", {method:"POST",headers:{"Content-Type":"application/json"}, body:JSON.stringify(SECTIONS)});
       if(hint) hint.textContent="sorular güncellendi ✓ (herkese görünür)";
     }catch(e){
       if(hint) hint.textContent="sorular bu oturumda güncellendi";
