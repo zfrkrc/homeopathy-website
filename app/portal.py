@@ -214,23 +214,7 @@ def register():
 
 @portal_bp.route("/giris", methods=["GET", "POST"])
 def login():
-    if get_session_user():
-        return redirect(url_for("portal.dashboard"))
-
-    if request.method == "POST":
-        email = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
-        user = auth_portal_user(email, password)
-        if user:
-            token = make_session_token(user["id"])
-            flask_session["portal_token"] = token
-            flask_session.permanent = True
-            update_portal_login(user["id"])
-            flash("Hosgeldiniz!", "success")
-            return redirect(url_for("portal.dashboard"))
-        flash("Hatali e-posta veya sifre.", "error")
-
-    return render_template("portal/login.html")
+    return redirect("https://wez.zk.net.tr")
 
 
 @portal_bp.route("/cikis")
