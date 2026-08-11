@@ -1239,7 +1239,7 @@ function render(){
     else if(f.type==="fixedcards") html+=renderFixedCards(f);
     else if(f.type==="shortgrid") html+=renderShortGrid(f);
     else if(f.type==="reviewpane") html+=renderReview();
-  });
+  }
   if(editMode && sec.id!=="review"){
     html += `<div class="edit-addbar">
       <button type="button" class="btn ghost" id="btnAddQuestion">+ Soru Ekle</button>
