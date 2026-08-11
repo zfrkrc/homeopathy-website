@@ -328,9 +328,8 @@ def vaka_template_get():
 
 
 @portal_bp.route("/vaka-kayit/template", methods=["POST"])
-@portal_login_required
 def vaka_template_save():
-    """Save the shared form template."""
+    """Save the shared form template (public)."""
     data = request.get_json(force=True, silent=True) or {}
     conn = get_db()
     conn.execute("DELETE FROM vaka_template")
