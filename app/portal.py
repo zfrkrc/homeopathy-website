@@ -205,28 +205,7 @@ def register():
         else:
             uid = create_portal_user(email, password, full_name, phone, company)
             if uid:
-                # Auto-provision PulseCare instance
-                try:
-                    import httpx
-                    code = email.split('@')[0].replace('.', '-').lower()
-                    domain = f"{code}.zeyna.zk.net.tr"
-                    resp = httpx.post(
-                        "http://172.16.16.215:8004/admin/tenants/create",
-                        data={
-                            "code": code,
-                            "domain": domain,
-                            "owner_email": email,
-                            "owner_name": full_name,
-                            "telegram_token": "",
-                        },
-                        timeout=30,
-                    )
-                    if resp.status_code == 302:
-                        flash(f"Kayit basarili! PulseCare hesabiniz hazir: https://{domain}", "success")
-                    else:
-                        flash(f"Kayit basarili ama PulseCare olusturulamadi: {resp.status_code}", "warning")
-                except Exception as e:
-                    flash(f"Kayit basarili! PulseCare instance daha sonra olusturulacak.", "success")
+                flash(f"Kayit basarili! Zeyna portali: https://wez.zeyna.net.tr", "success")
                 return redirect(url_for("portal.login"))
             flash("Bu e-posta zaten kayitli.", "error")
 
