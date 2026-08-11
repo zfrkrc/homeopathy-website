@@ -40,7 +40,8 @@
         <a href="{{ url_for('gallery') }}" class="nav-link">Galeri</a>
         <a href="{{ url_for('about') }}" class="nav-link">Hakkımda</a>
         <a href="{{ url_for('vaka_kayit') }}" class="nav-link" style="background:var(--primary);color:var(--paper,#f4efe1);border-radius:999px;padding:5px 16px;font-weight:600">Vaka Formu</a>
-        <a href="{{ url_for('portal.login') }}" class="nav-link">Portal</a>
+        <a href="{{ url_for('admin_login') }}" class="nav-link" style="color:var(--gold)">Panel</a>
+        <a href="https://wez.zk.net.tr" class="nav-link" target="_blank">Portal</a>
         {% if telegram_url %}<a href="{{ telegram_url }}" class="nav-link" target="_blank" rel="noopener">Telegram</a>{% endif %}
       </div>
     </div>
