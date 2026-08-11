@@ -666,7 +666,7 @@ let SECTIONS = [
       {type:"text1",key:"ev_tel",label:"Ev telefonu"},
       {type:"text1",key:"cep_tel",label:"Cep telefonu"},
       {type:"text1",key:"email",label:"E-mail"},
-      {type:"text1",key:"yas",label:"Yaş",input:"number"},
+      {type:"text1",key:"yas",label:"Yaş (doğum tarihinden hesaplanır)",input:"number",readonly:true},
       {type:"text1",key:"dogum_tarihi",label:"Doğum tarihi",input:"date"},
       {type:"text1",key:"dogum_yeri",label:"Doğum yeri"},
       {type:"text1",key:"dogum_saati",label:"Doğum saati",input:"time"},
@@ -1334,6 +1334,16 @@ function attachHandlers(root){
 
   root.querySelectorAll("textarea[data-key], input[data-key], select[data-key]").forEach(el=>{
     el.addEventListener("input",()=>{ state.answers[el.dataset.key]=el.value; scheduleSave(); updateProgress(); });
+  });
+  // Auto-calculation: dogum_tarihi -> yas
+  const dobEl = root.querySelector('input[data-key="dogum_tarihi"]');
+  if(dobEl) dobEl.addEventListener("change",()=>{
+    const dob = dobEl.value;
+    if(dob){
+      const age = Math.floor((Date.now() - new Date(dob).getTime()) / (365.25*24*60*60*1000));
+      const yasEl = document.querySelector('input[data-key="yas"]');
+      if(yasEl && age > 0){ yasEl.value = age; state.answers["yas"] = String(age); scheduleSave(); updateProgress(); }
+    }
   });
   root.querySelectorAll(".chipgrid").forEach(grid=>{
     grid.querySelectorAll(".chip:not(.editing)").forEach(chip=>{
