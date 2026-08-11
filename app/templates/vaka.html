@@ -1973,6 +1973,7 @@ document.body.addEventListener("click",(e)=>{
   await loadState();
   await loadTemplate();
   await loadSite();
+  if(new URLSearchParams(location.search).get('edit')==='1'){ editMode=true; }
   render();
   setView("landing");
 })();

@@ -10,7 +10,7 @@ import asyncio
 import markdown
 import shutil
 import base64
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, send_file, Response, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, send_file, Response, abort, make_response
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
 from app.models import init_db, User, get_posts, get_post, get_post_by_id, search_posts
@@ -245,7 +245,9 @@ def about():
 
 @app.route('/vaka-kayit')
 def vaka_kayit():
-    return render_template('vaka.html')
+    resp = make_response(render_template('vaka.html'))
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return resp
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
