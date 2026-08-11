@@ -34,7 +34,7 @@ def init_portal_db():
             expires_at TIMESTAMP,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
-        CREATE TABLE IF NOT EXISTS vaka_kayitlari (
+        CREATE TABLE IF NOT EXISTS anlatilari (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER,
             data_json TEXT NOT NULL,
@@ -276,7 +276,7 @@ def set_homepage_sections(sections):
     set_setting("homepage_sections", json.dumps(sections))
 
 
-@portal_bp.route("/vaka-kayit/randevu", methods=["POST"])
+@portal_bp.route("/anlati/randevu", methods=["POST"])
 def vaka_randevu_kaydet():
     """Save vaka appointment. Public endpoint."""
     data = request.get_json(force=True, silent=True) or {}
@@ -284,20 +284,20 @@ def vaka_randevu_kaydet():
         return {"ok": False, "msg": "Veri gerekli"}, 400
     conn = get_db()
     conn.execute(
-        "INSERT INTO vaka_kayitlari (user_id, data_json, durum) VALUES (?, ?, 'pending')",
+        "INSERT INTO anlatilari (user_id, data_json, durum) VALUES (?, ?, 'pending')",
         (None, json.dumps(data)),
     )
     conn.commit()
     conn.close()
     return {"ok": True}
 
-@portal_bp.route("/vaka-kayit/randevular", methods=["GET"])
+@portal_bp.route("/anlati/randevular", methods=["GET"])
 @portal_login_required
 def vaka_randevular():
     """List vaka appointments (admin)."""
     conn = get_db()
     rows = conn.execute(
-        "SELECT id, durum, created_at, data_json FROM vaka_kayitlari ORDER BY created_at DESC"
+        "SELECT id, durum, created_at, data_json FROM anlatilari ORDER BY created_at DESC"
     ).fetchall()
     conn.close()
     items = []
@@ -312,18 +312,18 @@ def vaka_randevular():
         })
     return items
 
-@portal_bp.route("/vaka-kayit/randevu/<int:id>/durum", methods=["POST"])
+@portal_bp.route("/anlati/randevu/<int:id>/durum", methods=["POST"])
 @portal_login_required
 def vaka_randevu_durum(id):
     durum = request.form.get("durum", "pending")
     conn = get_db()
-    conn.execute("UPDATE vaka_kayitlari SET durum=?, updated_at=CURRENT_TIMESTAMP WHERE id=?", (durum, id))
+    conn.execute("UPDATE anlatilari SET durum=?, updated_at=CURRENT_TIMESTAMP WHERE id=?", (durum, id))
     conn.commit()
     conn.close()
     return {"ok": True}
 
-@portal_bp.route("/vaka-kayit/kaydet", methods=["POST"])
-def vaka_kayit_kaydet():
+@portal_bp.route("/anlati/kaydet", methods=["POST"])
+def anlati_kaydet():
     """Save vaka form data. Public endpoint — no login required."""
     data = request.get_json(force=True, silent=True) or {}
     lead_name = (data.get("lead", {}) or {}).get("name", "").strip()
@@ -331,7 +331,7 @@ def vaka_kayit_kaydet():
     if lead_name:
         conn = get_db()
         conn.execute(
-            "INSERT INTO vaka_kayitlari (user_id, data_json, durum) VALUES (?, ?, 'pending')",
+            "INSERT INTO anlatilari (user_id, data_json, durum) VALUES (?, ?, 'pending')",
             (user_id, json.dumps(data)),
         )
         conn.commit()
@@ -340,7 +340,7 @@ def vaka_kayit_kaydet():
     return {"ok": False, "msg": "Isim zorunlu"}, 400
 
 
-@portal_bp.route("/vaka-kayit/template", methods=["GET"])
+@portal_bp.route("/anlati/template", methods=["GET"])
 def vaka_template_get():
     """Get the shared form template (editable by admin)."""
     conn = get_db()
@@ -353,7 +353,7 @@ def vaka_template_get():
     return {}
 
 
-@portal_bp.route("/vaka-kayit/template", methods=["POST"])
+@portal_bp.route("/anlati/template", methods=["POST"])
 def vaka_template_save():
     """Save the shared form template (public)."""
     data = request.get_json(force=True, silent=True) or {}
@@ -365,13 +365,13 @@ def vaka_template_save():
     return {"ok": True}
 
 
-@portal_bp.route("/vaka-kayit/list", methods=["GET"])
+@portal_bp.route("/anlati/list", methods=["GET"])
 @portal_login_required
 def vaka_list():
     user = get_session_user()
     conn = get_db()
     rows = conn.execute(
-        "SELECT id, user_id, durum, created_at FROM vaka_kayitlari ORDER BY created_at DESC"
+        "SELECT id, user_id, durum, created_at FROM anlatilari ORDER BY created_at DESC"
     ).fetchall()
     conn.close()
     items = []
@@ -380,12 +380,12 @@ def vaka_list():
     return render_template("portal/vaka_list.html", items=items, portal_user=user)
 
 
-@portal_bp.route("/vaka-kayit/<int:id>", methods=["GET"])
+@portal_bp.route("/anlati/<int:id>", methods=["GET"])
 @portal_login_required
 def vaka_detail(id):
     user = get_session_user()
     conn = get_db()
-    row = conn.execute("SELECT * FROM vaka_kayitlari WHERE id=?", (id,)).fetchone()
+    row = conn.execute("SELECT * FROM anlatilari WHERE id=?", (id,)).fetchone()
     conn.close()
     if not row:
         flash("Kayit bulunamadi.", "error")
@@ -394,12 +394,12 @@ def vaka_detail(id):
     return render_template("portal/vaka_detail.html", item=dict(row), data=data, portal_user=user)
 
 
-@portal_bp.route("/vaka-kayit/<int:id>/durum", methods=["POST"])
+@portal_bp.route("/anlati/<int:id>/durum", methods=["POST"])
 @portal_login_required
 def vaka_durum(id):
     durum = request.form.get("durum", "pending")
     conn = get_db()
-    conn.execute("UPDATE vaka_kayitlari SET durum=? WHERE id=?", (durum, id))
+    conn.execute("UPDATE anlatilari SET durum=? WHERE id=?", (durum, id))
     conn.commit()
     conn.close()
     flash("Durum guncellendi.", "success")

@@ -761,7 +761,7 @@ let SECTIONS = [
 /* =====================================================================
    STATE + STORAGE (portal API backed)
    ===================================================================== */
-const STORAGE_KEY = "zeyna-vaka-formu-v1";
+const STORAGE_KEY = "zeyna-anlati-formu-v1";
 let state = { answers:{}, pins:{front:[],back:[]}, rep:{}, chips:{}, rated:{}, traits:{} };
 let saveTimer=null;
 let CURRENT_USER_ID = null;
@@ -769,7 +769,7 @@ let CURRENT_USER_ID = null;
 // polyfill window.storage — use portal API + localStorage fallback
 if(!window.storage){
   window.storage = {
-    _prefix: "vaka_",
+    _prefix: "anlati_",
     async set(key, value, shared){
       const str = typeof value === "string" ? value : JSON.stringify(value);
       try{ localStorage.setItem(this._prefix + key, str); }catch(e){}
@@ -793,7 +793,7 @@ if(!window.storage){
 
 async function loadState(){
   try{
-    const raw = localStorage.getItem("vaka_" + STORAGE_KEY);
+    const raw = localStorage.getItem("anlati_" + STORAGE_KEY);
     if(raw){ state = Object.assign(state, JSON.parse(raw)); }
   }catch(e){}
 }
@@ -803,7 +803,7 @@ function scheduleSave(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async ()=>{
     try{
-      localStorage.setItem("vaka_" + STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem("anlati_" + STORAGE_KEY, JSON.stringify(state));
       if(hint) hint.textContent="taslak kaydedildi ✓";
     }catch(e){
       if(hint) hint.textContent="taslak bu oturumda tutuluyor";
@@ -1473,7 +1473,7 @@ function attachHandlers(root){
     const blob = new Blob([txt],{type:"text/plain;charset=utf-8"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href=url; a.download="vaka-kayit-formu.txt"; a.click();
+    a.href=url; a.download="anlati-formu.txt"; a.click();
     URL.revokeObjectURL(url);
   });
   const btnReset = document.getElementById("btnReset");

@@ -245,9 +245,13 @@ def about():
         about_title=get_setting('about_title', 'Hakkımda'),
         about_content=get_setting('about_content', ''))
 
+@app.route('/anlati')
+def anlati():
+    resp = make_response(render_template('anlati.html'))
+
 @app.route('/vaka-kayit')
-def vaka_kayit():
-    resp = make_response(render_template('vaka.html'))
+def vaka_kayit_redirect():
+    return redirect('/anlati')
     resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     return resp
 
