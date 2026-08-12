@@ -251,6 +251,22 @@ def about():
         about_title=get_setting('about_title', 'Hakkımda'),
         about_content=get_setting('about_content', ''))
 
+@app.route('/iletisim', methods=['GET', 'POST'])
+def iletisim():
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        name = request.form.get('name', '').strip()
+        if not email or '@' not in email:
+            flash('Geçerli bir e-posta adresi girin.', 'error')
+            return redirect(url_for('iletisim'))
+        result = add_subscriber(email, name)
+        if result == 'exists':
+            flash('Bu e-posta zaten kayıtlı.', 'info')
+        else:
+            flash('Bültene başarıyla katıldınız! İlk yazıyı sabırsızlıkla bekleyin.', 'success')
+        return redirect(url_for('iletisim'))
+    return render_template('iletisim.html')
+
 @app.route('/anlati')
 def anlati():
     resp = make_response(render_template('anlati.html'))

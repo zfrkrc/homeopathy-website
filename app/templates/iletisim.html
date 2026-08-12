@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}İletişim | {{ site_title }}{% endblock %}
+{% block content %}
+<style>
+  .contact-container {
+    max-width: 560px;
+    margin: 80px auto 100px;
+    padding: 0 24px;
+    text-align: center;
+  }
+  .contact-card {
+    background: var(--paper-2,#fffdf7);
+    border: 1px solid var(--line,#dcd4bd);
+    border-radius: var(--card-radius, 14px);
+    padding: 48px 36px;
+    box-shadow: var(--shadow-md);
+  }
+  .contact-card h1 {
+    font-family: var(--font-heading);
+    font-size: 32px;
+    color: var(--ink,#202b22);
+    margin-bottom: 10px;
+  }
+  .contact-card p {
+    font-size: 14.5px;
+    color: var(--muted,#726f5e);
+    margin-bottom: 32px;
+    line-height: 1.7;
+  }
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .contact-form label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink,#202b22);
+    text-align: left;
+  }
+  .contact-form input {
+    width: 100%;
+    padding: 11px 16px;
+    border: 1px solid var(--line,#dcd4bd);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .2s;
+  }
+  .contact-form input:focus {
+    border-color: var(--primary,#74906f);
+  }
+  .contact-form button {
+    background: var(--primary,#74906f);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14.5px;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: background .2s, transform .1s;
+  }
+  .contact-form button:hover {
+    background: var(--gold,#b08d57);
+  }
+  .contact-flash {
+    margin-bottom: 24px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 13.5px;
+  }
+  .contact-flash.success {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+  }
+  .contact-flash.error {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+</style>
+
+<div class="contact-container">
+  <div class="contact-card">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="contact-flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <h1>İletişim</h1>
+    <p>Yeni yazılardan haberdar olmak, bütünsel yaşam felsefesi üzerine düşünceler almak için bültenimize katılın.</p>
+
+    <form class="contact-form" method="POST" action="{{ url_for('iletisim') }}">
+      <label>Ad Soyad</label>
+      <input type="text" name="name" placeholder="Zafer Karaca">
+
+      <label>E-posta Adresi</label>
+      <input type="email" name="email" placeholder="ornek@mail.com" required>
+
+      <button type="submit">Bültene Katıl</button>
+    </form>
+
+    <p style="font-size: 11.5px; color: var(--muted,#726f5e); margin-top: 20px;">
+      E-postanız asla paylaşılmaz. İstediğiniz zaman çıkabilirsiniz.
+    </p>
+  </div>
+</div>
+{% endblock %}
