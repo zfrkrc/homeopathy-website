@@ -38,10 +38,9 @@ body {
 
 /* ─── HERO VISUAL (brand banner card) ─── */
 .hero-visual {
-  /* zemin resmin kendi tonlarindan turetildi */
-  background: linear-gradient(180deg, #e8e1d3 0%, #ece5d7 45%, #f4efe1 100%);
-  padding: clamp(22px, 3.6vw, 48px) clamp(14px, 2.2vw, 28px) clamp(30px, 4.4vw, 58px);
-  border-bottom: 1px solid rgba(220, 212, 189, .7);
+  background: transparent;
+  padding: clamp(40px, 5vw, 60px) clamp(14px, 2.2vw, 28px) 0;
+  border-bottom: none;
 }
 .hero-visual__frame {
   position: relative;
@@ -87,29 +86,40 @@ body {
   line-height: 1.78;
   text-shadow: 0 1px 12px rgba(255, 253, 247, .55);
 }
-/* Gomulu CTA butonunun tam uzerinde gorunmez tiklama alani */
-.hero-visual__hotspot {
+/* Gomulu CTA — yerine gercek gorunur buton */
+.hero-visual__cta {
   position: absolute;
-  left: 53.5%;
-  top: 61%;
-  width: 28%;
-  height: 13%;
+  left: 50%;
+  bottom: 11%;
+  transform: translateX(-50%);
+  display: inline-block;
+  background: linear-gradient(135deg, #b08d57, #c99a5e);
+  color: #fff;
+  padding: clamp(9px, 1.6vw, 14px) clamp(18px, 3.2vw, 38px);
   border-radius: 99px;
-  display: block;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(10px, 1.5vw, 13.5px);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
   z-index: 3;
-  transition: box-shadow .3s ease, transform .3s ease;
+  box-shadow: 0 6px 24px rgba(176,141,87,.35);
+  transition: transform .25s ease, box-shadow .25s ease;
 }
-.hero-visual__hotspot:hover {
-  box-shadow: 0 0 0 2px rgba(176, 141, 87, .5), 0 12px 28px rgba(176, 141, 87, .28);
-  transform: translateY(-1px);
+.hero-visual__cta:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 10px 32px rgba(176,141,87,.45);
 }
-.hero-visual__hotspot:focus-visible {
+.hero-visual__cta:active { transform: translateX(-50%) translateY(1px); }
+.hero-visual__cta:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 3px;
 }
 
 /* Mobil: overlay okunmaz olur -> resmin altinda gercek metin + buton */
-.hero-visual__mobile { display: none; }
+.hero-visual__mobile { display: none;
+  .hero-visual__cta { display: none; } }
 
 @media (max-width: 767px) {
   .hero-visual {
@@ -121,7 +131,8 @@ body {
     box-shadow: 0 10px 26px rgba(70, 62, 48, .10);
   }
   .hero-visual__overlay,
-  .hero-visual__hotspot { display: none; }
+  .hero-visual__hotspot { display: none;
+  .hero-visual__cta { display: none; } }
 
   .hero-visual__mobile {
     display: block;
@@ -171,8 +182,8 @@ body {
   position: sticky; top:0; z-index:100;
 }
 .nav-container {
-  max-width: 960px; margin:0 auto; padding:0 24px;
-  display:flex; align-items:center; height:60px; gap:32px;
+  max-width: 960px; margin:0 auto; padding:4px 24px;
+  display:flex; align-items:center; min-height:56px; gap:32px;
 }
 .logo {
   display:flex; align-items:center; gap:9px;
@@ -736,5 +747,59 @@ body {
 
 @media (max-width: 900px) {
   .leaf-deco--tr { width: 96px; opacity: .34; }
-  .leaf-deco--bl { display: none; }
+  .leaf-deco--bl { display: none;
+  .hero-visual__cta { display: none; } }
 }
+
+/* ─── Readable content cards over background image ─── */
+.post-detail,
+.about-hero,
+.container-narrow {
+  background: rgba(244,239,225,0.94);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: var(--card-radius, 14px);
+  padding: 40px 32px;
+  margin: 40px auto;
+  border: 1px solid rgba(220,212,189,0.5);
+}
+@media (max-width: 767px) {
+  .post-detail, .about-hero, .container-narrow {
+    padding: 24px 18px;
+    margin: 20px auto;
+    border-radius: 10px;
+  }
+}
+
+[data-theme="dark"] .post-detail,
+[data-theme="dark"] .about-hero,
+[data-theme="dark"] .container-narrow {
+  background: rgba(22,26,23,0.96);
+  border-color: rgba(44,51,46,0.6);
+}
+[data-theme="dark"] .post-content { color: #c8c4bd; }
+[data-theme="dark"] .post-content strong { color: #e8e6e3; }
+[data-theme="dark"] .hero-visual__title { color: #f4efe1; text-shadow: 0 2px 18px rgba(22,26,23,0.8); }
+[data-theme="dark"] .hero-visual__slogan { color: #dcd4bd; text-shadow: 0 2px 14px rgba(22,26,23,0.8); }
+[data-theme="dark"] .contact-card { background: #1f2521; border-color: var(--border); }
+[data-theme="dark"] .contact-card h1 { color: #e8e6e3; }
+[data-theme="dark"] .contact-card p { color: #a0a090; }
+[data-theme="dark"] .contact-form input,
+[data-theme="dark"] .contact-form textarea { background: #161a17; border-color: var(--border); color: #c8c4bd; }
+[data-theme="dark"] .brand-bio-content { color: #c8c4bd; }
+[data-theme="dark"] .brand-bio h1 { color: #e8e6e3; }
+[data-theme="dark"] .brand-symbol-box { background: #1f2521; border-color: var(--border); }
+[data-theme="dark"] .brand-step-card { background: #1f2521; border-color: var(--border); }
+[data-theme="dark"] .brand-symbolism-block { background: linear-gradient(135deg, #1a1e1a 0%, #1f2521 100%); border-color: var(--border); }
+[data-theme="dark"] .brand-step-name { color: #e8e6e3; }
+
+.blog-header-section {
+  background: rgba(244,239,225,0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+[data-theme="dark"] .blog-header-section {
+  background: rgba(22,26,23,0.95);
+}
+[data-theme="dark"] .blog-header-section h1 { color: #e8e6e3; }
+[data-theme="dark"] .blog-header-section p { color: #a0a090; }

@@ -46,6 +46,7 @@
   }
 </style>
 
+<div style="background:rgba(244,239,225,0.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:18px;padding:32px 24px;max-width:960px;margin:32px auto;border:1px solid rgba(220,212,189,0.3)">
 {% for b in blocks %}
   {% set b_css = b.styles|block_css if b.styles else "" %}
   {% set b_anim = "animate-" ~ b.animation if b.animation and b.animation != 'none' else "" %}
@@ -253,5 +254,7 @@
 
   {% endif %}
 {% endfor %}
+
+</div>
 
 {% endblock %}

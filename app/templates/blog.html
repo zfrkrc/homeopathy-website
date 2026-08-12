@@ -25,6 +25,7 @@
 </section>
 
 <section class="container" style="padding-top: 40px;">
+  <div style="background:rgba(244,239,225,0.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:18px;padding:28px 24px;margin-bottom:40px";backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:16px;padding:20px 0">
   {% if q or active_category %}
   <div class="filter-info">
     {{ total }} sonuç bulundu
@@ -50,7 +51,7 @@
         <div class="post-date">{{ post.created_at[:10] }}</div>
         <div class="post-title">{{ post.title }}</div>
         <div class="post-excerpt">{{ post.excerpt }}</div>
-        <div class="post-read">Devamını Oku →</div>
+        <div class="post-read">Devamını Oku</div>
       </div>
     </a>
     {% endfor %}
@@ -73,6 +74,8 @@
     {% endif %}
   </div>
   {% endif %}
+
+  </div>
 </section>
 
 {% endblock %}

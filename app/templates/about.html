@@ -4,51 +4,8 @@
 <style>
   .brand-about-container {
     padding: 80px 0 100px;
-    max-width: 900px;
+    max-width: 740px;
     margin: 0 auto;
-  }
-  .brand-intro {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 50px;
-    align-items: start;
-  }
-  @media (min-width: 768px) {
-    .brand-intro {
-      grid-template-columns: 300px 1fr;
-    }
-  }
-  .brand-symbol-box {
-    background: var(--paper-2, #fffdf7);
-    border: 1px solid var(--line, #dcd4bd);
-    border-radius: var(--card-radius, 14px);
-    padding: 40px 30px;
-    text-align: center;
-    box-shadow: var(--shadow-sm, 0 2px 12px rgba(0,0,0,.04));
-    position: sticky;
-    top: 100px;
-  }
-  .brand-symbol-box img {
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    display: inline-block;
-    object-fit: contain;
-  }
-  .brand-symbol-title {
-    font-family: var(--font-heading);
-    font-size: 22px;
-    color: var(--ink, #202b22);
-    margin-top: 20px;
-    margin-bottom: 4px;
-    font-weight: 600;
-  }
-  .brand-symbol-subtitle {
-    font-family: monospace;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    color: var(--gold, #b08d57);
-    text-transform: uppercase;
   }
   .brand-bio h1 {
     font-family: var(--font-heading);
@@ -62,23 +19,14 @@
     font-size: 16.5px;
     line-height: 1.9;
     color: var(--ink-2, #39473b);
+    white-space: pre-line;
   }
 </style>
 
 <div class="brand-about-container container reveal visible">
-  <!-- Biography & Cover symbol -->
-  <div class="brand-intro">
-    <div class="brand-symbol-box">
-      <!-- High quality tescilli brand logo -->
-      <img src="/uploads/logoaq.png" alt="Zeyna Logo">
-      <div class="brand-symbol-title">Zeyna Üstün</div>
-      <div class="brand-symbol-subtitle">Hayatı Okuma</div>
-    </div>
-    
-    <div class="brand-bio">
-      <h1>{{ about_title or 'Hakkımda' }}</h1>
-      <div class="brand-bio-content" style="white-space: pre-line;">{{ about_content or '' }}</div>
-    </div>
+  <div class="brand-bio">
+    <h1>{{ about_title or 'Hakkımda' }}</h1>
+    <div class="brand-bio-content">{{ about_content or '' }}</div>
   </div>
 </div>
 {% endblock %}

@@ -989,7 +989,7 @@ def theme_css():
   --sage: #74906f;
   --card-radius: {card_radius};
 }}
-body {{ font-family: var(--font-body); color: var(--ink); background: linear-gradient(180deg, #f8f5ee 0%, #f4efe1 100%); background-attachment: fixed; -webkit-font-smoothing: antialiased; }}
+body {{ font-family: var(--font-body); color: var(--ink); -webkit-font-smoothing: antialiased; }}
 h1, h2, h3, h4, h5, h6, .logo, .post-title, .hero h1, .hero-content h1 {{ font-family: var(--font-heading); letter-spacing: -.02em; }}
 a {{ color: var(--gold); }}
 .nav {{ background: rgba(244,239,225,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }}

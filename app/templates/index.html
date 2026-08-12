@@ -2,7 +2,10 @@
 {% block title %}{{ site_title }} | {{ site_description }}{% endblock %}
 {% block content %}
 
-<!-- Homepage Hero — brand banner card with live text overlay + invisible CTA hotspot -->
+<!-- Anasayfa — sadece burada Gemini arka plan -->
+<style>body{background:url('/uploads/background.png') no-repeat center fixed!important;background-size:cover!important}</style>
+
+<!-- Homepage Hero -->
 <section class="hero-visual">
   <div class="hero-visual__mobile">
     <h1>Hayatı Okuma</h1>
@@ -10,25 +13,23 @@
     <a href="/anlati">Birlikte Keşfedelim</a>
   </div>
 
-  <div class="hero-visual__frame">
-    <img class="hero-visual__img" src="/uploads/hero_final.png"
-         alt="Hayatı Okuma — Bağlantıları gör, Keşfet, Her haline izin ver" fetchpriority="high">
-
-    <div class="hero-visual__overlay">
-      <div class="hero-visual__title">Hayatı Okuma</div>
-      <div class="hero-visual__slogan">
+  <div class="hero-visual__frame" style="background:transparent;box-shadow:none;border-radius:0;overflow:visible">
+    <div class="hero-visual__overlay" style="position:static;left:auto;top:auto;width:100%;padding:60px 20px 40px;text-align:center">
+      <div class="hero-visual__title" style="color:#202b22;text-shadow:0 2px 20px rgba(244,239,225,0.7)">Hayatı Okuma</div>
+      <div class="hero-visual__slogan" style="color:#39473b;text-shadow:0 2px 18px rgba(244,239,225,0.7)">
         Bağlantıları gör.<br>
         Keşfet.<br>
         Her haline izin ver.
       </div>
+      <div style="margin-top:30px">
+        <a class="hero-visual__cta" href="/anlati" style="position:static;left:auto;bottom:auto;transform:none">Birlikte Keşfedelim</a>
+      </div>
     </div>
-
-    <a class="hero-visual__hotspot" href="/anlati" aria-label="Birlikte Keşfedelim"></a>
   </div>
 </section>
 
 <!-- Bütünsel Yaklaşım (Three Adım Block) matching brand designs -->
-<section style="padding: 76px 0 64px; text-align: center; border-bottom: 1px solid var(--line,#dcd4bd);">
+<section style="padding: 76px 0 64px; text-align: center; border-bottom: 1px solid var(--line,#dcd4bd); background: rgba(244,239,225,0.88); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);">
   <div class="container">
     <h2 style="font-family: var(--font-heading); font-size: 32px; color: var(--ink,#202b22); margin-bottom: 12px; font-weight: 600;">Bütünsel Yaklaşım</h2>
     <div style="font-family: monospace; font-size: 11px; letter-spacing: 0.2em; color: var(--gold,#b08d57); text-transform: uppercase; margin-bottom: 50px;">Bağlantıları gör · Keşfet · Her haline izin ver</div>
@@ -79,7 +80,7 @@
 </section>
 
 <!-- Blog Posts Teaser Section -->
-<section style="padding: 80px 0;">
+<section style="padding: 80px 0; background: rgba(244,239,225,0.88); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-bottom: 1px solid var(--line,#dcd4bd);">
   <div class="container">
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:40px; flex-wrap:wrap; gap:16px;">
       <div>
@@ -105,7 +106,7 @@
           <div class="post-date">{{ post.created_at[:10] }}</div>
           <div class="post-title">{{ post.title }}</div>
           <div class="post-excerpt">{{ post.excerpt }}</div>
-          <div class="post-read">Devamını Oku →</div>
+          <div class="post-read">Devamını Oku</div>
         </div>
       </a>
       {% endfor %}
