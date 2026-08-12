@@ -30,10 +30,116 @@ html { scroll-behavior:smooth; }
 body {
   font-family: 'Inter', -apple-system, sans-serif;
   color: var(--text);
-  background: url('/uploads/orneksitearkaplan_aq.png') no-repeat center center fixed !important;
-  background-size: cover !important;
+  background: linear-gradient(180deg, #f8f5ee 0%, #f4efe1 100%);
+  background-attachment: fixed;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+}
+
+/* ─── HERO VISUAL (brand banner with overlay) ─── */
+.hero-visual {
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  line-height: 0;
+}
+.hero-visual__img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.hero-visual__overlay {
+  position: absolute;
+  left: 47%;
+  top: 10%;
+  width: 40%;
+  text-align: center;
+  line-height: 1.25;
+  pointer-events: none;
+}
+.hero-visual__title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(18px, 4.4vw, 56px);
+  color: #2e3a30;
+  margin: 0 0 0.35em;
+  text-shadow: 0 1px 12px rgba(255,253,247,.55);
+}
+.hero-visual__slogan {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(9px, 2.2vw, 27px);
+  color: #3b463c;
+  line-height: 1.75;
+  text-shadow: 0 1px 10px rgba(255,253,247,.5);
+}
+/* Invisible hotspot sitting exactly on the baked-in CTA button */
+.hero-visual__hotspot {
+  position: absolute;
+  left: 53.5%;
+  top: 56.5%;
+  width: 27.5%;
+  height: 14%;
+  border-radius: 99px;
+  display: block;
+  z-index: 3;
+  transition: box-shadow .25s ease, transform .25s ease;
+}
+.hero-visual__hotspot:hover {
+  box-shadow: 0 0 0 2px rgba(176,141,87,.55), 0 10px 26px rgba(176,141,87,.3);
+  transform: translateY(-1px);
+}
+
+/* Mobile: stack image and a readable text card underneath */
+.hero-visual__mobile {
+  display: none;
+}
+@media (max-width: 767px) {
+  .hero-visual__overlay,
+  .hero-visual__hotspot {
+    display: none;
+  }
+  .hero-visual__mobile {
+    display: block;
+    line-height: 1.6;
+    text-align: center;
+    padding: 28px 22px 34px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-visual__mobile h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 32px;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  .hero-visual__mobile p {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-2);
+    line-height: 1.8;
+    margin-bottom: 22px;
+  }
+  .hero-visual__mobile a {
+    display: inline-block;
+    background: var(--gold);
+    color: #fff;
+    padding: 13px 34px;
+    border-radius: 99px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 12.5px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(176,141,87,.32);
+  }
 }
 
 /* ─── NAV ─── */

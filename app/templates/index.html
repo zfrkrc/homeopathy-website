@@ -2,22 +2,25 @@
 {% block title %}{{ site_title }} | {{ site_description }}{% endblock %}
 {% block content %}
 
-<!-- Homepage Hero Area (Immersive Fixed Background) -->
-<section class="hero">
-  <div class="hero-container">
-    <div class="hero-content">
-      <h1 style="font-family: var(--font-heading); font-style: italic; font-size: 52px; color: var(--ink,#202b22); margin-bottom: 20px; font-weight: normal; line-height: 1.2;">Hayatı Okuma</h1>
-      
-      <div style="font-family: var(--font-heading); font-style: italic; font-size: 26px; color: var(--ink,#202b22); line-height: 1.6; margin-bottom: 36px; font-weight: 300;">
-        Bağlantıları gör.<br>
-        Keşfet.<br>
-        Her haline izin ver.
-      </div>
-      
-      <div style="margin-bottom: 10px;">
-        <a href="/anlati" style="background: #b08d57; color: #fff; padding: 14px 44px; border-radius: 99px; font-weight: 600; text-transform: uppercase; font-size: 13.5px; letter-spacing: 0.15em; text-decoration: none; display: inline-block; box-shadow: 0 4px 15px rgba(176,141,87,0.35);">BİRLİKTE KEŞFEDELİM</a>
-      </div>
+<!-- Homepage Hero — brand banner with live text overlay + invisible CTA hotspot -->
+<section class="hero-visual">
+  <img class="hero-visual__img" src="/uploads/final_0.png" alt="Hayatı Okuma — Bağlantıları gör, Keşfet, Her haline izin ver">
+
+  <div class="hero-visual__overlay">
+    <div class="hero-visual__title">Hayatı Okuma</div>
+    <div class="hero-visual__slogan">
+      Bağlantıları gör.<br>
+      Keşfet.<br>
+      Her haline izin ver.
     </div>
+  </div>
+
+  <a class="hero-visual__hotspot" href="/anlati" aria-label="Birlikte Keşfedelim"></a>
+
+  <div class="hero-visual__mobile">
+    <h1>Hayatı Okuma</h1>
+    <p>Bağlantıları gör.<br>Keşfet.<br>Her haline izin ver.</p>
+    <a href="/anlati">Birlikte Keşfedelim</a>
   </div>
 </section>
 

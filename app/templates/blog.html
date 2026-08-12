@@ -2,27 +2,25 @@
 {% block title %}Blog | {{ site_title }}{% endblock %}
 {% block content %}
 
-<section class="hero" style="min-height: 280px; padding: 40px 0;">
-  <div class="hero-container">
-    <div class="hero-content" style="max-width: 600px; margin: 0 auto; background: rgba(244, 239, 225, 0.88); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border); backdrop-filter: blur(12px);">
-      <h1 style="font-family: var(--font-heading); font-style: italic; font-size: 32px; color: var(--ink,#202b22); margin-bottom: 12px;">Blog & Yazılar</h1>
-      <p style="font-size: 14.5px; color: var(--muted,#726f5e); margin-bottom: 20px;">Bütünsel yaşam ve hayatı okuma üzerine rehberler ve yazılar.</p>
-      
-      {% if categories %}
-      <div class="hero-tags" style="margin-bottom: 16px;">
-        <a href="{{ url_for('blog') }}" class="tag {% if not active_category %}tag-active{% endif %}">Tümü</a>
-        {% for cat in categories %}
-        <a href="{{ url_for('blog', category=cat.name) }}" class="tag {% if active_category == cat.name %}tag-active{% endif %}">{{ cat.name }}</a>
-        {% endfor %}
-      </div>
-      {% endif %}
-      
-      <form class="search-form" method="get" action="{{ url_for('blog') }}" style="max-width: 320px; margin: 0 auto;">
-        {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
-        <input type="search" name="q" value="{{ q }}" placeholder="Yazılarda ara..." aria-label="Ara" style="font-size: 12.5px;">
-        <button type="submit" style="font-size: 12.5px;">Ara</button>
-      </form>
+<section style="padding: 64px 0 40px; text-align: center; border-bottom: 1px solid var(--line,#dcd4bd);">
+  <div class="container" style="max-width: 640px;">
+    <h1 style="font-family: var(--font-heading); font-style: italic; font-size: 38px; color: var(--ink,#202b22); margin-bottom: 12px; font-weight: 400;">Blog & Yazılar</h1>
+    <p style="font-size: 15px; color: var(--muted,#726f5e); margin-bottom: 26px;">Bütünsel yaşam ve hayatı okuma üzerine düşünceler.</p>
+
+    {% if categories %}
+    <div class="hero-tags" style="margin-bottom: 18px;">
+      <a href="{{ url_for('blog') }}" class="tag {% if not active_category %}tag-active{% endif %}">Tümü</a>
+      {% for cat in categories %}
+      <a href="{{ url_for('blog', category=cat.name) }}" class="tag {% if active_category == cat.name %}tag-active{% endif %}">{{ cat.name }}</a>
+      {% endfor %}
     </div>
+    {% endif %}
+
+    <form class="search-form" method="get" action="{{ url_for('blog') }}" style="max-width: 340px; margin: 0 auto;">
+      {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
+      <input type="search" name="q" value="{{ q }}" placeholder="Yazılarda ara..." aria-label="Ara" style="font-size: 13px;">
+      <button type="submit" style="font-size: 13px;">Ara</button>
+    </form>
   </div>
 </section>
 
