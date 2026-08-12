@@ -204,13 +204,18 @@ def inject_settings():
 
 @app.route('/')
 def index():
+    posts, total = get_posts(page=1, per_page=3)
+    return render_template('index.html', posts=posts)
+
+@app.route('/blog')
+def blog():
     per_page = int(get_setting("posts_per_page", "12") or "12")
     page = request.args.get('page', 1, type=int)
     q = request.args.get('q', '').strip()
     active_category = request.args.get('category', '').strip()
     posts, total = get_posts(page=page, per_page=per_page, search=q, category=active_category)
     total_pages = (total + per_page - 1) // per_page
-    return render_template('index.html', posts=posts, page=page, total_pages=total_pages,
+    return render_template('blog.html', posts=posts, page=page, total_pages=total_pages,
                            q=q, active_category=active_category, total=total)
 
 @app.route('/post/<slug>')

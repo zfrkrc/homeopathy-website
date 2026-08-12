@@ -30,7 +30,8 @@ html { scroll-behavior:smooth; }
 body {
   font-family: 'Inter', -apple-system, sans-serif;
   color: var(--text);
-  background: var(--cream);
+  background: url('/uploads/orneksitearkaplanıaq.png') no-repeat center center fixed !important;
+  background-size: cover !important;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
@@ -66,7 +67,7 @@ body {
 
 /* ─── HERO ─── */
 .hero {
-  background: url('/uploads/orneksitearkaplanıaq.png') no-repeat center center / cover;
+  background: transparent;
   min-height: 520px;
   display: flex;
   align-items: center;
