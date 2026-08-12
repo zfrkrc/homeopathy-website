@@ -30,7 +30,7 @@ html { scroll-behavior:smooth; }
 body {
   font-family: 'Inter', -apple-system, sans-serif;
   color: var(--text);
-  background: url('/uploads/orneksitearkaplanıaq.png') no-repeat center center fixed !important;
+  background: url('/uploads/orneksitearkaplan_aq.png') no-repeat center center fixed !important;
   background-size: cover !important;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
