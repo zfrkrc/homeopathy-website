@@ -20,43 +20,14 @@
   <meta name="twitter:description" content="{{ self.og_description() }}">
   <script>(function(){var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="stylesheet" href="{{ url_for('theme_css') }}">
-  <link rel="stylesheet" href="/static/css/style.css?v=8">
+  <link rel="stylesheet" href="/static/css/style.css?v=10">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%23{{ primary_color[1:] if primary_color else '74906f' }}' stroke-width='1.5'%3E%3Cpath d='M50,50 A 5,5 0 1,1 45,45 A 10,10 0 1,1 55,35 A 15,15 0 1,1 35,50 A 20,20 0 1,1 70,50 A 25,25 0 1,1 25,50'/%3E%3Cpath d='M22,35 C30,22 45,20 50,20 C55,20 70,22 78,35 C68,40 55,42 50,42 C45,42 32,40 22,35 Z' stroke-dasharray='1.5,1.5'/%3E%3C/svg%3E">
   {% block json_ld %}{% endblock %}
 </head>
 <body style="position: relative;">
-  <!-- Elegant Olive Branch floating decorations on the sides of the body -->
-  <style>
-    @media (max-width: 1024px) {
-      .leaf-deco { display: none !important; }
-    }
-  </style>
-  <div class="leaf-deco" style="position: fixed; left: 10px; bottom: 8%; width: 130px; height: auto; opacity: 0.08; pointer-events: none; z-index: 1;">
-    <svg viewBox="0 0 100 200" fill="none" stroke="var(--primary)" stroke-width="1.2">
-      <!-- Elegant Branch curve -->
-      <path d="M10,190 Q40,110 30,10" />
-      <!-- Leaves -->
-      <path d="M30,10 Q20,25 30,30 Q40,25 30,10 Z" fill="var(--primary)" />
-      <path d="M32,40 Q15,45 22,60 Q32,55 32,40 Z" fill="var(--primary)" fill-opacity="0.2" />
-      <path d="M34,70 Q50,75 42,90 Q34,85 34,70 Z" fill="var(--primary)" fill-opacity="0.2" />
-      <path d="M30,100 Q12,105 18,120 Q30,115 30,100 Z" fill="var(--primary)" fill-opacity="0.2" />
-      <path d="M26,130 Q42,135 34,150 Q26,145 26,130 Z" fill="var(--primary)" fill-opacity="0.2" />
-      <path d="M20,160 Q5,165 11,180 Q20,175 20,160 Z" fill="var(--primary)" fill-opacity="0.2" />
-    </svg>
-  </div>
-  <div class="leaf-deco" style="position: fixed; right: 10px; top: 12%; width: 140px; height: auto; opacity: 0.12; pointer-events: none; z-index: 1;">
-    <svg viewBox="0 0 100 200" fill="none" stroke="var(--primary)" stroke-width="1.2">
-      <!-- Elegant Branch curve -->
-      <path d="M90,10 Q60,90 70,190" />
-      <!-- Leaves -->
-      <path d="M70,190 Q80,175 70,170 Q60,175 70,190 Z" fill="var(--primary)" />
-      <path d="M68,160 Q85,155 78,140 Q68,145 68,160 Z" fill="var(--primary)" fill-opacity="0.2" />
-      <path d="M66,130 Q50,125 58,110 Q66,115 66,130 Z" fill="var(--primary)" fill-opacity="0.2" />
-      <path d="M70,100 Q88,95 82,80 Q70,85 70,100 Z" fill="var(--primary)" fill-opacity="0.2" />
-      <path d="M74,70 Q58,65 66,50 Q74,55 74,70 Z" fill="var(--primary)" fill-opacity="0.2" />
-      <path d="M78,40 Q93,35 87,20 Q78,25 78,40 Z" fill="var(--primary)" fill-opacity="0.2" />
-    </svg>
-  </div>
+  <!-- Antetli kagittan alinan orijinal yaprak desenleri -->
+  <img class="leaf-deco leaf-deco--tr" src="/uploads/leaf_topright.png" alt="" aria-hidden="true">
+  <img class="leaf-deco leaf-deco--bl" src="/uploads/leaf_bottomleft.png" alt="" aria-hidden="true">
 
   <nav class="nav">
     <div class="nav-container">

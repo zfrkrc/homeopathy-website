@@ -708,3 +708,33 @@ body {
   border-color: var(--border) !important;
   color: var(--text) !important;
 }
+
+/* ─── ANTETLI KAGIT YAPRAK DESENLERI ─── */
+.leaf-deco {
+  position: fixed;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  height: auto;
+}
+/* sag ust: renkli zeytin dali (antetli kagittaki gibi) */
+.leaf-deco--tr {
+  top: 0;
+  right: 0;
+  width: clamp(120px, 13vw, 210px);
+  opacity: .5;
+}
+/* sol alt: soluk filigran dal */
+.leaf-deco--bl {
+  bottom: 0;
+  left: 0;
+  width: clamp(80px, 8.5vw, 140px);
+  opacity: .45;
+}
+/* icerik her zaman desenlerin ustunde kalsin */
+.nav, main, .site-footer { position: relative; z-index: 1; }
+
+@media (max-width: 900px) {
+  .leaf-deco--tr { width: 96px; opacity: .34; }
+  .leaf-deco--bl { display: none; }
+}

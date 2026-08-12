@@ -29,7 +29,7 @@
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 body{
-  background:var(--ink);
+  background:var(--paper);
   font-family:var(--sans);
   color:var(--text);
 }
@@ -37,47 +37,47 @@ body{
 
 /* ---------- sidebar ---------- */
 #sidebar{
-  width:280px;flex:0 0 280px;background:var(--ink);color:#f2efe4;
+  width:280px;flex:0 0 280px;background:var(--paper-2);color:var(--ink-2);border-right:1px solid var(--line);
   padding:48px 30px;position:sticky;top:0;height:100vh;overflow-y:auto;
   display:flex;flex-direction:column;justify-content:center;gap:38px;
 }
 .brand{margin-bottom:0;}
 .brand .mark{font-family:var(--mono);font-size:10.5px;letter-spacing:.28em;color:var(--gold);text-transform:uppercase;}
 .brand h1{font-family:var(--serif);font-weight:600;font-size:27px;margin:16px 0 14px;line-height:1.15;}
-.brand p{margin:0;font-size:12.5px;color:#a9a58f;font-style:italic;line-height:1.55;}
+.brand p{margin:0;font-size:12.5px;color:var(--muted);font-style:italic;line-height:1.55;}
 .brand .rule{width:34px;height:2px;background:var(--gold);border:none;margin:22px 0 0;opacity:.85;}
 .progress-wrap{margin-bottom:0;}
-.progress-track{height:5px;border-radius:3px;background:#33402f;overflow:hidden;}
+.progress-track{height:5px;border-radius:3px;background:var(--gold-soft);overflow:hidden;}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--sage),var(--gold));width:0%;transition:width .4s ease;}
-.progress-label{font-family:var(--mono);font-size:11px;color:#b9b49e;margin-top:8px;}
+.progress-label{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:8px;}
 
 .steps{list-style:none;margin:0;padding:0;}
 .steps li{margin-bottom:3px;background:transparent;}
 .steps button{
   all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;
-  padding:9px 10px;border-radius:9px;cursor:pointer;font-size:13px;color:#c8c4ac;
+  padding:9px 10px;border-radius:9px;cursor:pointer;font-size:13px;color:var(--ink-2);
   background-color:transparent;border:none;-webkit-appearance:none;appearance:none;font-family:var(--sans);
 }
 .steps button .num{
   font-family:var(--mono);font-size:11px;width:22px;height:22px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;border:1px solid #4c5a49;color:#a9a58f;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;border:1px solid var(--line);color:var(--muted);flex:0 0 auto;
   background-color:transparent;
 }
-.steps button.active{background-color:#2c3a2c;color:#fff;}
-.steps button.active .num{background-color:var(--gold);border-color:var(--gold);color:#20241a;}
-.steps button.done .num{background-color:var(--sage);border-color:var(--sage);color:#12200f;}
-.steps button:hover{background-color:#28352a;}
+.steps button.active{background-color:var(--gold-soft);color:var(--ink);font-weight:600;}
+.steps button.active .num{background-color:var(--gold);border-color:var(--gold);color:#fff;}
+.steps button.done .num{background-color:var(--sage);border-color:var(--sage);color:#fff;}
+.steps button:hover{background-color:var(--paper);}
 .steps button:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 
 .sidebar-foot{display:flex;align-items:center;gap:10px;opacity:.55;}
 .sidebar-foot svg{flex:0 0 auto;}
-.sidebar-foot span{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:#a9a58f;text-transform:uppercase;}
+.sidebar-foot span{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;}
 .edit-toggle{
   all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:8px;
   width:100%;padding:9px 10px;border-radius:9px;cursor:pointer;font-size:12px;font-family:var(--mono);
-  letter-spacing:.06em;color:#c8c4ac;background-color:transparent;border:1px dashed #4c5a49;
+  letter-spacing:.06em;color:var(--ink-2);background-color:transparent;border:1px dashed var(--line);
 }
-.edit-toggle:hover{background-color:#28352a;}
+.edit-toggle:hover{background-color:var(--paper);}
 .edit-toggle.on{background-color:var(--gold);border-color:var(--gold);color:#20241a;border-style:solid;}
 
 /* ---------- main panel ---------- */
@@ -287,7 +287,7 @@ body{overflow-y:auto;}
 .site-block-card{background:var(--paper-2);border:1px solid var(--line);border-radius:16px;padding:28px 30px;}
 .site-block-card h3{font-family:var(--serif);font-size:21px;color:var(--ink);margin:0 0 12px;}
 .site-block-card p{font-size:14px;color:var(--ink-2);line-height:1.7;margin:0;white-space:pre-line;}
-.cta-block{background:var(--ink);padding:64px 56px;text-align:center;}
+.cta-block{background:var(--sage);padding:64px 56px;text-align:center;}
 .cta-block h2{font-family:var(--serif);font-size:30px;color:#fff;margin:0 0 26px;}
 .btn.large{padding:15px 34px;font-size:15px;}
 .site-footer{padding:26px 56px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted);}
@@ -329,9 +329,18 @@ body{overflow-y:auto;}
 .ai-block{font-size:13.5px;line-height:1.7;color:var(--ink-2);}
 .ai-disclaimer{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:16px;}
 
+
+/* antetli kagit yaprak desenleri */
+.leaf-deco{position:fixed;pointer-events:none;user-select:none;z-index:0;height:auto;}
+.leaf-deco--tr{top:0;right:0;width:clamp(110px,11vw,180px);opacity:.42;}
+.leaf-deco--bl{bottom:0;left:0;width:clamp(70px,7vw,120px);opacity:.38;}
+#app,#landingView,#sidebar,#panel{position:relative;z-index:1;}
+@media (max-width:900px){.leaf-deco--tr{width:88px;opacity:.3;}.leaf-deco--bl{display:none;}}
 </style>
 </head>
 <body>
+<img class="leaf-deco leaf-deco--tr" src="/uploads/leaf_topright.png" alt="" aria-hidden="true">
+<img class="leaf-deco leaf-deco--bl" src="/uploads/leaf_bottomleft.png" alt="" aria-hidden="true">
 <div id="landingView" class="view">
   <div class="site-nav">
     <div class="site-brand">ZEYNA<span>· Hayatı Okuma</span></div>
@@ -400,6 +409,7 @@ body{overflow-y:auto;}
 <div id="app" class="view">
   <aside id="sidebar">
     <div class="brand">
+      <img src="/uploads/logoaq.png" alt="Zeyna" style="height:52px;width:auto;object-fit:contain;display:block;margin-bottom:14px">
       <div class="mark">Zeyna &middot; Hayatı Okuma</div>
       <h1>Anlatı Formu</h1>
       <p>Bilgileriniz güvenle saklanır ve yalnız sizin danışmanınız tarafından görülür.</p>
@@ -417,7 +427,7 @@ body{overflow-y:auto;}
     </div>
   </aside>
    <main id="panel">
-     <div style="background:var(--ink);padding:8px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.06)">
+     <div style="background:var(--paper-2);padding:8px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line)">
        <a href="/" style="color:var(--gold);text-decoration:none;font-family:var(--mono);font-size:12px;letter-spacing:.04em">← Zeyna Ana Sayfa</a>
        <span style="flex:1"></span>
        <a href="/portal/giris" style="color:var(--gold-soft);text-decoration:none;font-family:var(--mono);font-size:11px">Portal</a>

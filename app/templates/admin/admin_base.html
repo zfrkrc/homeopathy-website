@@ -12,15 +12,16 @@
     h1,h2,h3{font-family:'Fraunces',Georgia,serif;letter-spacing:-.02em}
 
     /* Sidebar */
-    .sidebar{width:220px;background:#202b22;color:#c8c4ac;flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
-    .sidebar-logo{padding:18px 20px;font-size:16px;font-weight:600;color:#fff;border-bottom:1px solid rgba(255,255,255,.06);font-family:'Fraunces',Georgia,serif}
+    .sidebar{width:220px;background:#fffdf7;color:#39473b;flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-right:1px solid #dcd4bd}
+    .sidebar-logo{padding:16px 18px;font-size:16px;font-weight:600;color:#202b22;border-bottom:1px solid #dcd4bd;font-family:'Fraunces',Georgia,serif;font-style:italic;display:flex;align-items:center;gap:9px}
+    .sidebar-logo img{height:30px;width:auto;object-fit:contain}
     .sidebar-nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
-    .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:#9ea89a;text-decoration:none;font-size:13px;font-weight:500;transition:.15s}
-    .sidebar-nav a:hover{background:rgba(176,141,87,.12);color:#e7d9bc}
-    .sidebar-nav a.active{background:rgba(176,141,87,.2);color:#e7d9bc}
-    .sidebar-foot{padding:12px 10px;border-top:1px solid rgba(255,255,255,.06)}
-    .sidebar-foot a{display:block;padding:8px 12px;border-radius:8px;color:#7a8476;text-decoration:none;font-size:12px}
-    .sidebar-foot a:hover{background:rgba(255,255,255,.05);color:#c8c4ac}
+    .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;color:#39473b;text-decoration:none;font-size:13px;font-weight:500;transition:.15s}
+    .sidebar-nav a:hover{background:#f4efe1;color:#b08d57}
+    .sidebar-nav a.active{background:#e7d9bc;color:#202b22;font-weight:600}
+    .sidebar-foot{padding:12px 10px;border-top:1px solid #dcd4bd}
+    .sidebar-foot a{display:block;padding:8px 12px;border-radius:10px;color:#726f5e;text-decoration:none;font-size:12px;transition:.15s}
+    .sidebar-foot a:hover{background:#f4efe1;color:#b08d57}
 
     /* Main */
     .main{flex:1;min-width:0;display:flex;flex-direction:column;background:#f4efe1}
@@ -75,23 +76,23 @@
 </head>
 <body>
   <aside class="sidebar">
-    <div class="sidebar-logo">🌿 {{ site_title }}</div>
+    <div class="sidebar-logo"><img src="/uploads/logoaq.png" alt="Zeyna"><span>{{ site_title }}</span></div>
     <nav class="sidebar-nav">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6b8f7a;padding:8px 12px 4px">İçerik</div>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#74906f;padding:8px 12px 4px">İçerik</div>
       <a href="{{ url_for('admin_dashboard') }}">📋 Yazılar</a>
       <a href="{{ url_for('admin_post_new') }}">➕ Yeni Yazı</a>
       <a href="{{ url_for('admin_categories') }}">📂 Kategoriler</a>
        <a href="{{ url_for('admin_gallery') }}">🖼️ Galeri</a>
        <a href="{{ url_for('admin_about') }}">✏️ Hakkımda</a>
-       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6b8f7a;padding:8px 12px 4px;margin-top:8px">Sayfalar</div>
+       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#74906f;padding:8px 12px 4px;margin-top:8px">Sayfalar</div>
       <a href="{{ url_for('admin_homepage') }}">🏠 Ana Sayfa</a>
       <a href="{{ url_for('admin_sayfalar') }}">📄 Özel Sayfalar</a>
       <a href="/anlati?edit=1" target="_blank">📋 Anlatı Formu</a>
       <a href="/anlati#admin" target="_blank">📨 Randevular</a>
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6b8f7a;padding:8px 12px 4px;margin-top:8px">İletişim</div>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#74906f;padding:8px 12px 4px;margin-top:8px">İletişim</div>
       <a href="{{ url_for('admin_subscribers') }}">📧 Aboneler</a>
       <a href="{{ url_for('admin_newsletter') }}">📨 Mail Gönder</a>
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6b8f7a;padding:8px 12px 4px;margin-top:8px">Sistem</div>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#74906f;padding:8px 12px 4px;margin-top:8px">Sistem</div>
       <a href="{{ url_for('admin_ai_content') }}">🤖 AI İçerik</a>
       <a href="{{ url_for('admin_portal_users') }}">👥 Portal</a>
       <a href="{{ url_for('admin_tenants_list') }}">🏢 Müşteriler</a>
