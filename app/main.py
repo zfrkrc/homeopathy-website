@@ -437,7 +437,104 @@ def admin_newsletter():
                             'sender': {'name': sender_name, 'email': sender_email},
                             'to': [{'email': email}],
                             'subject': subject,
-                            'htmlContent': message.replace('\n', '<br>'),
+                            'htmlContent': f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {{
+      background-color: #f4efe1 !important;
+      font-family: 'Georgia', Times, serif !important;
+      color: #202b22 !important;
+      margin: 0 !important;
+      padding: 40px 20px !important;
+      -webkit-font-smoothing: antialiased;
+    }}
+    .email-container {{
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fffdf7 !important;
+      border: 1px solid #dcd4bd !important;
+      border-radius: 14px !important;
+      padding: 48px !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important;
+    }}
+    .header {{
+      text-align: center !important;
+      margin-bottom: 36px !important;
+      border-bottom: 1px solid #dcd4bd !important;
+      padding-bottom: 24px !important;
+    }}
+    .logo-img {{
+      width: 72px !important;
+      height: 72px !important;
+      object-fit: contain !important;
+      display: inline-block !important;
+    }}
+    .brand-title {{
+      font-family: 'Georgia', Times, serif !important;
+      font-size: 24px !important;
+      font-weight: 600 !important;
+      color: #202b22 !important;
+      margin-top: 14px !important;
+      margin-bottom: 4px !important;
+    }}
+    .brand-slogan {{
+      font-family: 'Georgia', Times, serif !important;
+      font-style: italic !important;
+      font-size: 13px !important;
+      color: #726f5e !important;
+      letter-spacing: 0.05em !important;
+    }}
+    .content {{
+      font-size: 16px !important;
+      line-height: 1.85 !important;
+      color: #39473b !important;
+      margin-bottom: 40px !important;
+      white-space: pre-line !important;
+    }}
+    .signature {{
+      font-family: 'Georgia', Times, serif !important;
+      font-style: italic !important;
+      font-size: 15px !important;
+      color: #74906f !important;
+      border-top: 1px solid #dcd4bd !important;
+      padding-top: 20px !important;
+    }}
+    .footer {{
+      text-align: center !important;
+      font-size: 11px !important;
+      color: #726f5e !important;
+      margin-top: 40px !important;
+      line-height: 1.5 !important;
+    }}
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <img class="logo-img" src="https://zeyna.zk.net.tr/uploads/logoaq.png" alt="Zeyna Logo">
+      <div class="brand-title">Zeyna Üstün</div>
+      <div class="brand-slogan">Bağlantıları gör · Keşfet · Her haline izin ver</div>
+    </div>
+    
+    <div class="content">
+      {message.replace('\n', '<br>')}
+    </div>
+    
+    <div class="signature">
+      Sevgilerimle,<br>
+      <strong>Zeyna Üstün</strong><br>
+      <span style="font-size: 12px; color: #726f5e;">Hayatı Okuma Niyetiyle</span>
+    </div>
+  </div>
+  
+  <div class="footer">
+    Bu e-posta Zeyna bültenine abone olduğunuz için gönderilmiştir.<br>
+    © 2026 Zeyna Üstün. Tüm Hakları Saklıdır.
+  </div>
+</body>
+</html>""",
                         }
                     )
                     if resp.status_code in (200, 201):

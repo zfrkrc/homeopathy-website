@@ -17,22 +17,34 @@
 {% for s in homepage_sections %}
 {% if s.type == 'hero' %}
 <section class="hero">
-  <div class="hero-content">
-    <h1>{{ s.title or site_title }}</h1>
-    <p>{{ s.content or site_description }}</p>
-    {% if categories %}
-    <div class="hero-tags">
-      <a href="{{ url_for('index') }}" class="tag {% if not active_category %}tag-active{% endif %}">Tümü</a>
-      {% for cat in categories %}
-      <a href="{{ url_for('index', category=cat.name) }}" class="tag {% if active_category == cat.name %}tag-active{% endif %}">{{ cat.name }}</a>
-      {% endfor %}
+  <div class="hero-container">
+    <div class="hero-content">
+      <h1 style="font-family: var(--font-heading); font-style: italic; font-size: 46px; color: var(--ink,#202b22); margin-bottom: 20px; font-weight: normal; line-height: 1.2;">Hayatı Okuma</h1>
+      
+      <div style="font-family: var(--font-heading); font-style: italic; font-size: 24px; color: var(--ink,#202b22); line-height: 1.6; margin-bottom: 32px; font-weight: 300;">
+        Bağlantıları gör.<br>
+        Keşfet.<br>
+        Her haline izin ver.
+      </div>
+      
+      <div style="margin-bottom: 30px;">
+        <a href="/anlati" style="background: #b08d57; color: #fff; padding: 14px 36px; border-radius: 99px; font-weight: 600; text-transform: uppercase; font-size: 13px; letter-spacing: 0.15em; text-decoration: none; display: inline-block; box-shadow: 0 4px 15px rgba(176,141,87,0.35);">BİRLİKTE KEŞFEDELİM</a>
+      </div>
+      
+      {% if categories %}
+      <div class="hero-tags" style="margin-bottom: 20px;">
+        <a href="{{ url_for('index') }}" class="tag {% if not active_category %}tag-active{% endif %}">Tümü</a>
+        {% for cat in categories %}
+        <a href="{{ url_for('index', category=cat.name) }}" class="tag {% if active_category == cat.name %}tag-active{% endif %}">{{ cat.name }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <form class="search-form" method="get" action="{{ url_for('index') }}" style="max-width: 320px; margin: 0 auto;">
+        {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
+        <input type="search" name="q" value="{{ q }}" placeholder="Yazılarda ara..." aria-label="Ara" style="font-size: 12.5px;">
+        <button type="submit" style="font-size: 12.5px;">Ara</button>
+      </form>
     </div>
-    {% endif %}
-    <form class="search-form" method="get" action="{{ url_for('index') }}">
-      {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
-      <input type="search" name="q" value="{{ q }}" placeholder="Yazılarda ara..." aria-label="Ara">
-      <button type="submit">Ara</button>
-    </form>
   </div>
 </section>
 {% elif s.type == 'cta' %}
@@ -56,25 +68,63 @@
 {% endfor %}
 {% else %}
 <section class="hero">
-  <div class="hero-content">
-    <h1>{{ hero_title or site_title }}</h1>
-    <p>{{ hero_description or site_description }}</p>
-    {% if categories %}
-    <div class="hero-tags">
-      <a href="{{ url_for('index') }}" class="tag {% if not active_category %}tag-active{% endif %}">Tümü</a>
-      {% for cat in categories %}
-      <a href="{{ url_for('index', category=cat.name) }}" class="tag {% if active_category == cat.name %}tag-active{% endif %}">{{ cat.name }}</a>
-      {% endfor %}
+  <div class="hero-container">
+    <div class="hero-content">
+      <h1 style="font-family: var(--font-heading); font-style: italic; font-size: 46px; color: var(--ink,#202b22); margin-bottom: 20px; font-weight: normal; line-height: 1.2;">Hayatı Okuma</h1>
+      
+      <div style="font-family: var(--font-heading); font-style: italic; font-size: 24px; color: var(--ink,#202b22); line-height: 1.6; margin-bottom: 32px; font-weight: 300;">
+        Bağlantıları gör.<br>
+        Keşfet.<br>
+        Her haline izin ver.
+      </div>
+      
+      <div style="margin-bottom: 30px;">
+        <a href="/anlati" style="background: #b08d57; color: #fff; padding: 14px 36px; border-radius: 99px; font-weight: 600; text-transform: uppercase; font-size: 13px; letter-spacing: 0.15em; text-decoration: none; display: inline-block; box-shadow: 0 4px 15px rgba(176,141,87,0.35);">BİRLİKTE KEŞFEDELİM</a>
+      </div>
+      
+      {% if categories %}
+      <div class="hero-tags" style="margin-bottom: 20px;">
+        <a href="{{ url_for('index') }}" class="tag {% if not active_category %}tag-active{% endif %}">Tümü</a>
+        {% for cat in categories %}
+        <a href="{{ url_for('index', category=cat.name) }}" class="tag {% if active_category == cat.name %}tag-active{% endif %}">{{ cat.name }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <form class="search-form" method="get" action="{{ url_for('index') }}" style="max-width: 320px; margin: 0 auto;">
+        {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
+        <input type="search" name="q" value="{{ q }}" placeholder="Yazılarda ara..." aria-label="Ara" style="font-size: 12.5px;">
+        <button type="submit" style="font-size: 12.5px;">Ara</button>
+      </form>
     </div>
-    {% endif %}
-    <form class="search-form" method="get" action="{{ url_for('index') }}">
-      {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
-      <input type="search" name="q" value="{{ q }}" placeholder="Yazılarda ara..." aria-label="Ara">
-      <button type="submit">Ara</button>
-    </form>
   </div>
 </section>
 {% endif %}
+
+<!-- Bütünsel Yaklaşım (Three Adım Block) matching brand designs -->
+<section style="padding: 80px 0 40px; text-align: center;">
+  <div class="container">
+    <h2 style="font-family: var(--font-heading); font-size: 32px; color: var(--ink,#202b22); margin-bottom: 12px; font-weight: 600;">Bütünsel Yaklaşım</h2>
+    <div style="font-family: monospace; font-size: 11px; letter-spacing: 0.2em; color: var(--gold,#b08d57); text-transform: uppercase; margin-bottom: 50px;">Bağlantıları gör · Keşfet · Her haline izin ver</div>
+    
+    <div class="steps-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; text-align: left;">
+      <div style="background: var(--paper-2,#fffdf7); border: 1px solid var(--line,#dcd4bd); border-radius: var(--card-radius, 14px); padding: 36px 28px; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform=''; this.style.boxShadow='var(--shadow-sm)';">
+        <div style="font-family: monospace; font-size: 11px; color: var(--gold,#b08d57); font-weight: bold; margin-bottom: 14px; letter-spacing: 0.1em;">ADIM I</div>
+        <h3 style="font-family: var(--font-heading); font-size: 21px; color: var(--ink,#202b22); margin-bottom: 12px; font-weight: 600;">Bağlantıları Gör</h3>
+        <p style="font-size: 14.5px; color: var(--muted,#726f5e); line-height: 1.7;">İnsan hayatını yalnızca tek tek semptomlardan değil; semptomlar, olaylar, duygular, ilişkiler ve yaşam hikâyesi arasındaki bağlantılardan oluşan bir bütün olarak görmek.</p>
+      </div>
+      <div style="background: var(--paper-2,#fffdf7); border: 1px solid var(--line,#dcd4bd); border-radius: var(--card-radius, 14px); padding: 36px 28px; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform=''; this.style.boxShadow='var(--shadow-sm)';">
+        <div style="font-family: monospace; font-size: 11px; color: var(--gold,#b08d57); font-weight: bold; margin-bottom: 14px; letter-spacing: 0.1em;">ADIM II</div>
+        <h3 style="font-family: var(--font-heading); font-size: 21px; color: var(--ink,#202b22); margin-bottom: 12px; font-weight: 600;">Keşfet</h3>
+        <p style="font-size: 14.5px; color: var(--muted,#726f5e); line-height: 1.7;">Karşımdaki kişiyi düzeltmek veya onun adına bir sonuç vaat etmek yerine; kendisini ve yaşam döngülerini yargısızca keşfetmesine alan açmak.</p>
+      </div>
+      <div style="background: var(--paper-2,#fffdf7); border: 1px solid var(--line,#dcd4bd); border-radius: var(--card-radius, 14px); padding: 36px 28px; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform=''; this.style.boxShadow='var(--shadow-sm)';">
+        <div style="font-family: monospace; font-size: 11px; color: var(--gold,#b08d57); font-weight: bold; margin-bottom: 14px; letter-spacing: 0.1em;">ADIM III</div>
+        <h3 style="font-family: var(--font-heading); font-size: 21px; color: var(--ink,#202b22); margin-bottom: 12px; font-weight: 600;">Her Haline İzin Ver</h3>
+        <p style="font-size: 14.5px; color: var(--muted,#726f5e); line-height: 1.7;">Acele etmeden, sakinlikle ve merhametle yaklaşarak; kişinin beden, zihin ve ruh bütünlüğündeki tüm hallerine güvenle alan açmak.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section class="container">
   {% with messages = get_flashed_messages(with_categories=true) %}
