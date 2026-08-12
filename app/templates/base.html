@@ -27,8 +27,10 @@
 <body>
   <nav class="nav">
     <div class="nav-container">
-      <a href="{{ url_for('index') }}" class="logo" style="display:flex; align-items:center;">
-        <img src="/uploads/image1.png" alt="Zeyna" style="height: 52px; width: auto; object-fit: contain;">
+      <a href="{{ url_for('index') }}" class="logo" style="display:flex; align-items:center; gap:8px;">
+        <img src="/uploads/logoaq.png" alt="Zeyna" style="height: 38px; width: auto; object-fit: contain;">
+        <span style="font-family:var(--font-heading);font-weight:600;font-size:20px;color:var(--primary)">{{ site_title }}</span>
+        <span style="font-family:monospace;font-size:10px;color:#a9a58f;letter-spacing:.15em;margin-left:4px;text-transform:uppercase">· Hayatı Okuma</span>
       </a>
       <div class="nav-actions">
         <button class="theme-toggle" aria-label="Tema değiştir" onclick="toggleTheme()" title="Tema değiştir">🌙</button>
