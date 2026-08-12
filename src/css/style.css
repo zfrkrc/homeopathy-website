@@ -36,13 +36,23 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ─── HERO VISUAL (brand banner with overlay) ─── */
+/* ─── HERO VISUAL (brand banner card) ─── */
 .hero-visual {
+  /* zemin resmin kendi tonlarindan turetildi */
+  background: linear-gradient(180deg, #e8e1d3 0%, #ece5d7 45%, #f4efe1 100%);
+  padding: clamp(22px, 3.6vw, 48px) clamp(14px, 2.2vw, 28px) clamp(30px, 4.4vw, 58px);
+  border-bottom: 1px solid rgba(220, 212, 189, .7);
+}
+.hero-visual__frame {
   position: relative;
-  width: 100%;
-  max-width: 1280px;
+  max-width: 1120px;
   margin: 0 auto;
+  border-radius: clamp(12px, 1.9vw, 24px);
+  overflow: hidden;
   line-height: 0;
+  box-shadow:
+    0 22px 55px rgba(70, 62, 48, .16),
+    0 3px 10px rgba(70, 62, 48, .06);
 }
 .hero-visual__img {
   width: 100%;
@@ -51,95 +61,105 @@ body {
 }
 .hero-visual__overlay {
   position: absolute;
-  left: 47%;
-  top: 10%;
-  width: 40%;
+  left: 48.5%;
+  top: 12%;
+  width: 38%;
   text-align: center;
   line-height: 1.25;
   pointer-events: none;
+  z-index: 2;
 }
 .hero-visual__title {
   font-family: 'Fraunces', Georgia, serif;
   font-style: italic;
   font-weight: 400;
-  font-size: clamp(18px, 4.4vw, 56px);
-  color: #2e3a30;
-  margin: 0 0 0.35em;
-  text-shadow: 0 1px 12px rgba(255,253,247,.55);
+  font-size: clamp(17px, 4.3vw, 50px);
+  color: #2f3b31;
+  margin: 0 0 .32em;
+  text-shadow: 0 1px 14px rgba(255, 253, 247, .6);
 }
 .hero-visual__slogan {
   font-family: 'Fraunces', Georgia, serif;
   font-style: italic;
   font-weight: 400;
-  font-size: clamp(9px, 2.2vw, 27px);
-  color: #3b463c;
-  line-height: 1.75;
-  text-shadow: 0 1px 10px rgba(255,253,247,.5);
+  font-size: clamp(9px, 2.15vw, 25px);
+  color: #3c473d;
+  line-height: 1.78;
+  text-shadow: 0 1px 12px rgba(255, 253, 247, .55);
 }
-/* Invisible hotspot sitting exactly on the baked-in CTA button */
+/* Gomulu CTA butonunun tam uzerinde gorunmez tiklama alani */
 .hero-visual__hotspot {
   position: absolute;
   left: 53.5%;
-  top: 56.5%;
-  width: 27.5%;
-  height: 14%;
+  top: 61%;
+  width: 28%;
+  height: 13%;
   border-radius: 99px;
   display: block;
   z-index: 3;
-  transition: box-shadow .25s ease, transform .25s ease;
+  transition: box-shadow .3s ease, transform .3s ease;
 }
 .hero-visual__hotspot:hover {
-  box-shadow: 0 0 0 2px rgba(176,141,87,.55), 0 10px 26px rgba(176,141,87,.3);
+  box-shadow: 0 0 0 2px rgba(176, 141, 87, .5), 0 12px 28px rgba(176, 141, 87, .28);
   transform: translateY(-1px);
 }
-
-/* Mobile: stack image and a readable text card underneath */
-.hero-visual__mobile {
-  display: none;
+.hero-visual__hotspot:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
 }
+
+/* Mobil: overlay okunmaz olur -> resmin altinda gercek metin + buton */
+.hero-visual__mobile { display: none; }
+
 @media (max-width: 767px) {
-  .hero-visual__overlay,
-  .hero-visual__hotspot {
-    display: none;
+  .hero-visual {
+    padding: 0 0 34px;
+    background: linear-gradient(180deg, #e8e1d3 0%, #f4efe1 62%);
   }
+  .hero-visual__frame {
+    border-radius: 0;
+    box-shadow: 0 10px 26px rgba(70, 62, 48, .10);
+  }
+  .hero-visual__overlay,
+  .hero-visual__hotspot { display: none; }
+
   .hero-visual__mobile {
     display: block;
-    line-height: 1.6;
     text-align: center;
-    padding: 28px 22px 34px;
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
+    padding: 30px 26px 0;
+    line-height: 1.6;
   }
   .hero-visual__mobile h1 {
     font-family: 'Fraunces', Georgia, serif;
     font-style: italic;
     font-weight: 400;
-    font-size: 32px;
+    font-size: 34px;
     color: var(--ink);
-    margin-bottom: 14px;
+    margin-bottom: 16px;
   }
   .hero-visual__mobile p {
     font-family: 'Fraunces', Georgia, serif;
     font-style: italic;
-    font-size: 18px;
+    font-size: 19px;
     color: var(--ink-2);
-    line-height: 1.8;
-    margin-bottom: 22px;
+    line-height: 1.85;
+    margin-bottom: 26px;
   }
   .hero-visual__mobile a {
     display: inline-block;
     background: var(--gold);
     color: #fff;
-    padding: 13px 34px;
+    padding: 14px 38px;
     border-radius: 99px;
     font-family: 'Inter', system-ui, sans-serif;
     font-weight: 600;
     font-size: 12.5px;
-    letter-spacing: .15em;
+    letter-spacing: .16em;
     text-transform: uppercase;
     text-decoration: none;
-    box-shadow: 0 4px 15px rgba(176,141,87,.32);
+    box-shadow: 0 6px 18px rgba(176, 141, 87, .3);
   }
+  .hero-visual__mobile a:active { transform: translateY(1px); }
 }
 
 /* ─── NAV ─── */

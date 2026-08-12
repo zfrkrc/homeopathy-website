@@ -2,30 +2,33 @@
 {% block title %}{{ site_title }} | {{ site_description }}{% endblock %}
 {% block content %}
 
-<!-- Homepage Hero — brand banner with live text overlay + invisible CTA hotspot -->
+<!-- Homepage Hero — brand banner card with live text overlay + invisible CTA hotspot -->
 <section class="hero-visual">
-  <img class="hero-visual__img" src="/uploads/final_0.png" alt="Hayatı Okuma — Bağlantıları gör, Keşfet, Her haline izin ver">
-
-  <div class="hero-visual__overlay">
-    <div class="hero-visual__title">Hayatı Okuma</div>
-    <div class="hero-visual__slogan">
-      Bağlantıları gör.<br>
-      Keşfet.<br>
-      Her haline izin ver.
-    </div>
-  </div>
-
-  <a class="hero-visual__hotspot" href="/anlati" aria-label="Birlikte Keşfedelim"></a>
-
   <div class="hero-visual__mobile">
     <h1>Hayatı Okuma</h1>
     <p>Bağlantıları gör.<br>Keşfet.<br>Her haline izin ver.</p>
     <a href="/anlati">Birlikte Keşfedelim</a>
   </div>
+
+  <div class="hero-visual__frame">
+    <img class="hero-visual__img" src="/uploads/hero_final.png"
+         alt="Hayatı Okuma — Bağlantıları gör, Keşfet, Her haline izin ver" fetchpriority="high">
+
+    <div class="hero-visual__overlay">
+      <div class="hero-visual__title">Hayatı Okuma</div>
+      <div class="hero-visual__slogan">
+        Bağlantıları gör.<br>
+        Keşfet.<br>
+        Her haline izin ver.
+      </div>
+    </div>
+
+    <a class="hero-visual__hotspot" href="/anlati" aria-label="Birlikte Keşfedelim"></a>
+  </div>
 </section>
 
 <!-- Bütünsel Yaklaşım (Three Adım Block) matching brand designs -->
-<section style="padding: 80px 0 60px; text-align: center; background: rgba(244,239,225,0.3); border-bottom: 1px solid var(--line,#dcd4bd);">
+<section style="padding: 76px 0 64px; text-align: center; border-bottom: 1px solid var(--line,#dcd4bd);">
   <div class="container">
     <h2 style="font-family: var(--font-heading); font-size: 32px; color: var(--ink,#202b22); margin-bottom: 12px; font-weight: 600;">Bütünsel Yaklaşım</h2>
     <div style="font-family: monospace; font-size: 11px; letter-spacing: 0.2em; color: var(--gold,#b08d57); text-transform: uppercase; margin-bottom: 50px;">Bağlantıları gör · Keşfet · Her haline izin ver</div>

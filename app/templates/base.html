@@ -20,7 +20,7 @@
   <meta name="twitter:description" content="{{ self.og_description() }}">
   <script>(function(){var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="stylesheet" href="{{ url_for('theme_css') }}">
-  <link rel="stylesheet" href="/static/css/style.css?v=7">
+  <link rel="stylesheet" href="/static/css/style.css?v=8">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%23{{ primary_color[1:] if primary_color else '74906f' }}' stroke-width='1.5'%3E%3Cpath d='M50,50 A 5,5 0 1,1 45,45 A 10,10 0 1,1 55,35 A 15,15 0 1,1 35,50 A 20,20 0 1,1 70,50 A 25,25 0 1,1 25,50'/%3E%3Cpath d='M22,35 C30,22 45,20 50,20 C55,20 70,22 78,35 C68,40 55,42 50,42 C45,42 32,40 22,35 Z' stroke-dasharray='1.5,1.5'/%3E%3C/svg%3E">
   {% block json_ld %}{% endblock %}
 </head>
