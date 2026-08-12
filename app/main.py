@@ -256,14 +256,28 @@ def iletisim():
     if request.method == 'POST':
         email = request.form.get('email', '').strip()
         name = request.form.get('name', '').strip()
+        message = request.form.get('message', '').strip()
         if not email or '@' not in email:
             flash('Geçerli bir e-posta adresi girin.', 'error')
             return redirect(url_for('iletisim'))
+        # Save to subscribers
         result = add_subscriber(email, name)
+        # Save message if provided
+        if message:
+            conn = get_db()
+            conn.execute(
+                "CREATE TABLE IF NOT EXISTS contact_messages (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT, name TEXT, message TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+            )
+            conn.execute(
+                "INSERT INTO contact_messages (email, name, message) VALUES (?, ?, ?)",
+                (email, name, message),
+            )
+            conn.commit()
+            conn.close()
         if result == 'exists':
-            flash('Bu e-posta zaten kayıtlı.', 'info')
+            flash('Bu e-posta zaten kayıtlı. Mesajınız iletildi.', 'success')
         else:
-            flash('Bültene başarıyla katıldınız! İlk yazıyı sabırsızlıkla bekleyin.', 'success')
+            flash('Mesajınız iletildi! En kısa sürede dönüş yapacağız.', 'success')
         return redirect(url_for('iletisim'))
     return render_template('iletisim.html')
 
@@ -440,8 +454,8 @@ def admin_newsletter():
 
         try:
             api_key = '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'
-            sender_name = get_setting('site_title', 'Homeopati Blog')
-            sender_email = 'zafer@zaferkaraca.net'
+            sender_name = get_setting('site_title', 'Zeyna')
+            sender_email = 'cevap@zk.net.tr'
 
             sent = 0
             async def send_one(email):

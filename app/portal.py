@@ -336,6 +336,13 @@ def anlati_kaydet():
         )
         conn.commit()
         conn.close()
+        # Also push to PulseCare
+        try:
+            import httpx
+            httpx.post("http://172.16.16.215:8004/webhook/anlati",
+                       json=data, timeout=8)
+        except Exception:
+            pass
         return {"ok": True, "msg": "Kaydedildi"}
     return {"ok": False, "msg": "Isim zorunlu"}, 400
 
