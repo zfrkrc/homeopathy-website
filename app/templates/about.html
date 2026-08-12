@@ -1,15 +1,344 @@
 {% extends "base.html" %}
 {% block title %}{{ about_title or 'Hakkımda' }} | {{ site_title }}{% endblock %}
 {% block content %}
-<div class="container">
-  <div class="about-hero">
-    <div class="about-img">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+<style>
+  .brand-about-container {
+    padding: 60px 0 80px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .brand-intro {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-bottom: 60px;
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .brand-intro {
+      grid-template-columns: 340px 1fr;
+    }
+  }
+  .brand-symbol-box {
+    background: var(--paper-2, #fffdf7);
+    border: 1px solid var(--line, #dcd4bd);
+    border-radius: var(--card-radius, 14px);
+    padding: 16px;
+    text-align: center;
+    box-shadow: var(--shadow-sm, 0 2px 12px rgba(0,0,0,.04));
+  }
+  .brand-symbol-box img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    display: block;
+    mix-blend-mode: multiply;
+  }
+  .brand-symbol-title {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: var(--ink, #202b22);
+    margin-top: 16px;
+    margin-bottom: 4px;
+  }
+  .brand-symbol-subtitle {
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--gold, #b08d57);
+    text-transform: uppercase;
+  }
+  .brand-bio h1 {
+    font-family: var(--font-heading);
+    font-size: 36px;
+    color: var(--ink, #202b22);
+    margin-bottom: 24px;
+    line-height: 1.2;
+  }
+  .brand-bio-content {
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--ink-2, #39473b);
+  }
+  .brand-concept-section {
+    margin-bottom: 60px;
+    text-align: center;
+  }
+  .brand-concept-title {
+    font-family: var(--font-heading);
+    font-size: 26px;
+    color: var(--ink, #202b22);
+    margin-bottom: 12px;
+  }
+  .brand-concept-subtitle {
+    font-family: monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--gold, #b08d57);
+    text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+  .brand-steps-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  @media (min-width: 768px) {
+    .brand-steps-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .brand-step-card {
+    background: var(--paper-2, #fffdf7);
+    border: 1px solid var(--line, #dcd4bd);
+    border-radius: var(--card-radius, 14px);
+    padding: 30px 24px;
+    text-align: left;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .brand-step-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md, 0 8px 28px rgba(0,0,0,.08));
+  }
+  .brand-step-num {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--gold, #b08d57);
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  .brand-step-name {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: var(--ink, #202b22);
+    margin-bottom: 12px;
+  }
+  .brand-step-desc {
+    font-size: 14px;
+    color: var(--muted, #726f5e);
+    line-height: 1.6;
+  }
+  .brand-symbolism-block {
+    background: linear-gradient(135deg, var(--paper, #f4efe1) 0%, var(--paper-2, #fffdf7) 100%);
+    border: 1px solid var(--line, #dcd4bd);
+    border-radius: var(--card-radius, 14px);
+    padding: 40px;
+    margin-bottom: 60px;
+  }
+  .brand-symbolism-title {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    color: var(--ink, #202b22);
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .brand-symbols-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  @media (min-width: 768px) {
+    .brand-symbols-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .brand-sym-item h4 {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    color: var(--primary, #74906f);
+    margin-bottom: 8px;
+  }
+  .brand-sym-item p {
+    font-size: 14px;
+    color: var(--ink-2, #39473b);
+    line-height: 1.6;
+  }
+  
+  /* Gallery Showcase Section */
+  .brand-gallery-section {
+    margin-bottom: 60px;
+  }
+  .brand-gallery-title {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    color: var(--ink, #202b22);
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  .brand-gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  @media (min-width: 768px) {
+    .brand-gallery-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .brand-gallery-card {
+    background: var(--paper-2, #fffdf7);
+    border: 1px solid var(--line, #dcd4bd);
+    border-radius: var(--card-radius, 14px);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s;
+  }
+  .brand-gallery-card:hover {
+    transform: translateY(-3px);
+  }
+  .brand-gallery-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    display: block;
+  }
+  .brand-gallery-info {
+    margin-top: 14px;
+    padding: 0 4px;
+  }
+  .brand-gallery-tag {
+    font-family: monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--gold, #b08d57);
+    text-transform: uppercase;
+  }
+  .brand-gallery-name {
+    font-family: var(--font-heading);
+    font-size: 17px;
+    color: var(--ink, #202b22);
+    margin-top: 4px;
+    margin-bottom: 6px;
+  }
+  .brand-gallery-desc {
+    font-size: 13px;
+    color: var(--muted, #726f5e);
+    line-height: 1.5;
+  }
+
+  .brand-quote-block {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  .brand-quote-text {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-style: italic;
+    color: var(--primary, #74906f);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .brand-quote-author {
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted, #726f5e);
+    text-transform: uppercase;
+  }
+</style>
+
+<div class="brand-about-container container reveal visible">
+  <!-- Biography & Cover symbol -->
+  <div class="brand-intro">
+    <div class="brand-symbol-box">
+      <!-- High quality brand image from docx representing Logo & Symbol -->
+      <img src="/uploads/image1.png" alt="Zeyna Logo ve Sembol Dili">
+      <div class="brand-symbol-title">Zeyna Üstün</div>
+      <div class="brand-symbol-subtitle">Hayatı Okuma</div>
     </div>
-    <div class="about-text">
+    
+    <div class="brand-bio">
       <h1>{{ about_title or 'Hakkımda' }}</h1>
-      <div style="font-size:15px;line-height:1.8;color:var(--ink-2,#39473b);white-space:pre-line">{{ about_content or '' }}</div>
+      <div class="brand-bio-content" style="white-space: pre-line;">{{ about_content or '' }}</div>
     </div>
+  </div>
+
+  <!-- Concept Philosophy -->
+  <div class="brand-concept-section">
+    <h2 class="brand-concept-title">Bütünsel Yaklaşım</h2>
+    <div class="brand-concept-subtitle">Bağlantıları gör · Keşfet · Her haline izin ver</div>
+    
+    <div class="brand-steps-grid">
+      <div class="brand-step-card">
+        <div class="brand-step-num">ADIM I</div>
+        <div class="brand-step-name">Bağlantıları Gör</div>
+        <div class="brand-step-desc">İnsan hayatını yalnızca tek tek semptomlardan değil; semptomlar, olaylar, duygular, ilişkiler ve yaşam hikâyesi arasındaki bağlantılardan oluşan bir bütün olarak görmek.</div>
+      </div>
+      <div class="brand-step-card">
+        <div class="brand-step-num">ADIM II</div>
+        <div class="brand-step-name">Keşfet</div>
+        <div class="brand-step-desc">Karşımdaki kişiyi düzeltmek veya onun adına bir sonuç vaat etmek yerine; kendisini ve yaşam döngülerini yargısızca keşfetmesine alan açmak.</div>
+      </div>
+      <div class="brand-step-card">
+        <div class="brand-step-num">ADIM III</div>
+        <div class="brand-step-name">Her Haline İzin Ver</div>
+        <div class="brand-step-desc">Acele etmeden, sakinlikle ve merhametle yaklaşarak; kişinin beden, zihin ve ruh bütünlüğündeki tüm hallerine güvenle alan açmak.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logo and Symbolism -->
+  <div class="brand-symbolism-block">
+    <h3 class="brand-symbolism-title">Logo ve Sembol Dili</h3>
+    <div class="brand-symbols-grid">
+      <div class="brand-sym-item">
+        <h4>ANKA KUŞU — DÖNÜŞÜM</h4>
+        <p>Anka kuşu dönüşümü, yeniden doğmayı ve insanın hayatında her an yeniden başlayabilme kapasitesini; yaşam enerjisini küllerinden doğurabilme gücünü temsil eder.</p>
+      </div>
+      <div class="brand-sym-item">
+        <h4>SPİRAL — YOLCULUK</h4>
+        <p>Spiral ise hayatın döngüsünü, katmanlarını ve kişinin kendi merkezine doğru yaptığı derin yolculuğu temsil eder. Merkezden dışarıya ve dışarıdan merkeze katman katman açılan bir yaşam haritasıdır.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gallery Showcase from corporate docx -->
+  <div class="brand-gallery-section">
+    <h3 class="brand-gallery-title">Uygulama Alanı ve Materyaller</h3>
+    <div class="brand-gallery-grid">
+      <div class="brand-gallery-card">
+        <img src="/uploads/image2.png" alt="Kartvizit ve Antetli Kâğıt">
+        <div class="brand-gallery-info">
+          <div class="brand-gallery-tag">BÖLÜM 4</div>
+          <div class="brand-gallery-name">Kartvizit ve Antetli Kâğıt</div>
+          <div class="brand-gallery-desc">Güven, açıklık ve merak duygusu bırakan sade bir düzen içinde tasarlanmış kartvizit ve antetli kâğıt örnekleri.</div>
+        </div>
+      </div>
+      <div class="brand-gallery-card">
+        <img src="/uploads/image3.png" alt="Hasta Mektubu ve İletişim Dili">
+        <div class="brand-gallery-info">
+          <div class="brand-gallery-tag">BÖLÜM 5</div>
+          <div class="brand-gallery-name">Hasta Mektubu ve İletişim</div>
+          <div class="brand-gallery-desc">Resmî bir metin yerine, danışanla kurulan sıcak, yargısız ve sakin bağı sürdüren mektup dili.</div>
+        </div>
+      </div>
+      <div class="brand-gallery-card">
+        <img src="/uploads/image4.png" alt="Broşür ve Web Sitesi Görünümü">
+        <div class="brand-gallery-info">
+          <div class="brand-gallery-tag">BÖLÜM 6 & 7</div>
+          <div class="brand-gallery-name">Broşür ve Dijital Görünüm</div>
+          <div class="brand-gallery-desc">Farklı ekranlarda ve basılı materyallerde marka bütünlüğünü koruyan sade semboller ve kısa metin dili.</div>
+        </div>
+      </div>
+      <div class="brand-gallery-card">
+        <img src="/uploads/image5.png" alt="Uygulama Alanı Tasarımı">
+        <div class="brand-gallery-info">
+          <div class="brand-gallery-tag">BÖLÜM 8</div>
+          <div class="brand-gallery-name">Doğal Uygulama Alanı</div>
+          <div class="brand-gallery-desc">Doğal malzemeler, bitkiler, sıcak ışık ve sakinliği taşıyan, klinik his vermeyen güvenli ortam tasarımı.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Intention and Quote -->
+  <div class="brand-quote-block">
+    <div class="brand-quote-text">“Danışanımın benimle karşılaştığında hissetmesini istediğim ilk şey 'burada anlatabilirim' duygusudur.”</div>
+    <div class="brand-quote-author">Zeyna Üstün · Hayatı Okuma Niyetiyle</div>
   </div>
 </div>
 {% endblock %}

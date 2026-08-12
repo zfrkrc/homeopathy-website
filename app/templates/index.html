@@ -38,18 +38,18 @@
 {% elif s.type == 'cta' %}
 <section class="container" style="padding:32px 0">
   <div class="newsletter" style="text-align:center">
-    <h3>{{ s.title }}</h3>
+    {% if s.title %}<h3>{{ s.title }}</h3>{% endif %}
     <p>{{ s.content }}</p>
   </div>
 </section>
 {% elif s.type == 'features' %}
 <section class="container" style="padding:32px 0;text-align:center">
-  <h2 style="font-size:28px;color:var(--brown,#4a3f35);margin-bottom:12px">{{ s.title }}</h2>
+  {% if s.title %}<h2 style="font-size:28px;color:var(--brown,#4a3f35);margin-bottom:12px">{{ s.title }}</h2>{% endif %}
   <p style="color:var(--text-muted,#888);max-width:600px;margin:0 auto">{{ s.content }}</p>
 </section>
 {% else %}
 <section class="container" style="padding:24px 0">
-  <h2 style="font-size:22px;color:var(--brown,#4a3f35);margin-bottom:12px">{{ s.title }}</h2>
+  {% if s.title %}<h2 style="font-size:22px;color:var(--brown,#4a3f35);margin-bottom:12px">{{ s.title }}</h2>{% endif %}
   <div style="font-size:15px;line-height:1.8;color:#555">{{ s.content }}</div>
 </section>
 {% endif %}

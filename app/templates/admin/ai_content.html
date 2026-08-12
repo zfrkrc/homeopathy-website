@@ -17,7 +17,7 @@ input:focus,textarea:focus{outline:none;border-color:#3d6b4f}
 {% block content %}
 <form method="POST" enctype="multipart/form-data" action="{{ url_for('admin_ai_content') }}">
   <label>Blog Konusu</label>
-  <input type="text" name="topic" value="{{ topic }}" placeholder="Örn: Homeopati ile migren tedavisi">
+  <input type="text" name="topic" value="{{ topic }}" placeholder="Örn: Bütünsel yaşam ve migren yaklaşımları">
 
   <label>URL (isteğe bağlı)</label>
   <input type="url" name="url" placeholder="https://ornek.com/makale" value="">

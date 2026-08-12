@@ -926,11 +926,14 @@ def admin_homepage():
         contents = request.form.getlist('section_content[]')
         types = request.form.getlist('section_type[]')
         for i in range(len(titles)):
-            if titles[i].strip():
+            title_val = titles[i].strip() if i < len(titles) else ''
+            content_val = contents[i].strip() if i < len(contents) else ''
+            type_val = types[i] if i < len(types) else 'text'
+            if title_val or content_val:
                 sections.append({
-                    'title': titles[i].strip(),
-                    'content': contents[i].strip() if i < len(contents) else '',
-                    'type': types[i] if i < len(types) else 'text',
+                    'title': title_val,
+                    'content': content_val,
+                    'type': type_val,
                 })
         set_homepage_sections(sections)
         flash('Ana sayfa guncellendi.', 'success')
