@@ -1766,13 +1766,20 @@ async function saveAppointments(list){
 }
 async function submitAppointment(){
   const btn = document.getElementById("btnSubmitAppt");
+  const zone = document.getElementById("submitErrorZone");
+  const leadName = (currentLead && currentLead.name ? currentLead.name : (state.answers.isim || "")).trim();
+  if(!leadName){
+    if(zone) zone.innerHTML = '<p style="color:#c0392b;background:#fdf0ef;border:1px solid #f5d0ce;padding:10px 14px;border-radius:8px;margin-top:10px">Lütfen en az adınızı girin.</p>';
+    return;
+  }
+  if(zone) zone.innerHTML = '';
   if(btn){ btn.disabled = true; btn.textContent = "Gönderiliyor…"; }
   const rec = {
     id: fid(),
     submittedAt: new Date().toISOString(),
     status: "pending",
     lead: currentLead || {
-      name: state.answers.isim || "İsimsiz",
+      name: leadName,
       contact: state.answers.email || state.answers.cep_tel || "-",
       reason: ""
     },
@@ -1787,7 +1794,10 @@ async function submitAppointment(){
       setView("confirmation");
       return;
     }
-  }catch(e){}
+    throw new Error(data.msg || "Sunucu hatası");
+  }catch(e){
+    if(zone) zone.innerHTML = '<p style="color:#c0392b;background:#fdf0ef;border:1px solid #f5d0ce;padding:10px 14px;border-radius:8px;margin-top:10px">Talep gönderilemedi: ' + (e.message || 'bağlantı hatası') + '. Lütfen tekrar deneyin.</p>';
+  }
   if(btn){ btn.disabled = false; btn.textContent = "Randevu Talebini Gönder"; }
 }
 

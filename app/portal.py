@@ -289,6 +289,12 @@ def vaka_randevu_kaydet():
     )
     conn.commit()
     conn.close()
+    try:
+        import httpx
+        httpx.post("http://172.16.16.215:8004/webhook/anlati", json=data, timeout=8)
+    except Exception as e:
+        import logging
+        logging.getLogger("portal").warning("PulseCare anlati push failed: %s", e)
     return {"ok": True}
 
 @portal_bp.route("/anlati/randevular", methods=["GET"])
