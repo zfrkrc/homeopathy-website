@@ -1,3 +1,6 @@
 *.db
 __pycache__/
 .env
+
+# Repowise yerel index/vektör DB - her reindex sonrası değişir, repoya girmemeli
+.repowise/
