@@ -2,7 +2,12 @@
 
 function toggleNav() {
   const navLinks = document.getElementById('navLinks');
-  if (navLinks) navLinks.classList.toggle('open');
+  const toggle = document.querySelector('.nav-toggle');
+  if (navLinks) {
+    const willOpen = !navLinks.classList.contains('open');
+    navLinks.classList.toggle('open');
+    if (toggle) toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+  }
 }
 
 function handleNewsletter(event) {

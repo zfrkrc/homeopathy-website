@@ -195,7 +195,7 @@ body {
 .nav-links { display:flex; gap:4px; margin-left:auto; }
 .nav-link {
   font-size:13.5px; font-weight:500; color:var(--text-mid);
-  text-decoration:none; padding:6px 14px; border-radius:8px; transition:.15s;
+  text-decoration:none; padding:6px 14px; border-radius:8px; transition:.15s; white-space:nowrap;
 }
 .nav-link:hover { background:var(--gold-soft); color:#b08d57; }
 .nav-link.active { color:#b08d57; font-weight:600; }
@@ -464,6 +464,12 @@ body {
 .float-subscribe svg { width:16px; height:16px; }
 
 /* ─── RESPONSIVE ─── */
+@media (max-width: 860px) {
+  .nav-links { display:none; flex-direction:column; position:absolute; top:60px; left:0; right:0; background:var(--white); border-bottom:1px solid var(--border); padding:12px 24px; gap:4px; box-shadow:var(--shadow-md); z-index:101; }
+  .nav-links.open { display:flex; }
+  .nav-toggle { display:block; margin-left:auto; }
+  .nav-link { white-space:nowrap; }
+}
 @media (max-width: 640px) {
   .nav-links { display:none; flex-direction:column; position:absolute; top:60px; left:0; right:0; background:var(--white); border-bottom:1px solid var(--border); padding:12px 24px; gap:4px; box-shadow:var(--shadow-md); }
   .nav-links.open { display:flex; }
@@ -747,8 +753,8 @@ body {
 
 @media (max-width: 900px) {
   .leaf-deco--tr { width: 96px; opacity: .34; }
-  .leaf-deco--bl { display: none;
-  .hero-visual__cta { display: none; } }
+  .leaf-deco--bl { display: none; }
+  .hero-visual__cta { display: none; }
 }
 
 /* ─── Readable content cards over background image ─── */

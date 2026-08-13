@@ -8,6 +8,7 @@ import re
 import httpx
 import asyncio
 import markdown
+import bleach
 import shutil
 import base64
 from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, send_file, Response, abort, make_response
@@ -49,7 +50,7 @@ app = Flask(__name__)
 app.config.update(
 )
 app.register_blueprint(portal_bp)
-app.secret_key = os.environ.get('SECRET_KEY', 'zeyna-homeopathy-secret-2026')
+app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(32)
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
 login_manager = LoginManager()
@@ -227,6 +228,9 @@ def post(slug):
     if not current_user.is_authenticated:
         increment_post_views(post['id'])
     post = dict(post)
+    _ALLOWED_TAGS = ['p','br','h1','h2','h3','h4','h5','h6','strong','em','b','i','u','ul','ol','li','a','img','blockquote','code','pre','hr','table','thead','tbody','tr','td','th','span','div','sup','sub','del','figure','figcaption']
+    _ALLOWED_ATTRS = {'*': ['class','style'], 'a': ['href','title','target','rel'], 'img': ['src','alt','title','width','height']}
+    post['content'] = bleach.clean(post.get('content') or '', tags=_ALLOWED_TAGS, attributes=_ALLOWED_ATTRS, protocols=['http','https','mailto'], strip=True)
     post['views'] = (post.get('views') or 0) + 1
     word_count = len((post.get('content') or '').split())
     read_time = max(1, round(word_count / 200))
@@ -453,7 +457,7 @@ def admin_newsletter():
             return redirect(url_for('admin_newsletter'))
 
         try:
-            api_key = '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'
+            api_key = os.environ.get('BREVO_API_KEY', '')
             sender_name = get_setting('site_title', 'Zeyna')
             sender_email = 'cevap@zk.net.tr'
 
