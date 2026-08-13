@@ -749,7 +749,7 @@ body {
   opacity: .45;
 }
 /* icerik her zaman desenlerin ustunde kalsin */
-.nav, main, .site-footer { position: relative; z-index: 1; }
+main, .site-footer { position: relative; z-index: 1; }
 
 @media (max-width: 900px) {
   .leaf-deco--tr { width: 96px; opacity: .34; }
