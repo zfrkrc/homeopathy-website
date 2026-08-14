@@ -845,7 +845,7 @@ def _generate_content(job_id, topic, tone, length, url, file_path, orig_filename
                 _gen_log.error(f'file error: {e}')
 
         context_text = '\n\n---\n\n'.join(context_parts)[:8000]
-        sys_prompt = 'Sen profesyonel blog yazarisin. Turkce, akici, SEO uyumlu icerik uret. Baslik ve alt basliklar kullan.'
+        sys_prompt = 'Sen profesyonel blog yazarisin. SADECE Turkce cevap ver, baska dil kullanma. Turkce, akici, SEO uyumlu icerik uret. Baslik ve alt basliklar kullan. Asla Cince veya baska bir dilde yazma.'
         if context_text:
             sys_prompt += f'\n\nIcerigini asagidaki kaynaktan yararlanarak olustur:\n{context_text[:6000]}'
         prompt = f'{topic} hakkinda {tone} tonda, {length} kelimelik SEO uyumlu blog yazisi yaz.'
@@ -929,6 +929,94 @@ def admin_ai_content_clear():
         os.makedirs(AI_JOBS_DIR, exist_ok=True)
     flash('Gecmis uretimler temizlendi.', 'success')
     return redirect(url_for('admin_ai_content'))
+
+IMAGE_SERVICE_URL = os.environ.get('IMAGE_SERVICE_URL', 'http://172.16.16.215:8001')
+
+@app.route('/admin/ai-image', methods=['GET', 'POST'])
+@login_required
+def admin_ai_image():
+    images = []
+    img_dir = os.path.join(UPLOAD_DIR, 'ai_images')
+    os.makedirs(img_dir, exist_ok=True)
+    for f in sorted(os.listdir(img_dir), reverse=True)[:20]:
+        if f.endswith(('.png', '.jpg', '.webp')):
+            info_path = os.path.join(img_dir, f.rsplit('.', 1)[0] + '.json')
+            info = {}
+            if os.path.exists(info_path):
+                with open(info_path) as jf:
+                    info = json.load(jf)
+            images.append({'file': f, 'prompt': info.get('prompt', ''), 'time': info.get('time', '')})
+
+    if request.method == 'POST':
+        prompt = request.form.get('prompt', '').strip()
+        style = request.form.get('style', 'photorealistic')
+        width = int(request.form.get('width', 1024))
+        height = int(request.form.get('height', 1024))
+        if not prompt:
+            flash('Gorsel promptu gerekli.', 'error')
+            return redirect(url_for('admin_ai_image'))
+
+        job_id = uuid.uuid4().hex[:12]
+        img_path = os.path.join(img_dir, f'{job_id}.png')
+        info_path = os.path.join(img_dir, f'{job_id}.json')
+
+        try:
+            resp = httpx.post(
+                f"{IMAGE_SERVICE_URL}/generate",
+                json={
+                    "prompt": prompt,
+                    "model": "Z-Image-Turbo",
+                    "steps": 8,
+                    "enhance_prompt": False,
+                    "width": width,
+                    "height": height,
+                    "style": style,
+                },
+                timeout=30,
+            )
+            resp.raise_for_status()
+            gen_id = resp.json().get('id')
+
+            import time as _time
+            done = False
+            for _ in range(60):
+                _time.sleep(4)
+                try:
+                    h = httpx.get(f"{IMAGE_SERVICE_URL}/history?page=1&page_size=5", timeout=10)
+                    for item in h.json().get('items', []):
+                        if item['id'] == gen_id:
+                            if item['status'] == 'completed' and item.get('output_file'):
+                                img_data = httpx.get(f"{IMAGE_SERVICE_URL}/image/{gen_id}", timeout=15)
+                                if img_data.status_code == 200:
+                                    with open(img_path, 'wb') as f:
+                                        f.write(img_data.content)
+                                    with open(info_path, 'w') as f:
+                                        json.dump({'prompt': prompt, 'time': _time.strftime('%Y-%m-%d %H:%M')}, f, ensure_ascii=False)
+                                    done = True
+                            elif item['status'] == 'failed':
+                                flash('Gorsel uretimi basarisiz: ' + str(item.get('error_message','')), 'error')
+                                return redirect(url_for('admin_ai_image'))
+                            break
+                except:
+                    pass
+                if done:
+                    break
+
+            if not done:
+                flash('Gorsel uretimi zaman asimina ugradi.', 'error')
+            else:
+                flash('Gorsel olusturuldu!', 'success')
+        except Exception as e:
+            flash(f'Image service hatasi: {e}', 'error')
+
+        return redirect(url_for('admin_ai_image'))
+
+    return render_template('admin/ai_image.html', images=images)
+
+@app.route('/admin/ai-image/file/<path:filename>')
+@login_required
+def ai_image_file(filename):
+    return send_from_directory(os.path.join(UPLOAD_DIR, 'ai_images'), filename)
 
 @app.route('/robots.txt')
 def robots_txt():
