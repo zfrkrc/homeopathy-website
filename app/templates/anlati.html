@@ -336,6 +336,29 @@ body{overflow-y:auto;}
 .leaf-deco--bl{bottom:0;left:0;width:clamp(70px,7vw,120px);opacity:.38;}
 #app,#landingView,#sidebar,#panel{position:relative;z-index:1;}
 @media (max-width:900px){.leaf-deco--tr{width:88px;opacity:.3;}.leaf-deco--bl{display:none;}}
+@media (max-width:760px){
+  #app{flex-direction:column;}
+  #sidebar{width:100%;flex:0 0 auto;position:relative;height:auto;padding:18px;justify-content:flex-start;gap:14px;}
+  .brand h1{font-size:22px;margin:8px 0 10px;}
+  .brand p{font-size:12px;}
+  .progress-wrap{margin-bottom:6px;}
+  .steps{display:flex;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;gap:4px;padding-bottom:4px;}
+  .steps li{flex:0 0 auto;}
+  .steps button{flex-direction:column;text-align:center;font-size:10.5px;gap:5px;padding:7px 8px;}
+  .steps button .num{margin:0 auto;}
+  .sidebar-foot{display:none;}
+  #panelHeader{padding:20px 18px 12px;}
+  #panelHeader h2{font-size:22px;}
+  #content{padding:22px 18px 30px;}
+  footer#navbar{padding:14px 18px 22px;flex-wrap:wrap;gap:10px;}
+  .hero{padding:32px 18px 28px;}
+  .hero h1{font-size:30px;}
+  .site-nav{padding:16px 18px;}
+  .site-blocks{padding:10px 18px 36px;}
+  .cta-block{padding:32px 18px;}
+  .lead-card{padding:26px 20px;}
+  .blog-article{padding:10px 18px 40px;}
+}
 </style>
 </head>
 <body>
