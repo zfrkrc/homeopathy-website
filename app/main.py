@@ -295,6 +295,10 @@ def anlati():
 def vaka_kayit_redirect():
     return redirect('/anlati')
 
+@app.route('/favicon.ico')
+def favicon_ico():
+    return redirect('/uploads/logoaq.png')
+
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if current_user.is_authenticated:
