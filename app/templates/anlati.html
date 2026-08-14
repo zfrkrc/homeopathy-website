@@ -699,8 +699,8 @@ let SECTIONS = [
       {type:"text1",key:"ev_tel",label:"Ev telefonu"},
       {type:"text1",key:"cep_tel",label:"Cep telefonu"},
       {type:"text1",key:"email",label:"E-mail"},
-      {type:"text1",key:"yas",label:"Yaş (doğum tarihinden hesaplanır)",input:"number",readonly:true},
       {type:"text1",key:"dogum_tarihi",label:"Doğum tarihi",input:"date"},
+      {type:"text1",key:"yas",label:"Yaş (otomatik)",input:"number",readonly:true},
       {type:"text1",key:"dogum_yeri",label:"Doğum yeri"},
       {type:"text1",key:"dogum_saati",label:"Doğum saati",input:"time"},
       {type:"select1",key:"beslenme",label:"Beslenme tercihi",options:["Vegan","Vejetaryen","Vejetaryen olmayan"]},
@@ -1396,6 +1396,12 @@ function attachHandlers(root){
       if(yasEl && age > 0){ yasEl.value = age; state.answers["yas"] = String(age); scheduleSave(); updateProgress(); }
     }
   });
+  if(dobEl && dobEl.value){ dobEl.dispatchEvent(new Event("change")); }
+  const tarihEl = root.querySelector('input[data-key="tarih"]');
+  if(tarihEl && !tarihEl.value){
+    const iso = new Date().toISOString().slice(0,10);
+    tarihEl.value = iso; state.answers["tarih"] = iso; scheduleSave();
+  }
   root.querySelectorAll(".chipgrid").forEach(grid=>{
     grid.querySelectorAll(".chip:not(.editing)").forEach(chip=>{
       chip.addEventListener("click",()=>{
