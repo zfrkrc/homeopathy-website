@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Yazılar | {{ site_title }}{% endblock %}
+{% block meta_description %}Homeopatiyi sade bir dille anlatan yazılar — başlangıç yolu ve derinleşme.{% endblock %}
+{% block content %}
+<div class="container" style="max-width:760px;padding-bottom:60px">
+  <div style="padding:44px 0 24px">
+    <span class="post-category" style="display:inline-block;margin-bottom:12px">Yazılar</span>
+    <h1 style="font-family:var(--font-heading);font-size:clamp(26px,4vw,38px);color:var(--ink,#202b22);line-height:1.2">Anlaşılır bir dille homeopati</h1>
+    <p style="font-size:16px;color:var(--ink-2,#39473b);line-height:1.7;max-width:36rem">Yazılar iki grupta: <strong>başlangıç yolu</strong>, homeopatiyi ilk kez duyan biri için sırayla okunacak beş yazı; <strong>derinleşme</strong> ise temelleri bilenler için. Nereden başlayacağınızı bilmiyorsanız birinci gruptaki ilk yazı doğru yer.</p>
+  </div>
+
+  <section style="padding:20px 0 40px">
+    <div style="font-family:monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold,#b08d57);margin-bottom:8px">Başlangıç yolu · 5 yazı · ~40 dakika</div>
+    <h2 style="font-family:var(--font-heading);font-size:24px;color:var(--ink,#202b22);margin-bottom:8px">Sıfırdan başlıyorsanız</h2>
+    <p style="font-size:14px;color:var(--muted,#726f5e);margin-bottom:20px">Bu beşini sırayla okuyun. Her yazının sonunda sıradakine geçiş var.</p>
+    <div style="border-top:1px solid var(--line,#dcd4bd)">
+      {% for p in baslangic %}
+      <a href="{{ url_for('content_page', slug=p.slug) }}" style="display:block;text-decoration:none;color:inherit;padding:22px 0;border-bottom:1px solid var(--line,#dcd4bd);transition:padding-left .2s" onmouseover="this.style.paddingLeft='8px'" onmouseout="this.style.paddingLeft='0'">
+        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold,#b08d57);margin-bottom:6px">{{ p.reading_step }}. adım · {{ p.kicker }}</div>
+        <div style="font-weight:600;font-size:18px;color:var(--ink,#202b22)">{{ p.title }}</div>
+        {% if p.lede %}<div style="font-size:14px;color:var(--muted,#726f5e);margin-top:4px;line-height:1.6">{{ p.lede }}</div>{% endif %}
+        <div style="font-size:12.5px;color:var(--muted,#726f5e);margin-top:8px">Zeyna Üstün{% if p.read_minutes %} · {{ p.read_minutes }} dk okuma{% endif %} &nbsp;<span style="color:var(--gold,#b08d57)">Okuyun →</span></div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section style="padding:10px 0 40px">
+    <div style="font-family:monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold,#b08d57);margin-bottom:8px">Derinleşme</div>
+    <h2 style="font-family:var(--font-heading);font-size:24px;color:var(--ink,#202b22);margin-bottom:8px">Temelleri biliyorsanız</h2>
+    <p style="font-size:14px;color:var(--muted,#726f5e);margin-bottom:20px">Bakış açımı, dinleme biçimimi ve kendi yolumu anlattığım yazılar.</p>
+    <div style="border-top:1px solid var(--line,#dcd4bd)">
+      {% for p in derinlesme %}
+      <a href="{{ url_for('content_page', slug=p.slug) }}" style="display:block;text-decoration:none;color:inherit;padding:22px 0;border-bottom:1px solid var(--line,#dcd4bd);transition:padding-left .2s" onmouseover="this.style.paddingLeft='8px'" onmouseout="this.style.paddingLeft='0'">
+        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold,#b08d57);margin-bottom:6px">{{ p.kicker }}</div>
+        <div style="font-weight:600;font-size:18px;color:var(--ink,#202b22)">{{ p.title }}</div>
+        {% if p.lede %}<div style="font-size:14px;color:var(--muted,#726f5e);margin-top:4px;line-height:1.6">{{ p.lede }}</div>{% endif %}
+        <div style="font-size:12.5px;color:var(--muted,#726f5e);margin-top:8px">Zeyna Üstün{% if p.read_minutes %} · {{ p.read_minutes }} dk okuma{% endif %} &nbsp;<span style="color:var(--gold,#b08d57)">Okuyun →</span></div>
+      </a>
+      {% endfor %}
+    </div>
+    <p style="font-size:13px;color:var(--muted,#726f5e);margin-top:24px">Yeni yazılar ayda bir eklenir.</p>
+  </section>
+</div>
+{% endblock %}

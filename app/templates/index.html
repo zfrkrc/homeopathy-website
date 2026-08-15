@@ -28,6 +28,34 @@
   </div>
 </section>
 
+{% if baslangic_pages %}
+<!-- Okuma Yolu (İlk kez mi duydunuz?) -->
+<section style="padding: 72px 0 64px; border-bottom: 1px solid var(--line,#dcd4bd); background: var(--paper-2,#fffdf7);">
+  <div class="container" style="max-width:860px;">
+    <div style="text-align:center; margin-bottom:44px;">
+      <div style="font-family:monospace; font-size:11px; letter-spacing:0.2em; color:var(--gold,#b08d57); text-transform:uppercase; margin-bottom:14px;">İlk kez mi duydunuz?</div>
+      <h2 style="font-family:var(--font-heading); font-size:32px; color:var(--ink,#202b22); margin-bottom:12px;">Şu sırayla okuyun</h2>
+      <p style="font-size:15px; color:var(--muted,#726f5e); max-width:36rem; margin:0 auto;">Beş yazı, toplam yaklaşık 40 dakika. Sonunda homeopatinin ne olduğunu, neye dayandığını, nasıl çalıştığını ve nerede durduğunu bilerek çıkacaksınız.</p>
+    </div>
+    <div style="display:grid; gap:16px;">
+      {% for p in baslangic_pages %}
+      <a href="{{ url_for('content_page', slug=p.slug) }}" style="display:grid; grid-template-columns:46px 1fr; gap:18px; align-items:start; text-decoration:none; color:inherit; background:var(--paper-2,#fffdf7); border:1px solid var(--line,#dcd4bd); border-radius:14px; padding:22px 24px; box-shadow:var(--shadow-sm); transition:transform .2s, box-shadow .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+        <div style="width:46px;height:46px;border-radius:999px;background:var(--gold-soft,#e7d9bc);color:var(--gold,#b08d57);display:grid;place-items:center;font-family:var(--font-heading);font-size:18px;border:1px solid var(--line,#dcd4bd);">{{ p.reading_step }}</div>
+        <div>
+          <div style="font-weight:600;font-size:18px;color:var(--ink,#202b22);">{{ p.title }}</div>
+          {% if p.lede %}<div style="font-size:14px;color:var(--muted,#726f5e);line-height:1.6;margin-top:4px;">{{ p.lede }}</div>{% endif %}
+          <div style="font-size:12px;color:var(--gold,#b08d57);margin-top:8px;">{% if p.read_minutes %}{{ p.read_minutes }} dk okuma · {% endif %}Okuyun →</div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:32px;">
+      <a href="{{ url_for('yazilar') }}" style="color:var(--gold,#b08d57);font-weight:600;text-decoration:none;font-size:14.5px;">Tüm yazıları gör →</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
 <!-- Bütünsel Yaklaşım (Three Adım Block) matching brand designs -->
 <section style="padding: 76px 0 64px; text-align: center; border-bottom: 1px solid var(--line,#dcd4bd); background: rgba(244,239,225,0.88); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);">
   <div class="container">

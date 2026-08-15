@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} | {{ site_title }}{% endblock %}
+{% block meta_description %}{{ page.lede or page.title }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ page.title }}{% endblock %}
+{% block og_description %}{{ page.lede or page.title }}{% endblock %}
+{% block json_ld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ page.title|tojson }},
+  "description": {{ (page.lede or '')|tojson }},
+  "dateModified": {{ (page.updated_at or '')[:10]|tojson }},
+  "mainEntityOfPage": {{ request.url|tojson }},
+  "publisher": {"@type": "Organization", "name": {{ site_title|tojson }}}
+}
+</script>
+{% endblock %}
+{% block content %}
+<article class="container-narrow post-detail" style="max-width:760px">
+  {% if page.reading_step and page.reading_step > 0 %}
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:18px">
+    <span style="background:var(--gold-soft,#e7d9bc);color:var(--gold,#b08d57);border:1px solid var(--line,#dcd4bd);border-radius:999px;padding:4px 14px;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Başlangıç yolu · {{ page.reading_step }}/5</span>
+    <span style="font-size:12.5px;color:var(--muted,#726f5e)">Homeopatiyi ilk kez duyanlar için okuma sırası</span>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:28px">
+    {% for i in range(1, 6) %}
+    <span style="height:3px;flex:1;border-radius:2px;background:{% if i <= page.reading_step %}var(--gold,#b08d57){% else %}var(--line,#dcd4bd){% endif %}"></span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="post-detail-header" style="margin-bottom:8px">
+    {% if page.kicker %}<span class="post-category" style="display:inline-block;margin-bottom:12px">{{ page.kicker }}</span>{% endif %}
+    <h1 style="font-family:var(--font-heading);font-size:clamp(26px,4vw,38px);color:var(--ink,#202b22);line-height:1.2;margin:0">{{ page.title }}</h1>
+    {% if page.lede %}<p style="font-size:17px;color:var(--ink-2,#39473b);margin-top:12px;line-height:1.6">{{ page.lede }}</p>{% endif %}
+    <div style="font-size:13px;color:var(--muted,#726f5e);margin-top:14px">
+      Zeyna Üstün{% if page.read_minutes %} · {{ page.read_minutes }} dk okuma{% endif %}
+    </div>
+  </div>
+
+  <div class="post-content-wrap" style="max-width:none;padding:20px 0 0">
+    {{ body_html|safe }}
+  </div>
+
+  {% if next_page %}
+  <div style="border-top:1px solid var(--line,#dcd4bd);margin-top:36px;padding-top:24px">
+    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold,#b08d57);margin-bottom:10px">Sıradaki yazı</div>
+    <a href="{{ url_for('content_page', slug=next_page.slug) }}" style="text-decoration:none;color:inherit;display:block">
+      <div style="font-weight:600;font-size:18px;color:var(--ink,#202b22)">{{ next_page.title }}</div>
+      {% if next_page.lede %}<div style="font-size:14px;color:var(--muted,#726f5e);margin-top:4px">{{ next_page.lede }}</div>{% endif %}
+      <div style="font-size:13px;color:var(--gold,#b08d57);margin-top:8px">Okumaya devam edin →</div>
+    </a>
+  </div>
+  {% endif %}
+  <div style="margin-top:24px"><a href="{{ url_for('yazilar') }}" style="font-size:13px;color:var(--gold,#b08d57);text-decoration:none">← Tüm yazılar</a></div>
+</article>
+{% endblock %}

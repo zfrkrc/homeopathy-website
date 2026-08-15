@@ -23,6 +23,8 @@ from app.models import get_category, create_category, update_category, delete_ca
 from app.models import get_gallery_images, add_gallery_image, delete_gallery_image
 from app.models import get_subscribers, add_subscriber, toggle_subscriber, delete_subscriber, get_subscriber_count
 from app.models import get_pageview_stats, record_pageview, get_db
+from app.models import (get_content_pages, get_content_page, get_content_page_by_id,
+                        update_content_page, create_content_page, delete_content_page)
 
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), 'data', 'uploads')
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -206,7 +208,9 @@ def inject_settings():
 @app.route('/')
 def index():
     posts, total = get_posts(page=1, per_page=3)
-    return render_template('index.html', posts=posts)
+    content_pages = [dict(p) for p in get_content_pages(published_only=True)]
+    baslangic = [p for p in content_pages if p.get('group_name') == 'baslangic']
+    return render_template('index.html', posts=posts, baslangic_pages=baslangic)
 
 @app.route('/blog')
 def blog():
@@ -1038,7 +1042,10 @@ def sitemap_xml():
         (f'{base}/', ''),
         (f'{base}/about', ''),
         (f'{base}/gallery', ''),
+        (f'{base}/yazilar', ''),
     ]
+    for p in get_content_pages(published_only=True):
+        urls.append((f'{base}/sayfa/{p["slug"]}', (p['updated_at'] or '')[:10]))
     for p in posts:
         lastmod = (p['updated_at'] or '')[:10]
         urls.append((f'{base}/post/{p["slug"]}', lastmod))
@@ -1311,6 +1318,98 @@ def custom_page(slug):
     page = dict(page)
     blocks = json.loads(page['blocks_json']) if page['blocks_json'] else []
     return render_template('custom_page.html', page=page, blocks=blocks)
+
+
+# ── Content pages (makale/yazı — admin'den yönetilen sabit sayfalar) ────────
+
+_CONTENT_ALLOWED_TAGS = ['p','br','h1','h2','h3','h4','h5','h6','strong','em','b','i','u',
+                         'ul','ol','li','a','img','blockquote','code','pre','hr','table',
+                         'thead','tbody','tr','td','th','span','div','sup','sub','del',
+                         'figure','figcaption']
+
+def _render_content_body(body_md: str) -> str:
+    html = markdown.markdown(body_md or '', extensions=['extra'])
+    return bleach.clean(html, tags=_CONTENT_ALLOWED_TAGS,
+                        attributes={'*': ['class', 'style'], 'a': ['href', 'title', 'target', 'rel'],
+                                    'img': ['src', 'alt', 'title']},
+                        protocols=['http', 'https', 'mailto'], strip=True)
+
+
+@app.route('/sayfa/<slug>')
+def content_page(slug):
+    page = get_content_page(slug)
+    if not page or not page['is_published']:
+        abort(404)
+    page = dict(page)
+    body_html = _render_content_body(page.get('body_md', ''))
+    next_page = get_content_page(page['next_slug']) if page.get('next_slug') else None
+    if next_page and not next_page['is_published']:
+        next_page = None
+    return render_template('content_page.html', page=page, body_html=body_html, next_page=next_page)
+
+
+@app.route('/yazilar')
+def yazilar():
+    pages = [dict(p) for p in get_content_pages(published_only=True)]
+    baslangic = [p for p in pages if p.get('group_name') == 'baslangic']
+    derinlesme = [p for p in pages if p.get('group_name') == 'derinlesme']
+    return render_template('content_list.html', baslangic=baslangic, derinlesme=derinlesme)
+
+
+@app.route('/admin/yazilar')
+@login_required
+def admin_content_pages():
+    pages = [dict(p) for p in get_content_pages(published_only=False)]
+    return render_template('admin/content_pages.html', pages=pages)
+
+
+@app.route('/admin/yazilar/yeni', methods=['GET', 'POST'])
+@login_required
+def admin_content_page_new():
+    if request.method == 'POST':
+        slug = slugify(request.form.get('slug', ''))
+        title = request.form.get('title', '').strip()
+        if not slug or not title:
+            flash('Slug ve başlık zorunlu', 'error')
+            return redirect(url_for('admin_content_page_new'))
+        create_content_page(slug, title)
+        flash('Sayfa oluşturuldu.', 'success')
+        return redirect(url_for('admin_content_page_edit', slug=slug))
+    return render_template('admin/content_page_form.html', page=None)
+
+
+@app.route('/admin/yazilar/<slug>/edit', methods=['GET', 'POST'])
+@login_required
+def admin_content_page_edit(slug):
+    page = get_content_page(slug)
+    if not page:
+        flash('Sayfa bulunamadı', 'error')
+        return redirect(url_for('admin_content_pages'))
+    if request.method == 'POST':
+        update_content_page(
+            slug,
+            request.form.get('title', '').strip(),
+            request.form.get('kicker', '').strip(),
+            request.form.get('lede', '').strip(),
+            request.form.get('body_md', ''),
+            request.form.get('group_name', '').strip(),
+            int(request.form.get('reading_step', '0') or 0),
+            int(request.form.get('read_minutes', '0') or 0),
+            request.form.get('next_slug', '').strip(),
+            int(request.form.get('sort_order', '0') or 0),
+            1 if request.form.get('is_published') else 0,
+        )
+        flash('Sayfa güncellendi.', 'success')
+        return redirect(url_for('admin_content_page_edit', slug=slug))
+    return render_template('admin/content_page_form.html', page=dict(page))
+
+
+@app.route('/admin/yazilar/<slug>/delete', methods=['POST'])
+@login_required
+def admin_content_page_delete(slug):
+    delete_content_page(slug)
+    flash('Sayfa silindi.', 'success')
+    return redirect(url_for('admin_content_pages'))
 
 
 # ── Hakkımda düzenleme ─────────────────────────────────────────────────────

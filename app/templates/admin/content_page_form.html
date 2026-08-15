@@ -1,0 +1,88 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}{{ 'Sayfayı Düzenle' if page else 'Yeni Sayfa' }}{% endblock %}
+{% block breadcrumb %}İçerik <strong>/ Yazılar &amp; Sayfalar</strong>{% endblock %}
+{% block content %}
+<form method="POST" style="max-width:980px">
+  <div class="card">
+    <div class="card-hd" style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-weight:600;color:#202b22">{{ 'Sayfayı Düzenle' if page else 'Yeni Sayfa' }}</span>
+      <button type="submit" class="btn btn-primary" style="padding:8px 20px">Kaydet</button>
+    </div>
+    <div class="card-body">
+      {% if not page %}
+      <div class="f-row">
+        <div class="f-group">
+          <label class="f-label">Slug (URL)</label>
+          <input class="f-input" name="slug" placeholder="ornek-sayfa" required>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Başlık</label>
+          <input class="f-input" name="title" required>
+        </div>
+      </div>
+      {% else %}
+      <div class="f-group">
+        <label class="f-label">Slug (URL) — <span style="color:#888">/sayfa/{{ page.slug }}</span></label>
+        <input class="f-input" value="{{ page.title }}" name="title" required>
+      </div>
+      {% endif %}
+
+      <div class="f-row">
+        <div class="f-group">
+          <label class="f-label">Kicker (etiket)</label>
+          <input class="f-input" name="kicker" value="{{ page.kicker if page else '' }}" placeholder="Temel kavramlar · Başlangıç">
+        </div>
+        <div class="f-group">
+          <label class="f-label">Giriş (lede)</label>
+          <input class="f-input" name="lede" value="{{ page.lede if page else '' }}" placeholder="Kısa açıklama cümlesi">
+        </div>
+      </div>
+
+      <div class="f-row">
+        <div class="f-group">
+          <label class="f-label">Grup</label>
+          <select class="f-input" name="group_name">
+            <option value="" {% if page and not page.group_name %}selected{% endif %}>— yok —</option>
+            <option value="baslangic" {% if page and page.group_name == 'baslangic' %}selected{% endif %}>başlangıç yolu</option>
+            <option value="derinlesme" {% if page and page.group_name == 'derinlesme' %}selected{% endif %}>derinleşme</option>
+            <option value="hub" {% if page and page.group_name == 'hub' %}selected{% endif %}>hub sayfası</option>
+          </select>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Okuma sırası adımı (0 = yok)</label>
+          <input class="f-input" type="number" name="reading_step" value="{{ page.reading_step if page else 0 }}" min="0" max="10">
+        </div>
+      </div>
+
+      <div class="f-row">
+        <div class="f-group">
+          <label class="f-label">Okuma süresi (dk)</label>
+          <input class="f-input" type="number" name="read_minutes" value="{{ page.read_minutes if page else 0 }}" min="0">
+        </div>
+        <div class="f-group">
+          <label class="f-label">Sıradaki yazı (slug, boş = yok)</label>
+          <input class="f-input" name="next_slug" value="{{ page.next_slug if page else '' }}" placeholder="yasam-gucu">
+        </div>
+      </div>
+
+      <div class="f-row">
+        <div class="f-group">
+          <label class="f-label">Sıralama</label>
+          <input class="f-input" type="number" name="sort_order" value="{{ page.sort_order if page else 0 }}">
+        </div>
+        <div class="f-group" style="display:flex;align-items:flex-end;padding-bottom:8px">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#39473b">
+            <input type="checkbox" name="is_published" {% if not page or page.is_published %}checked{% endif %} style="width:16px;height:16px"> Yayında
+          </label>
+        </div>
+      </div>
+
+      <div class="f-group">
+        <label class="f-label">İçerik (Markdown)</label>
+        <textarea class="f-input" name="body_md" rows="24" style="font-family:monospace;font-size:13px;line-height:1.6">{{ page.body_md if page else '' }}</textarea>
+        <div style="font-size:12px;color:#888;margin-top:6px">Markdown desteklenir: <code>## Başlık</code>, <code>**kalın**</code>, <code>*italik*</code>, <code>- liste</code>, <code>&gt; alıntı/not</code>, <code>[metin](url)</code>.</div>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}

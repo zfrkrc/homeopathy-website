@@ -62,6 +62,22 @@ def init_db():
             key TEXT PRIMARY KEY,
             value TEXT NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS content_pages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            slug TEXT UNIQUE NOT NULL,
+            title TEXT NOT NULL,
+            kicker TEXT DEFAULT '',
+            lede TEXT DEFAULT '',
+            body_md TEXT DEFAULT '',
+            group_name TEXT DEFAULT '',
+            reading_step INTEGER DEFAULT 0,
+            read_minutes INTEGER DEFAULT 0,
+            next_slug TEXT DEFAULT '',
+            sort_order INTEGER DEFAULT 0,
+            is_published INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
     ''')
     # Lightweight migrations for existing databases
     for ddl in [
@@ -123,6 +139,7 @@ def init_db():
         );
     """)
     conn.commit()
+    seed_content_pages(conn)
     conn.close()
 
 class User(UserMixin):
@@ -242,6 +259,96 @@ def get_related_posts(category, exclude_id, limit=3):
 def delete_post(id):
     conn = get_db()
     conn.execute('DELETE FROM posts WHERE id=?', (id,))
+    conn.commit()
+    conn.close()
+
+
+# ── Content pages (makale/yazı — admin'den yönetilen sabit sayfalar) ─────────
+
+def seed_content_pages(conn=None):
+    """content_seed.json'daki içeriği idempotent biçimde içe aktarır.
+    Mevcut satırları bozmaz; yalnızca eksik slug'ları ekler."""
+    import json as _json
+    seed_path = os.path.join(os.path.dirname(__file__), 'content_seed.json')
+    if not os.path.exists(seed_path):
+        return
+    try:
+        with open(seed_path, encoding='utf-8') as f:
+            entries = _json.load(f)
+    except Exception:
+        return
+    own = conn is None
+    if own:
+        conn = get_db()
+    for e in entries:
+        exists = conn.execute('SELECT id FROM content_pages WHERE slug=?', (e.get('slug'),)).fetchone()
+        if exists:
+            continue
+        conn.execute(
+            'INSERT INTO content_pages (slug, title, kicker, lede, body_md, group_name, '
+            'reading_step, read_minutes, next_slug, sort_order, is_published) '
+            'VALUES (?,?,?,?,?,?,?,?,?,?,1)',
+            (e.get('slug'), e.get('title', ''), e.get('kicker', ''), e.get('lede', ''),
+             e.get('body_md', ''), e.get('group', ''), e.get('reading_step', 0),
+             e.get('read_minutes', 0), e.get('next_slug', ''), e.get('sort_order', 0))
+        )
+    conn.commit()
+    if own:
+        conn.close()
+
+
+def get_content_pages(published_only=True):
+    conn = get_db()
+    q = 'SELECT * FROM content_pages'
+    if published_only:
+        q += ' WHERE is_published=1'
+    q += ' ORDER BY sort_order, id'
+    rows = conn.execute(q).fetchall()
+    conn.close()
+    return rows
+
+
+def get_content_page(slug):
+    conn = get_db()
+    row = conn.execute('SELECT * FROM content_pages WHERE slug=?', (slug,)).fetchone()
+    conn.close()
+    return row
+
+
+def get_content_page_by_id(id):
+    conn = get_db()
+    row = conn.execute('SELECT * FROM content_pages WHERE id=?', (id,)).fetchone()
+    conn.close()
+    return row
+
+
+def update_content_page(slug, title, kicker, lede, body_md, group_name, reading_step,
+                        read_minutes, next_slug, sort_order, is_published):
+    conn = get_db()
+    now = datetime.now().isoformat()
+    conn.execute(
+        'UPDATE content_pages SET title=?, kicker=?, lede=?, body_md=?, group_name=?, '
+        'reading_step=?, read_minutes=?, next_slug=?, sort_order=?, is_published=?, updated_at=? '
+        'WHERE slug=?',
+        (title, kicker, lede, body_md, group_name, reading_step, read_minutes, next_slug,
+         sort_order, int(is_published), now, slug)
+    )
+    conn.commit()
+    conn.close()
+
+
+def create_content_page(slug, title):
+    conn = get_db()
+    conn.execute(
+        'INSERT INTO content_pages (slug, title, is_published) VALUES (?, ?, 0)', (slug, title)
+    )
+    conn.commit()
+    conn.close()
+
+
+def delete_content_page(slug):
+    conn = get_db()
+    conn.execute('DELETE FROM content_pages WHERE slug=?', (slug,))
     conn.commit()
     conn.close()
 
