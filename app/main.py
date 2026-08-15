@@ -48,7 +48,6 @@ def delete_upload(fname):
 
 app = Flask(__name__)
 app.config.update(
-    PREFERRED_URL_SCHEME='https',
 )
 app.register_blueprint(portal_bp)
 app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(32)
@@ -1038,12 +1037,7 @@ def sitemap_xml():
     urls = [
         (f'{base}/', ''),
         (f'{base}/about', ''),
-        (f'{base}/blog', ''),
         (f'{base}/gallery', ''),
-        (f'{base}/iletisim', ''),
-        (f'{base}/anlati', ''),
-        (f'{base}/s/yaklasimim', ''),
-        (f'{base}/s/danismanlik', ''),
     ]
     for p in posts:
         lastmod = (p['updated_at'] or '')[:10]
@@ -1057,170 +1051,72 @@ def sitemap_xml():
            + ''.join(items) + '</urlset>')
     return Response(xml, mimetype='application/xml')
 
-
-@app.route('/rss.xml')
-def rss_feed():
-    from flask import Response
-    base = request.url_root.rstrip('/')
-    posts, _ = get_posts(page=1, per_page=50)
-    items = []
-    for p in posts:
-        link = f'{base}/post/{p["slug"]}'
-        pub = p['created_at'] or ''
-        items.append(
-            '<item>'
-            f'<title>{_escape_xml(p["title"])}</title>'
-            f'<link>{link}</link>'
-            f'<guid>{link}</guid>'
-            f'<description>{_escape_xml(p["excerpt"] or "")}</description>'
-            f'<pubDate>{pub}</pubDate>'
-            '</item>'
-        )
-    rss = ('<?xml version="1.0" encoding="UTF-8"?>'
-           '<rss version="2.0"><channel>'
-           f'<title>{_escape_xml(get_setting("site_title", "Zeyna Üstün"))}</title>'
-           f'<link>{base}/</link>'
-           f'<description>{_escape_xml(get_setting("site_description", ""))}</description>'
-           '<language>tr</language>'
-           + ''.join(items) + '</channel></rss>')
-    return Response(rss, mimetype='application/rss+xml')
-
-
-def _escape_xml(s):
-    return (s or '').replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
-
 @app.route('/theme.css')
 def theme_css():
+    primary = get_setting('primary_color', '#3d6b4f')
+    secondary = get_setting('secondary_color', '#2d4f3a')
+    bg = get_setting('bg_color', '#ffffff')
+    text = get_setting('text_color', '#333333')
+    font_h = get_setting('font_heading', 'Georgia, serif')
+    font_b = get_setting('font_body', 'sans-serif')
     custom = get_setting('custom_css', '')
-    css = f'''/* Zeyna Üstün · Hayatı Okuma — design tokens
-   Sukunet > canlilik. Marka paletinin kontrast-dogrulanmis hali.
-   Tum stil kararlari bu custom property'lerden beslenir; style.css harici
-   hardcoded renk/olcu kullanmaz. */
+    hero_start = get_setting('hero_color_start', '#1e5631')
+    hero_end = get_setting('hero_color_end', '#74c69d')
+    card_radius = get_setting('card_radius', '14px')
+    card_shadow_map = {'none': 'none', 'sm': '0 2px 10px rgba(0,0,0,.06)', 'md': '0 4px 20px rgba(0,0,0,.10)', 'lg': '0 8px 32px rgba(0,0,0,.15)'}
+    card_shadow = card_shadow_map.get(get_setting('card_shadow', 'sm'), '0 2px 10px rgba(0,0,0,.06)')
+    thumb_color = get_setting('thumb_color', '#2d6a4f')
+    css = f'''/* Zeyna Dynamic Theme — premium paper aesthetic */
 :root {{
-   /* COLOR — Novocura paleti, --ed-* semasina eslenmis */
-  --bg: #F6F1E7;            --bg-rgb: 246,241,231;      /* parchment */
-  --surface: #FBF8F0;      --surface-rgb: 251,248,240;
-  --bg-deep: #EAE2D0;      --bg-deep-rgb: 234,226,208;  /* sand */
-  --dark: #2C4A3B;         --dark-rgb: 44,74,59;        /* forest */
-  --dark-soft: #1B2E23;    --dark-soft-rgb: 27,46,35;   /* forest-deep */
-  --ink: #3A4A40;          --ink-rgb: 58,74,64;         /* govde */
-  --ink-soft: #4E5E54;     --ink-soft-rgb: 78,94,84;    /* ikincil (kontrast düzeltilmis) */
-  --muted: #55625A;        --muted-rgb: 85,98,90;       /* AA 5.4:1 */
-  --on-dark: #F6F1E7;      --on-dark-rgb: 246,241,231;
-  --on-dark-muted: #C7D0BE; --on-dark-muted-rgb: 199,208,190;
-  --accent: #7A5C35;       /* metin ve link (AA >= 4.5) */  --accent-rgb: 122,92,53;
-  --accent-bright: #B08D57;/* brass — SADECE dekor: cizgi, ikon, rozet */  --accent-bright-rgb: 176,141,87;
-  --sage: #C7D0BE;         --sage-rgb: 199,208,190;     /* yumusak dekor */
-  --success: #4d7a52;      --success-rgb: 77,122,82;
-  --error: #a3403a;        --error-rgb: 163,64,58;
-  --line: rgba(58, 74, 64, 0.16);
-  --line-soft: rgba(58, 74, 64, 0.08);
-
-  /* TYPOGRAPHY */
-  --font-display: "Cormorant Garamond", Georgia, serif;
-  --font-body: "Montserrat", system-ui, sans-serif;
-  --step--1: clamp(.875rem, .83rem + .2vw, .95rem);
-  --step-0: clamp(1.0625rem, 1rem + .25vw, 1.15rem);
-  --step-1: clamp(1.3rem, 1.15rem + .6vw, 1.6rem);
-  --step-2: clamp(1.75rem, 1.4rem + 1.4vw, 2.6rem);
-  --step-3: clamp(2.4rem, 1.7rem + 3vw, 4.5rem);
-  --step-4: clamp(3rem, 1.8rem + 6vw, 7rem);
-
-  /* SPACING */
-  --s1: .5rem;
-  --s2: 1rem;
-  --s3: 1.5rem;
-  --s4: 2.5rem;
-  --s5: 4rem;
-  --s6: 6rem;
-  --s7: 9rem;
-
-  /* LAYOUT */
-  --measure: 64ch;
-  --radius: 2px;
-  --radius-lg: 16px;
-
-  /* MOTION */
-  --ease: cubic-bezier(.22, .61, .36, 1);
-  --dur: .6s;
+  --primary: {primary};
+  --secondary: {secondary};
+  --bg: {bg};
+  --text: {text};
+  --font-heading: \{font_h};
+  --font-body: \{font_b};
+  --gold: #b08d57;
+  --gold-soft: #e7d9bc;
+  --ink: #202b22;
+  --ink-2: #39473b;
+  --paper: #f4efe1;
+  --paper-2: #fffdf7;
+  --line: #dcd4bd;
+  --muted: #726f5e;
+  --sage: #74906f;
+  --card-radius: {card_radius};
 }}
-
-/* ---- DARK MODE (ayni AA esikleri) ---- */
-[data-theme="dark"] {{
-  --bg: #121A15;            --bg-rgb: 18,26,21;
-  --surface: #1A241D;      --surface-rgb: 26,36,29;
-  --bg-deep: #0E140F;      --bg-deep-rgb: 14,20,15;
-  --dark: #0A0F0B;         --dark-rgb: 10,15,11;
-  --dark-soft: #1B2E23;    --dark-soft-rgb: 27,46,35;
-  --ink: #F6F1E7;          --ink-rgb: 246,241,231;
-  --ink-soft: #C7D0BE;     --ink-soft-rgb: 199,208,190;
-  --muted: #B9C2B6;        --muted-rgb: 185,194,182;    /* koyu zemin AA */
-  --on-dark: #F6F1E7;      --on-dark-rgb: 246,241,231;
-  --on-dark-muted: #C7D0BE; --on-dark-muted-rgb: 199,208,190;
-  --accent: #D8BC84;    /* koyu zeminde AA metin vurgusu */  --accent-rgb: 216,188,132;
-  --accent-bright: #B08D57;  --accent-bright-rgb: 176,141,87;
-  --sage: #C7D0BE;     --sage-rgb: 199,208,190;
-  --success: #5ea86a;  --success-rgb: 94,168,106;
-  --error: #b35a52;    --error-rgb: 179,90,82;
-  --line: rgba(246, 241, 231, 0.16);
-  --line-soft: rgba(246, 241, 231, 0.08);
-}}
-
-/* ---- legacy aliases (Jinja template inlinelari + eski style.css)
-   :root ve dark-mode ortak tek blockta; degerler var() ile takip eder. ---- */
-:root, html[data-theme="dark"] {{
-  --primary: var(--accent);
-  --secondary: var(--sage);
-  --text: var(--ink);
-  --font-heading: var(--font-display);
-  --gold: var(--accent-bright);
-  --gold-soft: #EAE2D0;
-  --ink-2: var(--ink-soft);
-  --paper: var(--bg);
-  --paper-2: var(--surface);
-  --border: var(--line);
-
-  /* legacy --ed-* (eski editorial template'ler) */
-  --ed-bg: var(--bg);
-  --ed-bg-deep: var(--bg-deep);
-  --ed-surface: var(--surface);
-  --ed-ink: var(--ink);
-  --ed-ink-soft: var(--ink-soft);
-  --ed-muted: var(--muted);
-  --ed-faint: var(--muted);
-  --ed-line: var(--line);
-  --ed-line-soft: var(--line-soft);
-  --ed-accent: var(--accent);
-  --ed-accent-deep: var(--accent);
-  --ed-accent-bright: var(--accent-bright);
-  --ed-sage: var(--sage);
-  --ed-dark: var(--dark);
-  --ed-dark-soft: var(--dark-soft);
-  --ed-dark-text: var(--on-dark);
-  --fs-hero: var(--step-4);
-  --fs-hero-slogan: var(--step-1);
-  --fs-h2: var(--step-2);
-  --fs-h3: var(--step-1);
-  --fs-body: var(--step-0);
-  --space-xs: var(--s1);
-  --space-sm: var(--s2);
-  --space-md: var(--s3);
-  --space-lg: var(--s4);
-  --space-xl: var(--s5);
-  --space-2xl: var(--s6);
-  --container: 1320px;
-  --container-narrow: 760px;
-  --gutter: clamp(1.25rem, 4vw, 3rem);
-  --ease-editorial: var(--ease);
-  --dur-slow: 900ms;
-  --dur-med: var(--dur);
-}}
-
-/* ---- admin ozel css (custom_css) ---- */
-{custom}'''
-    resp = Response(css, mimetype='text/css')
-    resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-    return resp
+body {{ font-family: var(--font-body); color: var(--ink); -webkit-font-smoothing: antialiased; }}
+h1, h2, h3, h4, h5, h6, .logo, .post-title, .hero h1, .hero-content h1 {{ font-family: var(--font-heading); letter-spacing: -.02em; }}
+a {{ color: var(--gold); }}
+.nav {{ background: rgba(244,239,225,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }}
+.nav-link {{ color: var(--ink-2); font-size: 13.5px; font-weight: 500; }}
+.nav-link:hover {{ color: var(--gold); }}
+.hero {{ background: linear-gradient(135deg, var(--gold) 0%, var(--sage) 100%); }}
+.hero h1, .hero p {{ color: #fff; }}
+.hero-content {{ padding: 80px 0; }}
+.tag {{ background: rgba(255,255,255,.15); color: rgba(255,255,255,.85); border: 1px solid rgba(255,255,255,.25); }}
+.tag-active {{ background: #fff; color: var(--ink); }}
+.post-card {{ background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--card-radius); box-shadow: 0 2px 12px rgba(0,0,0,.04); transition: transform .2s, box-shadow .2s; }}
+.post-card:hover {{ transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.08); border-color: var(--gold); }}
+.post-read {{ color: var(--gold); }}
+.post-thumb {{ background: linear-gradient(135deg, var(--gold-soft), var(--sage)); }}
+.site-footer {{ background: var(--ink); color: #a9a58f; }}
+.btn-newsletter {{ background: var(--gold); }}
+.tag:hover {{ background: rgba(255,255,255,.25); }}
+.nav-links a {{ border-radius: 8px; transition: background .15s; }}
+.nav-links a:hover {{ background: rgba(176,141,87,.08); }}
+.flash {{ border-radius: 10px; }}
+.flash.error {{ background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }}
+.flash.success {{ background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }}
+.flash.info {{ background: var(--gold-soft); color: #6b5220; border: 1px solid var(--gold); }}
+.card {{ background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--card-radius); }}
+.newsletter {{ background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--card-radius); }}
+input, textarea, select {{ font-family: var(--font-body); border: 1px solid var(--line); border-radius: 10px; background: var(--paper-2); padding: 10px 14px; }}
+input:focus, textarea:focus, select:focus {{ outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(176,141,87,.12); }}
+.search-form input {{ border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.12); color: #fff; }}
+.search-form input::placeholder {{ color: rgba(255,255,255,.5); }}
+.custom_css_placeholder'''
+    return Response(css, mimetype='text/css')
 
 @app.route('/static/<path:path>')
 def static_files(path):

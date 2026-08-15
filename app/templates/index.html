@@ -1,234 +1,119 @@
 {% extends "base.html" %}
 {% block title %}{{ site_title }} | {{ site_description }}{% endblock %}
-{% block og_image %}<meta property="og:image" content="{{ url_for('uploaded_file', filename='og.png', _external=True)|replace('http://', 'https://') }}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">{% endblock %}
-{% block json_ld %}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Person",
-      "@id": "{{ request.url_root.rstrip('/') }}/#person",
-      "name": "Zeyna Üstün",
-      "url": "{{ request.url_root.rstrip('/') }}/",
-      "image": "{{ url_for('uploaded_file', filename='og.png', _external=True)|replace('http://', 'https://') }}",
-      "jobTitle": "Hayatı Okuma danışmanı"
-    },
-    {
-      "@type": "ProfilePage",
-      "@id": "{{ request.url_root.rstrip('/') }}/#profile",
-      "url": "{{ request.url_root.rstrip('/') }}/",
-      "mainEntity": { "@id": "{{ request.url_root.rstrip('/') }}/#person" }
-    },
-    {
-      "@type": "Service",
-      "@id": "{{ request.url_root.rstrip('/') }}/#service",
-      "name": "Hayatı Okuma",
-      "description": "{{ site_description }}",
-      "provider": { "@id": "{{ request.url_root.rstrip('/') }}/#person" },
-      "areaServed": "TR"
-    }
-  ]
-}
-</script>
-{% endblock %}
 {% block content %}
 
-<!-- ─── HERO ─ fotografik, editorial tipografi ─── -->
-<section class="hero hero--photo">
-  <div class="hero-bg" aria-hidden="true"></div>
-  <div class="hero__inner">
-    <div class="hero__eyebrow reveal">
-      <span class="eyebrow">Zeyna Üstün · Hayatı Okuma</span>
-    </div>
-    <h1 class="hero__title reveal" data-delay="1">Hayatı<br>Okuma<span style="color:var(--ed-accent)">.</span></h1>
-    <div class="hero__side">
-      <p class="hero__desc reveal" data-delay="2">Bağlantıları gör.<br>Keşfet.<br>Her haline izin ver.</p>
-      <div class="hero__meta reveal" data-delay="2">
-        <a href="/anlati" class="cta-line">Birlikte Keşfedelim <span class="arrow">→</span></a>
-        <span>EST. 2026</span>
+<!-- Anasayfa — sadece burada Gemini arka plan -->
+<style>body{background:url('/uploads/background.png') no-repeat center fixed!important;background-size:cover!important}</style>
+
+<!-- Homepage Hero -->
+<section class="hero-visual">
+  <div class="hero-visual__mobile">
+    <h1>Hayatı Okuma</h1>
+    <p>Bağlantıları gör.<br>Keşfet.<br>Her haline izin ver.</p>
+    <a href="/anlati">Birlikte Keşfedelim</a>
+  </div>
+
+  <div class="hero-visual__frame" style="background:transparent;box-shadow:none;border-radius:0;overflow:visible">
+    <div class="hero-visual__overlay" style="position:static;left:auto;top:auto;width:100%;padding:60px 20px 40px;text-align:center">
+      <div class="hero-visual__title" style="color:#202b22;text-shadow:0 2px 20px rgba(244,239,225,0.7)">Hayatı Okuma</div>
+      <div class="hero-visual__slogan" style="color:#39473b;text-shadow:0 2px 18px rgba(244,239,225,0.7)">
+        Bağlantıları gör.<br>
+        Keşfet.<br>
+        Her haline izin ver.
       </div>
-      <div class="hero__scroll reveal" data-delay="3">
-        <span class="line"></span>
-        <span>Aşağı Kaydır</span>
+      <div style="margin-top:30px">
+        <a class="hero-visual__cta" href="/anlati" style="position:static;left:auto;bottom:auto;transform:none">Birlikte Keşfedelim</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── KİME İYİ GELİR? ─── -->
-<section class="section">
+<!-- Bütünsel Yaklaşım (Three Adım Block) matching brand designs -->
+<section style="padding: 76px 0 64px; text-align: center; border-bottom: 1px solid var(--line,#dcd4bd); background: rgba(244,239,225,0.88); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);">
   <div class="container">
-    <div class="sec-head">
-      <span class="sec-num">Kime İyi Gelir?</span>
-      <h2>Kendini arayan herkese</h2>
-      <p class="sec-intro">Hayatı Okuma alanı, bir tanı ya da etiket koymadan; insanı kendi hikâyesiyle karşılaştıran, yargısız bir alandır.</p>
-    </div>
-    <div class="for-whom">
-      <div class="for-whom__item reveal">
-        <span class="for-whom__num">01</span>
-        <h3>Hayatında dönüm noktasında olanlar</h3>
-        <p>Değişim, kayıp, yeni bir başlangıç ya da belirsizlik içinde olup yönünü bulmak isteyenler.</p>
+    <h2 style="font-family: var(--font-heading); font-size: 32px; color: var(--ink,#202b22); margin-bottom: 12px; font-weight: 600;">Bütünsel Yaklaşım</h2>
+    <div style="font-family: monospace; font-size: 11px; letter-spacing: 0.2em; color: var(--gold,#b08d57); text-transform: uppercase; margin-bottom: 50px;">Bağlantıları gör · Keşfet · Her haline izin ver</div>
+    
+    <div class="steps-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; text-align: left;">
+      <div style="background: var(--paper-2,#fffdf7); border: 1px solid var(--line,#dcd4bd); border-radius: var(--card-radius, 14px); padding: 36px 28px; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform=''; this.style.boxShadow='var(--shadow-sm)';">
+        <div style="font-family: monospace; font-size: 11px; color: var(--gold,#b08d57); font-weight: bold; margin-bottom: 14px; letter-spacing: 0.1em;">ADIM I</div>
+        <h3 style="font-family: var(--font-heading); font-size: 21px; color: var(--ink,#202b22); margin-bottom: 12px; font-weight: 600;">Bağlantıları Gör</h3>
+        <p style="font-size: 14.5px; color: var(--muted,#726f5e); line-height: 1.7;">İnsan hayatını yalnızca tek tek semptomlardan değil; semptomlar, olaylar, duygular, ilişkiler ve yaşam hikâyesi arasındaki bağlantılardan oluşan bir bütün olarak görmek.</p>
       </div>
-      <div class="for-whom__item reveal" data-delay="1">
-        <span class="for-whom__num">02</span>
-        <h3>Beden ve duygu arasında bağ arayanlar</h3>
-        <p>Anlamsız gelen bedensel şikâyetlerin ardındaki hikâyeyi anlamak ve bütünlüğe dönmek isteyenler.</p>
+      <div style="background: var(--paper-2,#fffdf7); border: 1px solid var(--line,#dcd4bd); border-radius: var(--card-radius, 14px); padding: 36px 28px; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform=''; this.style.boxShadow='var(--shadow-sm)';">
+        <div style="font-family: monospace; font-size: 11px; color: var(--gold,#b08d57); font-weight: bold; margin-bottom: 14px; letter-spacing: 0.1em;">ADIM II</div>
+        <h3 style="font-family: var(--font-heading); font-size: 21px; color: var(--ink,#202b22); margin-bottom: 12px; font-weight: 600;">Keşfet</h3>
+        <p style="font-size: 14.5px; color: var(--muted,#726f5e); line-height: 1.7;">Karşımdaki kişiyi düzeltmek veya onun adına bir sonuç vaat etmek yerine; kendisini ve yaşam döngülerini yargısızca keşfetmesine alan açmak.</p>
       </div>
-      <div class="for-whom__item reveal" data-delay="2">
-        <span class="for-whom__num">03</span>
-        <h3>Kendine alan açmak isteyenler</h3>
-        <p>Hayatını dinleyen bir eşlikçiyle, acele etmeden kendi döngülerini keşfetmeye hazır olanlar.</p>
+      <div style="background: var(--paper-2,#fffdf7); border: 1px solid var(--line,#dcd4bd); border-radius: var(--card-radius, 14px); padding: 36px 28px; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform=''; this.style.boxShadow='var(--shadow-sm)';">
+        <div style="font-family: monospace; font-size: 11px; color: var(--gold,#b08d57); font-weight: bold; margin-bottom: 14px; letter-spacing: 0.1em;">ADIM III</div>
+        <h3 style="font-family: var(--font-heading); font-size: 21px; color: var(--ink,#202b22); margin-bottom: 12px; font-weight: 600;">Her Haline İzin Ver</h3>
+        <p style="font-size: 14.5px; color: var(--muted,#726f5e); line-height: 1.7;">Acele etmeden, sakinlikle ve merhametle yaklaşarak; kişinin beden, zihin ve ruh bütünlüğündeki tüm hallerine güvenle alan açmak.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── 01 · BÜTÜNSEL YAKLAŞIM — pin'lenen üç adım ─── -->
-<section class="stage-intro">
-  <span class="kicker">01 — Yaklaşım</span>
-  <h2>Bütünsel Yaklaşım</h2>
-  <div class="hairline"></div>
-  <div class="hint">yavaşça kaydırın</div>
-</section>
-
-<section class="stage-section" id="stageSection">
-  <div class="stage-pin">
-    <svg class="journey-path" aria-hidden="true"><path class="jline" d=""/></svg>
-
-    <div class="jstep js1 tx-r">
-      <div class="jbadge"><span>1</span></div>
-      <div class="jtext">
-        <div class="num">Adım I</div>
-        <h3>Bağlantıları Gör</h3>
-        <p>İnsan hayatını yalnızca tek tek semptomlardan değil; semptomlar, olaylar, duygular, ilişkiler ve yaşam hikâyesi arasındaki bağlantılardan oluşan bir bütün olarak görmek.</p>
+<!-- Personal Bio Teaser Section -->
+<section style="padding: 80px 0; background: var(--paper-2,#fffdf7); border-bottom: 1px solid var(--line,#dcd4bd);">
+  <div class="container" style="display:grid; grid-template-columns: 1fr; gap: 40px; align-items: center;">
+    <style>
+      @media (min-width: 768px) {
+        .about-teaser-grid { grid-template-columns: 280px 1fr !important; }
+      }
+    </style>
+    <div class="about-teaser-grid" style="display:grid; grid-template-columns: 1fr; gap: 40px;">
+      <div style="text-align:center;">
+        <img src="/uploads/logoaq.png" alt="Zeyna Üstün" style="width: 180px; height: 180px; border-radius: 50%; border: 1px solid var(--line,#dcd4bd); box-shadow: var(--shadow-sm); object-fit: contain;">
       </div>
-    </div>
-
-    <div class="jstep js2 tx-l">
-      <div class="jbadge"><span>2</span></div>
-      <div class="jtext">
-        <div class="num">Adım II</div>
-        <h3>Keşfet</h3>
-        <p>Karşımdaki kişiyi düzeltmek veya onun adına bir sonuç vaat etmek yerine; kendisini ve yaşam döngülerini yargısızca keşfetmesine alan açmak.</p>
-      </div>
-    </div>
-
-    <div class="jstep js3 tx-r">
-      <div class="jbadge"><span>3</span></div>
-      <div class="jtext">
-        <div class="num">Adım III</div>
-        <h3>Her Haline İzin Ver</h3>
-        <p>Acele etmeden, sakinlikle ve merhametle yaklaşarak; kişinin beden, zihin ve ruh bütünlüğündeki tüm hallerine güvenle alan açmak.</p>
-      </div>
-    </div>
-
-    <div class="jstep js4 tx-l">
-      <div class="jbadge"><span>4</span></div>
-      <div class="jtext">
-        <div class="num">Adım IV</div>
-        <h3>Bütünlüğe Dön</h3>
-        <p>Görülen bağlantılar ve açılan alan sonrası; kişinin kendi ritmine, kendi cümlelerine ve kendi bütünlüğüne güvenle dönmesine eşlik etmek.</p>
-      </div>
-    </div>
-
-    <div class="progress-label">İlerleme</div>
-    <div class="progress"><div class="bar" id="progressBar"></div></div>
-  </div>
-</section>
-
-<!-- ─── 02 · HAKKIMDA ─── -->
-<section class="section" style="background:var(--ed-bg-deep)">
-  <div class="container">
-    <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:var(--space-lg);align-items:center">
-      <div style="grid-column:1/4" class="reveal">
-        <img src="/uploads/logoaq.png" alt="Zeyna Üstün" style="width:100%;max-width:220px;aspect-ratio:1;object-fit:contain;margin-left:auto;">
-      </div>
-      <div style="grid-column:4/10" class="reveal" data-delay="1">
-        <span class="eyebrow" style="display:block;margin-bottom:var(--space-md)">02 — Hakkımda</span>
-        <h2 style="font-family:var(--font-display);font-size:var(--fs-h2);margin-bottom:var(--space-lg);letter-spacing:-.03em">Ben Zeyna Üstün</h2>
-      </div>
-      <div style="grid-column:4/13" class="reveal" data-delay="2">
-        <p style="font-size:var(--fs-body);line-height:1.9;color:var(--ed-ink-soft);max-width:60ch;margin-bottom:var(--space-lg)">
-          Yıllarca hizmet ve turizm sektöründe operasyon müdürlüğü yaptıktan sonra, hayatıma özel gereksinimli bir evladın gelişi benim dönüm noktam oldu.
+      <div>
+        <h2 style="font-family: var(--font-heading); font-size: 32px; color: var(--ink,#202b22); margin-bottom: 16px;">Ben Zeyna Üstün</h2>
+        <div style="font-family: monospace; font-size: 11px; color: var(--gold,#b08d57); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 20px;">Hayatı Okuma Niyetiyle</div>
+        <p style="font-size: 16px; line-height: 1.8; color: var(--ink-2,#39473b); margin-bottom: 24px;">
+          Yıllarca hizmet ve turizm sektöründe operasyon müdürlüğü yaptıktan sonra, hayatıma özel gereksinimli bir evladın gelişi benim dönüm noktam oldu. 
           Bu uyanış beni bütünsel bakış açısı eğitimlerine getirdi. Bugün, insanı sadece semptomlarıyla değil; beden, zihin ve ruh bütünlüğündeki tüm hikayesiyle dinlediğim "Hayatı Okuma" alanını sunuyorum.
         </p>
-        <a href="/about" class="cta-line">Yolumun Hikayesini Oku <span class="arrow">→</span></a>
+        <a href="/about" style="color: var(--primary,#74906f); font-weight: 600; text-decoration: none; font-size: 15px;">Yolumun Hikayesini Oku →</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── NASIL İŞLER ─── -->
-<section class="section">
+<!-- Blog Posts Teaser Section -->
+<section style="padding: 80px 0; background: rgba(244,239,225,0.88); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-bottom: 1px solid var(--line,#dcd4bd);">
   <div class="container">
-    <div class="sec-head">
-      <span class="sec-num">Nasıl İşler</span>
-      <h2>Birlikte yürüdüğümüz yol</h2>
-    </div>
-    <ol class="steps">
-      <li class="reveal">
-        <span class="step-num">01</span>
-        <div>
-          <h3>Tanışma</h3>
-          <p>İlk adım; birbirimizi tanımak ve sana neyin iyi geleceğini birlikte görmek. Bu buluşma hiçbir taahhüt içermez.</p>
-        </div>
-      </li>
-      <li class="reveal" data-delay="1">
-        <span class="step-num">02</span>
-        <div>
-          <h3>Dinleme</h3>
-          <p>Hikâyeni bütünüyle dinlerim; yalnızca bugününü değil, olaylar, duygular ve bedenin arasındaki bağlantıları birlikte okuruz.</p>
-        </div>
-      </li>
-      <li class="reveal" data-delay="2">
-        <span class="step-num">03</span>
-        <div>
-          <h3>Keşif</h3>
-          <p>Kendi döngülerini yargısızca fark etmene alan açarım; sen kendi hızında, kendi cümlelerinle keşfedersin.</p>
-        </div>
-      </li>
-    </ol>
-  </div>
-</section>
-
-<!-- ─── 03 · SON YAZILAR ─── -->
-<section class="section">
-  <div class="container">
-    <div class="sec-head">
-      <span class="sec-num">03 — Blog</span>
-      <h2>Son Yazılar</h2>
-      <p class="sec-intro">Hayatı Okuma ve bütünsel yaşam felsefesi üzerine düşünceler.</p>
-      <div style="text-align:right"><a href="/blog" class="cta-line">Tüm Yazıları Gör <span class="arrow">→</span></a></div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:40px; flex-wrap:wrap; gap:16px;">
+      <div>
+        <h2 style="font-family: var(--font-heading); font-size: 32px; color: var(--ink,#202b22); margin-bottom: 8px;">Son Yazılar</h2>
+        <p style="font-size: 14.5px; color: var(--muted,#726f5e); margin:0;">Hayatı Okuma ve bütünsel yaşam felsefesi üzerine düşünceler.</p>
+      </div>
+      <a href="/blog" style="color: var(--gold,#b08d57); font-weight: 600; text-decoration: none; font-size: 14.5px;">Tüm Yazıları Gör →</a>
     </div>
 
     {% if posts %}
-    <ol class="ed-list">
+    <div class="post-grid" style="padding-top: 0; padding-bottom: 20px;">
       {% for post in posts[:3] %}
-      <li class="ed-list-item reveal">
-        <a href="{{ url_for('post', slug=post.slug) }}" style="display:contents">
-          <span class="ed-list-item__num">0{{ loop.index }}</span>
-          <span class="ed-list-item__title">{{ post.title }}</span>
-          <span class="ed-list-item__cat">{{ post.category }}</span>
-          <span class="ed-list-item__meta"><span>{{ post.created_at[:10] }}</span><span>Devamını Oku →</span></span>
-        </a>
-      </li>
+      <a href="{{ url_for('post', slug=post.slug) }}" class="post-card reveal visible">
+        <div class="post-thumb">
+          {% if post.image %}
+          <img src="{{ url_for('uploaded_file', filename=post.image) }}" alt="{{ post.title }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+          {% else %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22c4-4 8-7.6 8-12a8 8 0 1 0-16 0c0 4.4 4 8 8 12z"/><path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
+          {% endif %}
+          <span class="post-category">{{ post.category }}</span>
+        </div>
+        <div class="post-body">
+          <div class="post-date">{{ post.created_at[:10] }}</div>
+          <div class="post-title">{{ post.title }}</div>
+          <div class="post-excerpt">{{ post.excerpt }}</div>
+          <div class="post-read">Devamını Oku</div>
+        </div>
+      </a>
       {% endfor %}
-    </ol>
-    {% else %}
-    <p style="color:var(--ed-faint)">Henüz bir blog yazısı bulunmuyor.</p>
-    {% endif %}
-  </div>
-</section>
-
-<!-- ─── KAPANIŞ CTA ─── -->
-<section class="section closing">
-  <div class="container">
-    <h2 class="reveal">Hikâyeni birlikte okuyalım</h2>
-    <p class="reveal" data-delay="1">Sana özel bir alan, sana özel bir yolculuk. İlk adımı atmak için bana ulaş.</p>
-    <div class="reveal" data-delay="2">
-      <a href="/iletisim" class="cta-line">Benimle İletişime Geç <span class="arrow">→</span></a>
     </div>
+    {% else %}
+    <p style="color:#aaa; text-align:center;">Henüz bir blog yazısı bulunmuyor.</p>
+    {% endif %}
   </div>
 </section>
 

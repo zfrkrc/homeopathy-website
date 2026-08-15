@@ -1,34 +1,32 @@
 {% extends "base.html" %}
 {% block title %}{{ about_title or 'Hakkımda' }} | {{ site_title }}{% endblock %}
-{% block meta_description %}Zeyna Üstün'ün hikayesi, bütünsel bakış açısına uzanan yolu ve "Hayatı Okuma" yaklaşımının doğuşu.{% endblock %}
 {% block content %}
+<style>
+  .brand-about-container {
+    padding: 80px 0 100px;
+    max-width: 740px;
+    margin: 0 auto;
+  }
+  .brand-bio h1 {
+    font-family: var(--font-heading);
+    font-size: 40px;
+    color: var(--ink, #202b22);
+    margin-bottom: 28px;
+    line-height: 1.2;
+    font-weight: 600;
+  }
+  .brand-bio-content {
+    font-size: 16.5px;
+    line-height: 1.9;
+    color: var(--ink-2, #39473b);
+    white-space: pre-line;
+  }
+</style>
 
-<section class="about-hero container">
-  <div class="about-text">
-    <span class="eyebrow reveal" style="display:block;margin-bottom:var(--space-md)">Hakkımda</span>
-    <h1 class="reveal" data-delay="1">{{ about_title or 'Hakkımda' }}</h1>
-    <div class="reveal" data-delay="2" style="white-space:pre-line">{{ about_content or '' }}</div>
+<div class="brand-about-container container reveal visible">
+  <div class="brand-bio">
+    <h1>{{ about_title or 'Hakkımda' }}</h1>
+    <div class="brand-bio-content">{{ about_content or '' }}</div>
   </div>
-  <div class="about-visual reveal" data-delay="2">
-    <img class="about-img" src="/uploads/logoaq.png" alt="{{ site_title }}" loading="lazy">
-  </div>
-</section>
-
-<section class="section container">
-  <div class="about-stats">
-    <div class="about-stat">
-      <span class="about-stat-num">EST.</span>
-      <span class="about-stat-label">2026</span>
-    </div>
-    <div class="about-stat">
-      <span class="about-stat-num">3</span>
-      <span class="about-stat-label">Adım</span>
-    </div>
-    <div class="about-stat">
-      <span class="about-stat-num">1</span>
-      <span class="about-stat-label">Bakış</span>
-    </div>
-  </div>
-</section>
-
+</div>
 {% endblock %}

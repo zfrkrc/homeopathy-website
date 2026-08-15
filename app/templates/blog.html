@@ -1,71 +1,80 @@
 {% extends "base.html" %}
 {% block title %}Blog | {{ site_title }}{% endblock %}
-{% block meta_description %}Hayatı Okuma ve bütünsel yaşam felsefesi üzerine yazılar; beden, zihin ve ruh bütünlüğü üzerine düşünceler.{% endblock %}
 {% block content %}
 
-<section class="blog-header-section">
-  <div class="container">
-    <span class="eyebrow reveal">Blog &amp; Yazılar</span>
-    <h1 class="reveal" data-delay="1" style="font-size:var(--fs-h2);margin-bottom:var(--space-md)">Bütünsel yaşam üzerine düşünceler.</h1>
-    <p class="lead reveal" data-delay="1">Hayatı okuma ve bütünsel yaklaşım üzerine yazılar, düşünceler ve yürümekte olduğum yolun izleri.</p>
+<section style="padding: 64px 0 40px; text-align: center; border-bottom: 1px solid var(--line,#dcd4bd);">
+  <div class="container" style="max-width: 640px;">
+    <h1 style="font-family: var(--font-heading); font-style: italic; font-size: 38px; color: var(--ink,#202b22); margin-bottom: 12px; font-weight: 400;">Blog & Yazılar</h1>
+    <p style="font-size: 15px; color: var(--muted,#726f5e); margin-bottom: 26px;">Bütünsel yaşam ve hayatı okuma üzerine düşünceler.</p>
 
     {% if categories %}
-    <nav class="hero-tags reveal" data-delay="2" aria-label="Kategoriler">
+    <div class="hero-tags" style="margin-bottom: 18px;">
       <a href="{{ url_for('blog') }}" class="tag {% if not active_category %}tag-active{% endif %}">Tümü</a>
       {% for cat in categories %}
       <a href="{{ url_for('blog', category=cat.name) }}" class="tag {% if active_category == cat.name %}tag-active{% endif %}">{{ cat.name }}</a>
       {% endfor %}
-    </nav>
+    </div>
     {% endif %}
 
-    <form class="search-form reveal" data-delay="2" method="get" action="{{ url_for('blog') }}" role="search">
+    <form class="search-form" method="get" action="{{ url_for('blog') }}" style="max-width: 340px; margin: 0 auto;">
       {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
-      <input type="search" name="q" value="{{ q }}" placeholder="Yazılarda ara..." aria-label="Ara">
-      <button type="submit">Ara</button>
+      <input type="search" name="q" value="{{ q }}" placeholder="Yazılarda ara..." aria-label="Ara" style="font-size: 13px;">
+      <button type="submit" style="font-size: 13px;">Ara</button>
     </form>
   </div>
 </section>
 
-<section class="section">
-  <div class="container">
-    {% if q or active_category %}
-    <div class="filter-info">
-      {{ total }} sonuç bulundu
-      {% if active_category %} — <strong>{{ active_category }}</strong>{% endif %}
-      {% if q %} — "<strong>{{ q }}</strong>"{% endif %}
-      <a href="{{ url_for('blog') }}" class="filter-clear">Filtreyi temizle ✕</a>
-    </div>
-    {% endif %}
+<section class="container" style="padding-top: 40px;">
+  <div style="background:rgba(244,239,225,0.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:18px;padding:28px 24px;margin-bottom:40px";backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:16px;padding:20px 0">
+  {% if q or active_category %}
+  <div class="filter-info">
+    {{ total }} sonuç bulundu
+    {% if active_category %} — <strong>{{ active_category }}</strong>{% endif %}
+    {% if q %} — "<strong>{{ q }}</strong>"{% endif %}
+    <a href="{{ url_for('blog') }}" class="filter-clear">Filtreyi temizle ✕</a>
+  </div>
+  {% endif %}
 
-    {% if posts %}
-    <div class="ed-grid">
-      {% for post in posts %}
-      <a href="{{ url_for('post', slug=post.slug) }}" class="ed-card reveal">
-        <span class="ed-card__cat">{{ post.category }}</span>
-        <h3 class="ed-card__title">{{ post.title }}</h3>
-        {% if post.excerpt %}<p class="ed-card__excerpt">{{ post.excerpt }}</p>{% endif %}
-        <span class="ed-card__meta">{{ post.created_at[:10] }} · Devamını Oku →</span>
-      </a>
-      {% endfor %}
-    </div>
-    {% else %}
-    <div class="empty-state">
-      <p>Sonuç bulunamadı.</p>
-      <a href="{{ url_for('blog') }}" class="cta-line">Tüm yazılara dön <span class="arrow">→</span></a>
-    </div>
-    {% endif %}
+  {% if posts %}
+  <div class="post-grid" style="padding-top: 20px;">
+    {% for post in posts %}
+    <a href="{{ url_for('post', slug=post.slug) }}" class="post-card reveal visible">
+      <div class="post-thumb">
+        {% if post.image %}
+        <img src="{{ url_for('uploaded_file', filename=post.image) }}" alt="{{ post.title }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+        {% else %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22c4-4 8-7.6 8-12a8 8 0 1 0-16 0c0 4.4 4 8 8 12z"/><path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
+        {% endif %}
+        <span class="post-category">{{ post.category }}</span>
+      </div>
+      <div class="post-body">
+        <div class="post-date">{{ post.created_at[:10] }}</div>
+        <div class="post-title">{{ post.title }}</div>
+        <div class="post-excerpt">{{ post.excerpt }}</div>
+        <div class="post-read">Devamını Oku</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p>😕 Sonuç bulunamadı.</p>
+    <a href="{{ url_for('blog') }}" class="tag">Tüm yazılara dön</a>
+  </div>
+  {% endif %}
 
-    {% if total_pages > 1 %}
-    <nav class="pagination" aria-label="Sayfalama">
-      {% if page > 1 %}
-      <a href="{{ url_for('blog', page=page-1, q=q, category=active_category) }}" class="page-link">← Önceki</a>
-      {% else %}<span></span>{% endif %}
-      <span class="page-info">Sayfa {{ page }} / {{ total_pages }}</span>
-      {% if page < total_pages %}
-      <a href="{{ url_for('blog', page=page+1, q=q, category=active_category) }}" class="page-link">Sonraki →</a>
-      {% else %}<span></span>{% endif %}
-    </nav>
+  {% if total_pages > 1 %}
+  <div class="pagination">
+    {% if page > 1 %}
+    <a href="{{ url_for('blog', page=page-1, q=q, category=active_category) }}" class="page-link">← Önceki</a>
     {% endif %}
+    <span class="page-info">Sayfa {{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+    <a href="{{ url_for('blog', page=page+1, q=q, category=active_category) }}" class="page-link">Sonraki →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
   </div>
 </section>
 

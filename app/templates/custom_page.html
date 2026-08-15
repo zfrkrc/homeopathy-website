@@ -2,248 +2,259 @@
 {% block title %}{{ page.title }}{% endblock %}
 {% block content %}
 
-<!-- page builder sections — editorial presentation -->
-<section class="section">
-  <div class="container">
-    <header class="sec-head" style="border-bottom-color:var(--ed-line);margin-bottom:var(--space-lg)">
-      <span class="sec-num">—</span>
-      <h2 style="max-width:none">{{ page.title }}</h2>
-    </header>
+<!-- Custom animations and styles for page builder sections -->
+<style>
+  .builder-section {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  .animate-fade-up {
+    animation: b-fade-up 0.8s ease both;
+  }
+  .animate-fade-in {
+    animation: b-fade-in 0.8s ease both;
+  }
+  .animate-zoom-in {
+    animation: b-zoom-in 0.8s ease both;
+  }
+  @keyframes b-fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes b-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes b-zoom-in {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: none; }
+  }
+  
+  /* Bento Grid Layout */
+  .bento-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  @media (min-width: 768px) {
+    .bento-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .bento-col-2 {
+      grid-column: span 2;
+    }
+  }
+</style>
 
-    {% for b in blocks %}
-    {% set b_css = b.styles|block_css if b.styles else "" %}
-    {% set b_anim = "animate-" ~ b.animation if b.animation and b.animation != 'none' else "" %}
+<div style="background:rgba(244,239,225,0.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:18px;padding:32px 24px;max-width:960px;margin:32px auto;border:1px solid rgba(220,212,189,0.3)">
+{% for b in blocks %}
+  {% set b_css = b.styles|block_css if b.styles else "" %}
+  {% set b_anim = "animate-" ~ b.animation if b.animation and b.animation != 'none' else "" %}
 
-    {% if b.type == 'hero' or b.type == 'centered_hero' %}
-    <section class="builder-section {{ b_anim }}" style="padding:var(--space-xl) 0; text-align:center; {{ b_css }}">
-      <div class="container" style="max-width: 860px;">
-        {% if b.badge %}<span class="eyebrow" style="display:block;margin-bottom:var(--space-md)">{{ b.badge }}</span>{% endif %}
-        {% if b.title %}<h2 style="font-family:var(--font-display);font-size:clamp(2.2rem,5vw,4rem);letter-spacing:-.04em;line-height:1.02;margin-bottom:var(--space-md)">{{ b.title }}</h2>{% endif %}
-        {% if b.desc %}<p style="font-size:var(--fs-body);color:var(--ed-muted);max-width:640px;margin:0 auto var(--space-lg);line-height:1.9">{{ b.desc }}</p>{% endif %}
-        <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;">
-          {% if b.btn %}<a href="{{ b.url or '#' }}" class="cta-line">{{ b.btn }} <span class="arrow">→</span></a>{% endif %}
-          {% if b.btn2 %}<a href="{{ b.url2 or '#' }}" class="cta-line" style="color:var(--ed-muted);border-color:var(--ed-line)">{{ b.btn2 }}</a>{% endif %}
-        </div>
-      </div>
-    </section>
-
-    {% elif b.type == 'split_hero' %}
-    <section class="builder-section {{ b_anim }}" style="padding:var(--space-xl) 0; {{ b_css }}">
-      <div class="container">
-        <style>
-          @media (min-width: 768px) {
-            .split-container-{{ loop.index }} { grid-template-columns: 1fr 1.1fr !important; }
-          }
-        </style>
-        <div class="split-container-{{ loop.index }}" style="display:grid;grid-template-columns:1fr;gap:var(--space-xl);align-items:center">
-          <div>
-            {% if b.badge %}<span class="eyebrow" style="display:block;margin-bottom:var(--space-md)">{{ b.badge }}</span>{% endif %}
-            {% if b.title %}<h2 style="font-family:var(--font-display);font-size:clamp(2rem,4.5vw,3.4rem);letter-spacing:-.04em;line-height:1.05;margin-bottom:var(--space-md)">{{ b.title }}</h2>{% endif %}
-            {% if b.desc %}<p style="font-size:var(--fs-body);color:var(--ed-muted);margin-bottom:var(--space-lg);line-height:1.9">{{ b.desc }}</p>{% endif %}
-            <div style="display:flex;gap:var(--space-md);flex-wrap:wrap;">
-              {% if b.btn %}<a href="{{ b.url or '#' }}" class="cta-line">{{ b.btn }} <span class="arrow">→</span></a>{% endif %}
-            </div>
-          </div>
-          <div style="text-align:center;">
-            {% if b.image_url %}
-            <img src="{{ b.image_url }}" alt="{{ b.title }}" style="max-width:100%;width:100%;aspect-ratio:5/4;object-fit:cover;">
-            {% else %}
-            <div style="border:1px dashed var(--ed-line);aspect-ratio:5/4;display:flex;align-items:center;justify-content:center;color:var(--ed-faint)">Görsel Yok</div>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    </section>
-
-    {% elif b.type == 'text' %}
-    <section class="builder-section {{ b_anim }}" style="padding:var(--space-lg) 0; {{ b_css }}">
-      <div class="container" style="max-width:820px;">
-        {% if b.title %}<h2 style="font-family:var(--font-display);font-size:var(--fs-h3);margin-bottom:var(--space-md)">{{ b.title }}</h2>{% endif %}
-        {% if b.body %}<div style="font-size:var(--fs-body);line-height:1.9;color:var(--ed-ink-soft);white-space:pre-line">{{ b.body }}</div>{% endif %}
-      </div>
-    </section>
-
-    {% elif b.type == 'cards' or b.type == 'feature_cards' %}
-    <section class="builder-section {{ b_anim }}" style="padding:var(--space-lg) 0; {{ b_css }}">
-      <div class="container">
-        {% if b.title %}<h2 style="font-family:var(--font-display);font-size:var(--fs-h3);text-align:center;margin-bottom:var(--space-xl)">{{ b.title }}</h2>{% endif %}
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px;background:var(--ed-line);border-top:1px solid var(--ed-line)">
-          {% for c in b.cards %}
-          <div style="background:var(--ed-bg);padding:var(--space-xl) var(--space-md) 0;border-bottom:1px solid var(--ed-line)">
-            {% if c.title %}<h3 style="font-family:var(--font-display);font-size:1.6rem;font-weight:400;margin-bottom:var(--space-sm)">{{ c.title }}</h3>{% endif %}
-            {% if c.body %}<p style="font-size:0.92rem;color:var(--ed-muted);line-height:1.8;white-space:pre-line">{{ c.body }}</p>{% endif %}
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </section>
-
-    {% elif b.type == 'bento_grid' %}
-    <section class="builder-section {{ b_anim }}" style="padding:var(--space-lg) 0; {{ b_css }}">
-      <div class="container">
-        {% if b.title %}<h2 style="font-family:var(--font-display);font-size:var(--fs-h3);margin-bottom:var(--space-xl)">{{ b.title }}</h2>{% endif %}
-        <div class="bento-grid" style="gap:0;border-top:1px solid var(--ed-line)">
-          {% for c in b.cards %}
-          <div class="{% if loop.index % 3 == 1 %}bento-col-2{% endif %}" style="padding:var(--space-lg) var(--space-md) 0;border-bottom:1px solid var(--ed-line)">
-            {% if c.title %}<h3 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;margin-bottom:var(--space-sm)">{{ c.title }}</h3>{% endif %}
-            {% if c.body %}<p style="font-size:0.92rem;color:var(--ed-muted);line-height:1.8">{{ c.body }}</p>{% endif %}
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </section>
-
-    {% elif b.type == 'timeline' %}
-    <section class="builder-section {{ b_anim }}" style="padding:var(--space-lg) 0; {{ b_css }}">
-      <div class="container" style="max-width:820px;">
-        {% if b.title %}<h2 style="font-family:var(--font-display);font-size:var(--fs-h3);margin-bottom:var(--space-xl)">{{ b.title }}</h2>{% endif %}
-        <div style="border-left:1px solid var(--ed-accent);margin-left:6px;padding-left:var(--space-lg);display:flex;flex-direction:column;gap:var(--space-lg)">
-          {% for c in b.cards %}
-          <div style="position:relative;">
-            <div style="position:absolute;left:calc(-1 * var(--space-lg) - 3px);top:8px;width:7px;height:7px;border-radius:50%;background:var(--ed-accent)"></div>
-            {% if c.title %}<h3 style="font-family:var(--font-display);font-size:1.4rem;font-weight:400;margin-bottom:var(--space-sm)">{{ c.title }}</h3>{% endif %}
-            {% if c.body %}<p style="font-size:0.95rem;color:var(--ed-muted);line-height:1.8">{{ c.body }}</p>{% endif %}
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </section>
-
-    {% elif b.type == 'cta' %}
-    <section class="builder-section {{ b_anim }}" style="background:var(--ed-ink);padding:var(--space-2xl) 0;text-align:center; {{ b_css }}">
-      <div class="container" style="max-width:720px;">
-        {% if b.title %}<h2 style="font-family:var(--font-display);color:var(--ed-dark-text);font-size:clamp(2rem,4vw,3rem);letter-spacing:-.03em;margin-bottom:var(--space-md)">{{ b.title }}</h2>{% endif %}
-        {% if b.desc %}<p style="color:rgba(233,227,211,.7);font-size:var(--fs-body);margin-bottom:var(--space-lg)">{{ b.desc }}</p>{% endif %}
-        {% if b.btn %}<a href="{{ b.url or '#' }}" class="cta-line" style="color:var(--ed-accent);border-color:var(--ed-accent)">{{ b.btn }} <span class="arrow">→</span></a>{% endif %}
-      </div>
-    </section>
-
-    {% elif b.type == 'image' %}
-    <section class="builder-section {{ b_anim }}" style="padding:var(--space-lg) 0; {{ b_css }}">
-      <div class="container" style="text-align:center;">
-        <img src="{{ b.url }}" alt="{{ b.alt or 'Görsel' }}" style="max-width:100%;width:100%;object-fit:cover;max-height:80vh">
-      </div>
-    </section>
-
-    {% elif b.type == 'divider' %}
-    <div class="builder-section {{ b_anim }}" style="{{ b_css }}">
-      <div class="container">
-        <hr style="margin:var(--space-lg) 0;border:none;border-top:1px solid var(--ed-line)">
+  {% if b.type == 'hero' or b.type == 'centered_hero' %}
+  <section class="builder-section {{ b_anim }}" style="padding:80px 0 60px; text-align:center; {{ b_css }}">
+    <div class="container" style="max-width: 800px;">
+      {% if b.badge %}<span style="font-family:monospace; font-size:11px; letter-spacing:0.2em; color:var(--gold,#b08d57); text-transform:uppercase; display:block; margin-bottom:16px;">{{ b.badge }}</span>{% endif %}
+      {% if b.title %}<h1 style="font-size:42px; color:var(--ink,#202b22); margin-bottom:20px; line-height:1.2;">{{ b.title }}</h1>{% endif %}
+      {% if b.desc %}<p style="font-size:17px; color:var(--muted,#726f5e); max-width:640px; margin:0 auto 32px; line-height:1.8;">{{ b.desc }}</p>{% endif %}
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        {% if b.btn %}<a href="{{ b.url or '#' }}" class="btn" style="background:var(--primary,#74906f); color:#fff; padding:12px 32px; border-radius:30px; text-decoration:none; font-weight:600; font-size:15px; box-shadow:var(--shadow-sm);">{{ b.btn }}</a>{% endif %}
+        {% if b.btn2 %}<a href="{{ b.url2 or '#' }}" class="btn" style="background:var(--paper-2,#fffdf7); border:1px solid var(--line,#dcd4bd); color:var(--ink,#202b22); padding:12px 32px; border-radius:30px; text-decoration:none; font-weight:600; font-size:15px;">{{ b.btn2 }}</a>{% endif %}
       </div>
     </div>
+  </section>
 
-    {% elif b.type == 'testimonials' %}
-    <section class="builder-section {{ b_anim }}" style="padding:var(--space-xl) 0; {{ b_css }}">
-      <div class="container">
-        {% if b.title %}<h2 style="font-family:var(--font-display);font-size:var(--fs-h3);margin-bottom:var(--space-xl)">{{ b.title }}</h2>{% endif %}
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px;background:var(--ed-line);border-top:1px solid var(--ed-line)">
-          {% for c in b.cards %}
-          <div style="background:var(--ed-bg);padding:var(--space-lg) var(--space-md) 0;border-bottom:1px solid var(--ed-line);display:flex;flex-direction:column;justify-content:space-between">
-            <div style="font-family:var(--font-display);font-style:italic;font-size:1.15rem;line-height:1.6;color:var(--ed-ink);margin-bottom:var(--space-md)">“{{ c.body }}”</div>
-            <div style="font-size:0.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ed-muted);margin-bottom:var(--space-sm)">— {{ c.title }}</div>
+  {% elif b.type == 'split_hero' %}
+  <section class="builder-section {{ b_anim }}" style="padding:80px 0; {{ b_css }}">
+    <div class="container" style="display:grid; grid-template-columns:1fr; gap:40px; align-items:center;">
+      <style>
+        @media (min-width: 768px) {
+          .split-container-{{ loop.index }} { grid-template-columns: 1fr 1fr !important; }
+        }
+      </style>
+      <div class="split-container-{{ loop.index }}" style="display:grid; grid-template-columns:1fr; gap:40px;">
+        <div>
+          {% if b.badge %}<span style="font-family:monospace; font-size:11px; letter-spacing:0.2em; color:var(--gold,#b08d57); text-transform:uppercase; display:block; margin-bottom:12px;">{{ b.badge }}</span>{% endif %}
+          {% if b.title %}<h1 style="font-size:38px; color:var(--ink,#202b22); margin-bottom:16px; line-height:1.2;">{{ b.title }}</h1>{% endif %}
+          {% if b.desc %}<p style="font-size:16px; color:var(--muted,#726f5e); margin-bottom:28px; line-height:1.8;">{{ b.desc }}</p>{% endif %}
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            {% if b.btn %}<a href="{{ b.url or '#' }}" class="btn" style="background:var(--primary,#74906f); color:#fff; padding:10px 24px; border-radius:30px; text-decoration:none; font-weight:600;">{{ b.btn }}</a>{% endif %}
           </div>
-          {% endfor %}
+        </div>
+        <div style="text-align:center;">
+          {% if b.image_url %}
+          <img src="{{ b.image_url }}" alt="{{ b.title }}" style="max-width:100%; border-radius:var(--card-radius,14px); box-shadow:var(--shadow-md);">
+          {% else %}
+          <div style="background:var(--paper-2,#fffdf7); border:1px dashed var(--line,#dcd4bd); height:300px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#aaa;">Görsel Yok</div>
+          {% endif %}
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    {% elif b.type == 'accordion' or b.type == 'faq' %}
-    <section class="builder-section {{ b_anim }}" style="padding:var(--space-lg) 0; {{ b_css }}">
-      <div class="container" style="max-width:820px;">
-        {% if b.title %}<h2 style="font-family:var(--font-display);font-size:var(--fs-h3);margin-bottom:var(--space-xl)">{{ b.title }}</h2>{% endif %}
-        <div style="display:flex;flex-direction:column;border-top:1px solid var(--ed-line)">
-          {% for c in b.cards %}
-          <div style="border-bottom:1px solid var(--ed-line);padding:var(--space-md) 0;">
-            <summary style="font-family:var(--font-display);font-size:1.3rem;font-weight:400;color:var(--ed-ink);cursor:pointer;list-style:none;outline:none;display:flex;justify-content:space-between;align-items:center;gap:var(--space-md)" onclick="var p=this.nextElementSibling; p.style.display=p.style.display==='none'?'block':'none'">
-              <span>{{ c.title }}</span>
-              <span style="color:var(--ed-accent);font-size:1.4rem;line-height:1">+</span>
-            </summary>
-            <div style="display:none;margin-top:var(--space-sm);font-size:0.95rem;line-height:1.8;color:var(--ed-muted)">{{ c.body }}</div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </section>
+  {% elif b.type == 'text' %}
+  <section class="builder-section {{ b_anim }}" style="padding:40px 0; {{ b_css }}">
+    <div class="container" style="max-width:740px;">
+      {% if b.title %}<h2 style="font-family:var(--font-heading); font-size:28px; color:var(--ink,#202b22); margin-bottom:16px;">{{ b.title }}</h2>{% endif %}
+      {% if b.body %}<div style="font-size:16px; line-height:1.85; color:var(--ink-2,#39473b); white-space:pre-line;">{{ b.body }}</div>{% endif %}
+    </div>
+  </section>
 
-    {% elif b.type == 'stage' %}
-    <!-- pin'lenen yaklaşım (Novocura stage-section, 4 istasyon) -->
-    <section class="stage-intro">
-      {% if b.badge %}<span class="kicker">{{ b.badge }}</span>{% endif %}
-      {% if b.title %}<h2>{{ b.title }}</h2>{% endif %}
-      <div class="hairline"></div>
-      <div class="hint">yavaşça kaydırın</div>
-    </section>
-    <section class="stage-section" id="stageSection">
-      <div class="stage-pin">
-        <svg class="journey-path" aria-hidden="true"><path class="jline" d=""/></svg>
+  {% elif b.type == 'cards' or b.type == 'feature_cards' %}
+  <section class="builder-section {{ b_anim }}" style="padding:50px 0; {{ b_css }}">
+    <div class="container">
+      {% if b.title %}<h2 style="font-family:var(--font-heading); font-size:28px; color:var(--ink,#202b22); text-align:center; margin-bottom:40px;">{{ b.title }}</h2>{% endif %}
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px;">
         {% for c in b.cards %}
-        <div class="jstep js{{ loop.index }} {{ 'tx-r' if loop.index % 2 == 1 else 'tx-l' }}">
-          <div class="jbadge"><span>{{ loop.index }}</span></div>
-          <div class="jtext">
-            <div class="num">{{ c.num or ('Adım ' + loop.index|string) }}</div>
-            <h3>{{ c.title }}</h3>
-            <p>{{ c.body }}</p>
-          </div>
+        <div style="background:var(--paper-2,#fffdf7); border:1px solid var(--line,#dcd4bd); border-radius:var(--card-radius,14px); padding:32px 24px; box-shadow:var(--shadow-sm); transition:transform .2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+          {% if c.title %}<h3 style="font-family:var(--font-heading); font-size:20px; color:var(--ink,#202b22); margin-bottom:12px;">{{ c.title }}</h3>{% endif %}
+          {% if c.body %}<p style="font-size:14px; color:var(--muted,#726f5e); line-height:1.65; white-space:pre-line;">{{ c.body }}</p>{% endif %}
         </div>
         {% endfor %}
-        <div class="progress-label">İlerleme</div>
-        <div class="progress"><div class="bar" id="progressBar"></div></div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    {% elif b.type == 'contact_form' %}
-    <section class="builder-section {{ b_anim }}" style="padding:var(--space-lg) 0; {{ b_css }}">
-      <div class="container" style="max-width:620px;">
-        {% if b.title %}<h2 style="font-family:var(--font-display);font-size:var(--fs-h3);margin-bottom:var(--space-sm)">{{ b.title }}</h2>{% endif %}
-        {% if b.desc %}<p style="font-size:0.95rem;color:var(--ed-muted);margin-bottom:var(--space-lg)">{{ b.desc }}</p>{% endif %}
-        <form action="/subscribe" method="POST" style="display:flex;flex-direction:column;gap:var(--space-md)">
-          <div>
-            <label style="font-size:0.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ed-muted);display:block;margin-bottom:8px">Ad Soyad</label>
-            <input type="text" name="name" required style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--ed-line);padding:12px 0;font-size:1rem;font-family:inherit;outline:none" placeholder="Zafer Karaca">
-          </div>
-          <div>
-            <label style="font-size:0.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ed-muted);display:block;margin-bottom:8px">E-posta Adresi</label>
-            <input type="email" name="email" required style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--ed-line);padding:12px 0;font-size:1rem;font-family:inherit;outline:none" placeholder="isim@ornek.com">
-          </div>
-          <button type="submit" style="align-self:flex-start;background:none;border:none;border-bottom:1px solid var(--ed-ink);padding:6px 2px 4px;font-size:0.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ed-ink);cursor:pointer;font-weight:500">Bize Gönder →</button>
-        </form>
-      </div>
-    </section>
-
-    {% elif b.type == 'stats' %}
-    <section class="builder-section {{ b_anim }}" style="padding:var(--space-xl) 0; {{ b_css }}">
-      <div class="container">
-        {% if b.title %}<h2 style="font-family:var(--font-display);font-size:var(--fs-h3);text-align:center;margin-bottom:var(--space-xl)">{{ b.title }}</h2>{% endif %}
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border-top:1px solid var(--ed-line)">
-          {% for c in b.cards %}
-          <div style="padding:var(--space-lg) var(--space-sm) 0;border-right:1px solid var(--ed-line-soft);border-bottom:1px solid var(--ed-line)">
-            <div style="font-family:var(--font-display);font-size:clamp(2.8rem,6vw,4.5rem);color:var(--ed-accent);margin-bottom:var(--space-sm);line-height:1">{{ c.title }}</div>
-            <div style="font-size:0.8rem;color:var(--ed-muted);letter-spacing:.08em">{{ c.body }}</div>
-          </div>
-          {% endfor %}
+  {% elif b.type == 'bento_grid' %}
+  <section class="builder-section {{ b_anim }}" style="padding:60px 0; {{ b_css }}">
+    <div class="container">
+      {% if b.title %}<h2 style="font-family:var(--font-heading); font-size:28px; text-align:center; margin-bottom:40px;">{{ b.title }}</h2>{% endif %}
+      <div class="bento-grid">
+        {% for c in b.cards %}
+        <div class="{% if loop.index % 3 == 1 %}bento-col-2{% endif %}" style="background:var(--paper-2,#fffdf7); border:1px solid var(--line,#dcd4bd); border-radius:var(--card-radius,14px); padding:32px; box-shadow:var(--shadow-sm);">
+          {% if c.title %}<h3 style="font-family:var(--font-heading); font-size:22px; color:var(--ink,#202b22); margin-bottom:12px;">{{ c.title }}</h3>{% endif %}
+          {% if c.body %}<p style="font-size:14.5px; color:var(--muted,#726f5e); line-height:1.65;">{{ c.body }}</p>{% endif %}
         </div>
+        {% endfor %}
       </div>
-    </section>
+    </div>
+  </section>
 
-    {% elif b.type == 'steps' %}
-    <section class="builder-section {{ b_anim }}" style="padding:var(--space-lg) 0; {{ b_css }}">
-      <div class="container">
-        {% if b.title %}<h2 style="font-family:var(--font-display);font-size:var(--fs-h3);margin-bottom:var(--space-xl)">{{ b.title }}</h2>{% endif %}
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-xl)">
-          {% for c in b.cards %}
-          <div style="border-top:1px solid var(--ed-line);padding-top:var(--space-md)">
-            <div style="font-family:var(--font-display);font-size:3rem;color:var(--ed-line);line-height:1">{{ "%02d"|format(loop.index) }}</div>
-            <h3 style="font-family:var(--font-display);font-size:1.4rem;font-weight:400;margin:var(--space-sm) 0">{{ c.title }}</h3>
-            <p style="font-size:0.92rem;color:var(--ed-muted);line-height:1.8">{{ c.body }}</p>
-          </div>
-          {% endfor %}
+  {% elif b.type == 'timeline' %}
+  <section class="builder-section {{ b_anim }}" style="padding:60px 0; {{ b_css }}">
+    <div class="container" style="max-width:800px;">
+      {% if b.title %}<h2 style="font-family:var(--font-heading); font-size:28px; text-align:center; margin-bottom:40px;">{{ b.title }}</h2>{% endif %}
+      <div style="border-left: 2px solid var(--line,#dcd4bd); margin-left:16px; padding-left:32px; display:flex; flex-direction:column; gap:40px;">
+        {% for c in b.cards %}
+        <div style="position:relative;">
+          <div style="position:absolute; left:-41px; top:4px; width:16px; height:16px; border-radius:50%; background:var(--primary,#74906f); border:4px solid var(--paper,#f4efe1);"></div>
+          {% if c.title %}<h3 style="font-family:var(--font-heading); font-size:18px; color:var(--ink,#202b22); margin-bottom:8px;">{{ c.title }}</h3>{% endif %}
+          {% if c.body %}<p style="font-size:14.5px; color:var(--muted,#726f5e); line-height:1.6;">{{ c.body }}</p>{% endif %}
         </div>
+        {% endfor %}
       </div>
-    </section>
+    </div>
+  </section>
 
-    {% endif %}
-    {% endfor %}
+  {% elif b.type == 'cta' %}
+  <section class="builder-section {{ b_anim }}" style="background:var(--primary,#74906f); padding:64px 0; text-align:center; {{ b_css }}">
+    <div class="container" style="max-width:700px;">
+      {% if b.title %}<h2 style="font-family:var(--font-heading); color:#fff; font-size:32px; margin-bottom:16px; line-height:1.2;">{{ b.title }}</h2>{% endif %}
+      {% if b.desc %}<p style="color:rgba(255,255,255,0.85); font-size:16px; margin-bottom:28px;">{{ b.desc }}</p>{% endif %}
+      {% if b.btn %}<a href="{{ b.url or '#' }}" style="background:#fff; color:var(--primary,#74906f); padding:12px 36px; border-radius:30px; text-decoration:none; font-weight:700; font-size:15px; display:inline-block; box-shadow:var(--shadow-md);">{{ b.btn }}</a>{% endif %}
+    </div>
+  </section>
+
+  {% elif b.type == 'image' %}
+  <section class="builder-section {{ b_anim }}" style="padding:20px 0; {{ b_css }}">
+    <div class="container" style="text-align:center;">
+      <img src="{{ b.url }}" alt="{{ b.alt or 'Görsel' }}" style="max-width:100%; border-radius:var(--card-radius,14px); box-shadow:var(--shadow-md);">
+    </div>
+  </section>
+
+  {% elif b.type == 'divider' %}
+  <div class="builder-section {{ b_anim }}" style="{{ b_css }}">
+    <div class="container">
+      <hr style="margin:40px 0; border:none; border-top:1px solid var(--line,#dcd4bd);">
+    </div>
   </div>
-</section>
+
+  {% elif b.type == 'testimonials' %}
+  <section class="builder-section {{ b_anim }}" style="padding:60px 0; background:rgba(244,239,225,0.4); {{ b_css }}">
+    <div class="container">
+      {% if b.title %}<h2 style="font-family:var(--font-heading); font-size:28px; text-align:center; margin-bottom:40px;">{{ b.title }}</h2>{% endif %}
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px;">
+        {% for c in b.cards %}
+        <div style="background:var(--paper-2,#fffdf7); border:1px solid var(--line,#dcd4bd); border-radius:var(--card-radius,14px); padding:32px 24px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; justify-content:space-between;">
+          <div style="font-size:14.5px; line-height:1.7; color:var(--ink-2,#39473b); font-style:italic; margin-bottom:20px;">“{{ c.body }}”</div>
+          <div style="font-weight:600; font-size:13.5px; color:var(--ink,#202b22);">— {{ c.title }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {% elif b.type == 'accordion' or b.type == 'faq' %}
+  <section class="builder-section {{ b_anim }}" style="padding:60px 0; {{ b_css }}">
+    <div class="container" style="max-width:740px;">
+      {% if b.title %}<h2 style="font-family:var(--font-heading); font-size:28px; text-align:center; margin-bottom:40px;">{{ b.title }}</h2>{% endif %}
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        {% for c in b.cards %}
+        <div style="background:var(--paper-2,#fffdf7); border:1px solid var(--line,#dcd4bd); border-radius:var(--card-radius,14px); padding:20px 24px;">
+          <summary style="font-family:var(--font-heading); font-size:17px; font-weight:600; color:var(--ink,#202b22); cursor:pointer; list-style:none; outline:none; display:flex; justify-content:space-between; align-items:center;" onclick="var p=this.nextElementSibling; p.style.display=p.style.display==='none'?'block':'none'">
+            <span>{{ c.title }}</span>
+            <span style="font-family:monospace; color:var(--gold,#b08d57); font-size:18px;">+</span>
+          </summary>
+          <div style="display:none; margin-top:12px; font-size:14px; line-height:1.65; color:var(--muted,#726f5e); border-top:1px solid var(--line,#dcd4bd); padding-top:12px;">{{ c.body }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {% elif b.type == 'contact_form' %}
+  <section class="builder-section {{ b_anim }}" style="padding:60px 0; {{ b_css }}">
+    <div class="container" style="max-width:540px;">
+      {% if b.title %}<h2 style="font-family:var(--font-heading); font-size:28px; text-align:center; margin-bottom:12px;">{{ b.title }}</h2>{% endif %}
+      {% if b.desc %}<p style="font-size:14.5px; color:var(--muted,#726f5e); text-align:center; margin-bottom:32px;">{{ b.desc }}</p>{% endif %}
+      <form action="/subscribe" method="POST" style="display:flex; flex-direction:column; gap:16px; background:var(--paper-2,#fffdf7); border:1px solid var(--line,#dcd4bd); border-radius:14px; padding:32px; box-shadow:var(--shadow-sm);">
+        <div>
+          <label style="font-size:12.5px; font-weight:600; color:var(--ink,#202b22); display:block; margin-bottom:6px;">Ad Soyad</label>
+          <input type="text" name="name" required style="width:100%; padding:10px 14px; border:1px solid var(--line,#dcd4bd); border-radius:8px; font-size:14px; outline:none;" placeholder="Zafer Karaca">
+        </div>
+        <div>
+          <label style="font-size:12.5px; font-weight:600; color:var(--ink,#202b22); display:block; margin-bottom:6px;">E-posta Adresi</label>
+          <input type="email" name="email" required style="width:100%; padding:10px 14px; border:1px solid var(--line,#dcd4bd); border-radius:8px; font-size:14px; outline:none;" placeholder="isim@ornek.com">
+        </div>
+        <button type="submit" style="background:var(--primary,#74906f); color:#fff; border:none; padding:12px; border-radius:8px; font-weight:600; cursor:pointer; font-size:14.5px; margin-top:8px;">Bize Gönder</button>
+      </form>
+    </div>
+  </section>
+
+  {% elif b.type == 'stats' %}
+  <section class="builder-section {{ b_anim }}" style="padding:60px 0; text-align:center; {{ b_css }}">
+    <div class="container">
+      {% if b.title %}<h2 style="font-family:var(--font-heading); font-size:28px; margin-bottom:40px;">{{ b.title }}</h2>{% endif %}
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:24px;">
+        {% for c in b.cards %}
+        <div style="padding:20px;">
+          <div style="font-family:var(--font-heading); font-size:48px; font-weight:700; color:var(--primary,#74906f); margin-bottom:6px; line-height:1;">{{ c.title }}</div>
+          <div style="font-size:14px; color:var(--muted,#726f5e); font-weight:500;">{{ c.body }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {% elif b.type == 'steps' %}
+  <section class="builder-section {{ b_anim }}" style="padding:60px 0; {{ b_css }}">
+    <div class="container">
+      {% if b.title %}<h2 style="font-family:var(--font-heading); font-size:28px; text-align:center; margin-bottom:40px;">{{ b.title }}</h2>{% endif %}
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:32px;">
+        {% for c in b.cards %}
+        <div style="position:relative; padding-top:20px;">
+          <div style="font-family:monospace; font-size:40px; font-weight:bold; color:var(--gold-soft,#e7d9bc); line-height:1; position:absolute; top:-10px; left:0; z-index:-1;">0{{ loop.index }}</div>
+          <h3 style="font-family:var(--font-heading); font-size:19px; color:var(--ink,#202b22); margin-bottom:10px; position:relative; z-index:1;">{{ c.title }}</h3>
+          <p style="font-size:14px; color:var(--muted,#726f5e); line-height:1.6; position:relative; z-index:1;">{{ c.body }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {% endif %}
+{% endfor %}
+
+</div>
 
 {% endblock %}
