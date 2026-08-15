@@ -1,30 +1,37 @@
 {% extends "base.html" %}
 {% block title %}Galeri | {{ site_title }}{% endblock %}
+{% block meta_description %}Doğal yaşam ve bütünsel bakış üzerine görseller; "Hayatı Okuma" alanının görsel dünyası.{% endblock %}
 {% block content %}
-<section class="container" style="padding-top:40px">
-  <h1 style="text-align:center;margin-bottom:8px;font-size:28px">📷 Görsel Galerisi</h1>
-  <p style="text-align:center;color:#888;margin-bottom:32px;font-size:14px">Doğal yaşam ve bütünsel bakış üzerine görseller</p>
+<section class="gallery-head container">
+  <span class="eyebrow reveal">Galeri</span>
+  <h1 class="reveal" data-delay="1">Hayatı Okuma’dan görseller.</h1>
+  <p class="reveal" data-delay="1" style="color:var(--ed-muted);max-width:48ch">Doğal yaşam ve bütünsel bakış üzerine görseller.</p>
+</section>
 
+<section class="container">
   {% if images %}
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+  <div class="gallery-grid">
     {% for img in images %}
-    <a href="{{ url_for('uploaded_file', filename=img.filename) }}" target="_blank" style="display:block;border-radius:8px;overflow:hidden;border:1px solid #eee;transition:.2s;text-decoration:none" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-      <img src="{{ url_for('uploaded_file', filename=img.filename) }}" alt="{{ img.alt_text or img.title }}" style="width:100%;height:180px;object-fit:cover;display:block;background:var(--bg-deep)">
-      {% if img.title %}<div style="padding:6px 10px;font-size:12px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ img.title }}</div>{% endif %}
+    <a href="{{ url_for('uploaded_file', filename=img.filename) }}" target="_blank" class="gallery-item reveal" rel="noopener">
+      <img src="{{ url_for('uploaded_file', filename=img.filename) }}" alt="{{ img.alt_text or img.title }}" loading="lazy">
+      {% if img.title %}<span class="g-cap">{{ img.title }}</span>{% endif %}
     </a>
     {% endfor %}
   </div>
 
   {% if total_pages > 1 %}
-  <div style="text-align:center;margin:32px 0">
-    {% if page > 1 %}<a href="{{ url_for('gallery', page=page-1) }}" style="color:var(--accent);margin-right:12px">← Önceki</a>{% endif %}
-    <span style="color:#888;font-size:13px">{{ page }} / {{ total_pages }}</span>
-    {% if page < total_pages %}<a href="{{ url_for('gallery', page=page+1) }}" style="color:var(--accent);margin-left:12px">Sonraki →</a>{% endif %}
-  </div>
+  <nav class="pagination" aria-label="Sayfalama">
+    {% if page > 1 %}
+    <a href="{{ url_for('gallery', page=page-1) }}" class="page-link">← Önceki</a>
+    {% else %}<span></span>{% endif %}
+    <span class="page-info">{{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+    <a href="{{ url_for('gallery', page=page+1) }}" class="page-link">Sonraki →</a>
+    {% else %}<span></span>{% endif %}
+  </nav>
   {% endif %}
   {% else %}
-  <div style="text-align:center;padding:80px 20px;color:#888">
-    <div style="font-size:48px;margin-bottom:16px">📸</div>
+  <div class="empty-state">
     <p>Henüz görsel eklenmemiş.</p>
   </div>
   {% endif %}

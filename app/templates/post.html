@@ -4,7 +4,7 @@
 {% block og_type %}article{% endblock %}
 {% block og_title %}{{ post.title }}{% endblock %}
 {% block og_description %}{{ post.excerpt }}{% endblock %}
-{% block og_image %}{% if post.image %}<meta property="og:image" content="{{ url_for('uploaded_file', filename=post.image, _external=True) }}">{% endif %}{% endblock %}
+{% block og_image %}{% if post.image %}<meta property="og:image" content="{{ url_for('uploaded_file', filename=post.image, _external=True)|replace('http://', 'https://') }}">{% endif %}{% endblock %}
 {% block json_ld %}
 <script type="application/ld+json">
 {
@@ -14,7 +14,7 @@
   "description": {{ post.excerpt|tojson }},
   "datePublished": {{ post.created_at[:10]|tojson }},
   "dateModified": {{ post.updated_at[:10]|tojson }},
-  {% if post.image %}"image": {{ url_for('uploaded_file', filename=post.image, _external=True)|tojson }},{% endif %}
+  {% if post.image %}"image": {{ url_for('uploaded_file', filename=post.image, _external=True)|replace('http://', 'https://')|tojson }},{% endif %}
   "mainEntityOfPage": {{ request.url|tojson }},
   "publisher": {"@type": "Organization", "name": {{ site_title|tojson }}}
 }
@@ -22,46 +22,40 @@
 {% endblock %}
 {% block content %}
 <article class="container-narrow post-detail">
-  <div class="post-detail-header">
+  <header class="post-detail-header reveal">
     <span class="post-category">{{ post.category }}</span>
     <h1>{{ post.title }}</h1>
     <div class="post-meta">
-      {{ post.created_at[:10] }} · {{ read_time }} dk okuma · {{ post.views }} görüntülenme
+      <span>{{ post.created_at[:10] }}</span>
+      <span>{{ read_time }} dk okuma</span>
+      <span>{{ post.views }} görüntülenme</span>
     </div>
-  </div>
+  </header>
+
   {% if post.image %}
-  <div class="post-cover reveal">
+  <div class="post-cover reveal" data-delay="1">
     <img src="{{ url_for('uploaded_file', filename=post.image) }}" alt="{{ post.title }}">
   </div>
   {% endif %}
-  <div class="post-content">
+
+  <div class="post-content reveal" data-delay="1">
     {{ post.content|safe }}
   </div>
-  <div class="post-footer">
-    <div class="post-nav">
-      <a href="{{ url_for('index') }}" class="back-link">← Blog'a Dön</a>
-    </div>
-  </div>
+
+  <footer class="post-footer">
+    <a href="{{ url_for('index') }}" class="back-link">← Blog'a Dön</a>
+    <a href="{{ url_for('blog') }}" class="back-link">Tüm Yazılar</a>
+  </footer>
 
   {% if related %}
   <section class="related-posts">
     <h2 class="related-title">İlgili Yazılar</h2>
-    <div class="post-grid">
+    <div class="ed-grid">
       {% for r in related %}
-      <a href="{{ url_for('post', slug=r.slug) }}" class="post-card reveal">
-        <div class="post-thumb">
-          {% if r.image %}
-          <img src="{{ url_for('uploaded_file', filename=r.image) }}" alt="{{ r.title }}" loading="lazy">
-          {% else %}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22c4-4 8-7.6 8-12a8 8 0 1 0-16 0c0 4.4 4 8 8 12z"/><path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
-          {% endif %}
-          <span class="post-category">{{ r.category }}</span>
-        </div>
-        <div class="post-body">
-          <div class="post-date">{{ r.created_at[:10] }}</div>
-          <div class="post-title">{{ r.title }}</div>
-          <div class="post-read">Devamını Oku</div>
-        </div>
+      <a href="{{ url_for('post', slug=r.slug) }}" class="ed-card reveal">
+        <span class="ed-card__cat">{{ r.category }}</span>
+        <h3 class="ed-card__title">{{ r.title }}</h3>
+        <span class="ed-card__meta">{{ r.created_at[:10] }} · Devamını Oku →</span>
       </a>
       {% endfor %}
     </div>
