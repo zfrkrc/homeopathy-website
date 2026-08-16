@@ -5,48 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="{% block meta_description %}{{ site_description }}{% endblock %}">
   <title>{% block title %}{{ site_title }}{% endblock %}</title>
-  <link rel="canonical" href="{{ request.url }}">
+  <link rel="canonical" href="{{ request.url|replace('http://', 'https://') }}">
+  <link rel="alternate" type="application/rss+xml" title="{{ site_title }}" href="{{ url_for('rss_feed') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Montserrat:wght@300;400;500&display=swap&subset=latin-ext" rel="stylesheet">
   <meta property="og:site_name" content="{{ site_title }}">
   <meta property="og:type" content="{% block og_type %}website{% endblock %}">
   <meta property="og:title" content="{% block og_title %}{{ site_title }}{% endblock %}">
   <meta property="og:description" content="{% block og_description %}{{ site_description }}{% endblock %}">
-  <meta property="og:url" content="{{ request.url }}">
+  <meta property="og:url" content="{{ request.url|replace('http://', 'https://') }}">
   {% block og_image %}{% endblock %}
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ self.og_title() }}">
   <meta name="twitter:description" content="{{ self.og_description() }}">
   <script>(function(){var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);})();</script>
-  <link rel="stylesheet" href="{{ url_for('theme_css') }}">
-  <link rel="stylesheet" href="/static/css/style.css?v=25">
-<link rel="icon" type="image/png" href="/uploads/logoaq.png">
+  <link rel="stylesheet" href="{{ url_for('theme_css') }}?v=2">
+  <link rel="stylesheet" href="/static/css/style.css?v=36">
+  <link rel="icon" type="image/png" href="/uploads/logoaq.png">
   {% block json_ld %}{% endblock %}
 </head>
-<body style="position: relative;">
-  <!-- Antetli kagittan alinan orijinal yaprak desenleri -->
-  <img class="leaf-deco leaf-deco--tr" src="/uploads/leaf_topright.png" alt="" aria-hidden="true">
-  <img class="leaf-deco leaf-deco--bl" src="/uploads/leaf_bottomleft.png" alt="" aria-hidden="true">
-
+<body>
   <nav class="nav">
     <div class="nav-container">
-      <a href="{{ url_for('index') }}" class="logo" style="display:flex; align-items:center;">
-        <img src="/uploads/logoaq.png" alt="Zeyna" style="height: 42px; width: auto; object-fit: contain; padding: 4px 0;">
+      <a href="{{ url_for('index') }}" class="logo">
+        <img src="/uploads/logoaq.png" alt="Zafer">
+        <span>Zeyna Üstün<span class="logo-sub">Hayatı Okuma</span></span>
       </a>
       <div class="nav-actions">
         <button class="theme-toggle" aria-label="Tema değiştir" onclick="toggleTheme()" title="Tema değiştir">🌙</button>
         <button class="nav-toggle" aria-label="Menü" aria-expanded="false" aria-controls="navLinks" onclick="toggleNav()"><span></span><span></span><span></span></button>
       </div>
       <div class="nav-links" id="navLinks">
-        <a href="{{ url_for('index') }}" class="nav-link">Ana Sayfa</a>
-        <a href="{{ url_for('about') }}" class="nav-link">Hakkımda</a>
-        <a href="/sayfa/homeopati" class="nav-link">Homeopati</a>
-        <a href="{{ url_for('yazilar') }}" class="nav-link">Yazılar</a>
-        <a href="/sayfa/arastirmalar" class="nav-link">Araştırmalar</a>
-        <a href="{{ url_for('anlati') }}" class="nav-link">Anlatı Formu</a>
-        <a href="{{ url_for('iletisim') }}" class="nav-link" style="background:var(--primary,#74906f);color:#fff;border-radius:999px;padding:5px 16px;font-weight:600">İletişim</a>
-        <a href="{{ url_for('admin_login') }}" class="nav-link" style="color:var(--gold);font-weight:600;margin-left:8px">Panel</a>
+        <a href="{{ url_for('index') }}" class="nav-link {% if request.path == url_for('index') %}active{% endif %}">Ana Sayfa</a>
+        <a href="{{ url_for('about') }}" class="nav-link {% if request.path == url_for('about') %}active{% endif %}">Hakkımda</a>
+        <a href="/s/yaklasimim" class="nav-link {% if request.path == '/s/yaklasimim' %}active{% endif %}">Yaklaşımım</a>
+        <a href="/s/danismanlik" class="nav-link {% if request.path == '/s/danismanlik' %}active{% endif %}">Danışmanlık</a>
+        <a href="{{ url_for('blog') }}" class="nav-link {% if request.path == url_for('blog') %}active{% endif %}">Blog</a>
+        <a href="{{ url_for('iletisim') }}" class="nav-cta">İletişim →</a>
       </div>
     </div>
   </nav>
@@ -57,19 +53,44 @@
 
   <footer class="site-footer">
     <div class="footer-container">
-      <p>&copy; 2026 {{ site_title }}. Tüm hakları saklıdır.</p>
+      <div class="footer-brand">
+        <a href="{{ url_for('index') }}" class="logo">
+          <span>Zeyna Üstün<span class="logo-sub" style="color:var(--on-dark-muted)">Hayatı Okuma</span></span>
+        </a>
+        <p>{{ site_description }}</p>
+      </div>
+      <div class="footer-col">
+        <h4>Keşfet</h4>
+        <a href="{{ url_for('index') }}">Ana Sayfa</a>
+        <a href="{{ url_for('about') }}">Hakkımda</a>
+        <a href="{{ url_for('blog') }}">Blog</a>
+        <a href="{{ url_for('gallery') }}">Galeri</a>
+      </div>
+      <div class="footer-col">
+        <h4>Yaklaşım</h4>
+        <a href="/s/yaklasimim">Yaklaşımım</a>
+        <a href="/s/danismanlik">Danışmanlık</a>
+        <a href="{{ url_for('anlati') }}">Anlatı Formu</a>
+        <a href="{{ url_for('iletisim') }}">İletişim</a>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 {{ site_title }}. Tüm hakları saklıdır.</p>
+        <a href="#" id="newsletterToggle2" onclick="toggleNewsletter();return false;">Bülten →</a>
+      </div>
     </div>
   </footer>
 
   <!-- Newsletter -->
   <div style="position:fixed;bottom:20px;right:20px;z-index:999">
-    <div id="newsletterToggle" onclick="toggleNewsletter()" style="width:48px;height:48px;border-radius:50%;background:var(--primary,#3d6b4f);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,.2);font-size:20px" title="Abone Ol">✉️</div>
-    <div id="newsletterBox" style="display:none;position:absolute;bottom:56px;right:0;width:300px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.12);padding:20px">
-      <h4 style="font-size:14px;margin-bottom:4px;color:#333">📧 Bülten</h4>
-      <p style="font-size:11px;color:#888;margin-bottom:12px">Yeni yazılardan haberdar olun.</p>
-      <form action="{{ url_for('subscribe') }}" method="POST" style="display:flex;flex-direction:column;gap:8px">
-        <input type="email" name="email" placeholder="E-posta" required style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px">
-        <button type="submit" style="width:100%;padding:8px;background:var(--primary,#3d6b4f);color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">Abone Ol</button>
+    <div id="newsletterToggle" onclick="toggleNewsletter()" class="float-mail" title="Bülten" aria-label="Bülten" role="button" tabindex="0">✉</div>
+    <div id="newsletterBox" style="display:none;position:absolute;bottom:64px;right:0;width:320px;background:var(--surface);border:1px solid var(--line);padding:var(--space-lg) var(--space-md) var(--space-md);">
+      <div style="font-family:var(--font-display);font-size:1.3rem;color:var(--ink);margin-bottom:2px">Bülten</div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:var(--space-md);line-height:1.6">Yeni yazılardan haberdar olun. E-postanız asla paylaşılmaz.</p>
+      <form action="{{ url_for('subscribe') }}" method="POST" style="display:flex;flex-direction:column;gap:12px">
+        <input type="email" name="email" placeholder="E-posta" required
+          style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);padding:10px 0;font-size:0.95rem;color:var(--ink);outline:none;font-family:inherit">
+        <button type="submit"
+          style="width:100%;background:var(--ink);color:var(--bg);border:none;padding:13px;font-size:0.75rem;letter-spacing:0.18em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background .4s var(--ease)">Abone Ol</button>
       </form>
     </div>
   </div>
@@ -80,6 +101,8 @@
     }
   </script>
 
-  <script src="{{ url_for('static', filename='js/main.js', v='25') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="{{ url_for('static', filename='js/main.js', v='35') }}"></script>
 </body>
 </html>
