@@ -1079,13 +1079,13 @@ def theme_css():
   --secondary: {secondary};
   --bg: {bg};
   --text: {text};
-  --font-heading: \{font_h};
-  --font-body: \{font_b};
+  --font-heading: {font_h};
+  --font-body: {font_b};
   --gold: #b08d57;
   --gold-soft: #e7d9bc;
-  --ink: #202b22;
-  --ink-2: #39473b;
-  --paper: #f4efe1;
+  --ink: #3A4A40;
+  --ink-2: #4E5E54;
+  --paper: #F6F1E7;
   --paper-2: #fffdf7;
   --line: #dcd4bd;
   --muted: #726f5e;
@@ -1123,7 +1123,9 @@ input:focus, textarea:focus, select:focus {{ outline: none; border-color: var(--
 .search-form input {{ border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.12); color: #fff; }}
 .search-form input::placeholder {{ color: rgba(255,255,255,.5); }}
 .custom_css_placeholder'''
-    return Response(css, mimetype='text/css')
+    resp = Response(css, mimetype='text/css')
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return resp
 
 @app.route('/static/<path:path>')
 def static_files(path):
