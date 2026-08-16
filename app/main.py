@@ -1079,21 +1079,24 @@ def theme_css():
   --secondary: {secondary};
   --bg: {bg};
   --text: {text};
+  --forest: #2C4A3B;
+  --forest-deep: #1B2E23;
+  --sand: #EAE2D0;
   --font-heading: {font_h};
   --font-body: {font_b};
   --gold: #b08d57;
-  --gold-soft: #e7d9bc;
+  --gold-soft: #EAE2D0;
   --ink: #3A4A40;
-  --ink-2: #4E5E54;
+  --ink-2: #6B7B6F;
   --paper: #F6F1E7;
   --paper-2: #fffdf7;
   --line: #dcd4bd;
-  --muted: #726f5e;
-  --sage: #74906f;
+  --muted: #6B7B6F;
+  --sage: #C7D0BE;
   --card-radius: {card_radius};
 }}
-body {{ font-family: var(--font-body); color: var(--ink); -webkit-font-smoothing: antialiased; }}
-h1, h2, h3, h4, h5, h6, .logo, .post-title, .hero h1, .hero-content h1 {{ font-family: var(--font-heading); letter-spacing: -.02em; }}
+body {{ font-family: var(--font-body); font-weight: 300; color: var(--ink); -webkit-font-smoothing: antialiased; }}
+h1, h2, h3, h4, h5, h6, .logo, .post-title, .hero h1, .hero-content h1 {{ font-family: var(--font-heading); font-weight: 500; color: var(--forest-deep); letter-spacing: -.02em; }}
 a {{ color: var(--gold); }}
 .nav {{ background: rgba(244,239,225,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }}
 .nav-link {{ color: var(--ink-2); font-size: 13.5px; font-weight: 500; }}
