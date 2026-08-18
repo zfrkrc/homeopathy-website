@@ -10,6 +10,8 @@ services:
       - ./src:/app/src:ro
     environment:
       - SECRET_KEY=zeyna-homeopathy-secret-2026
+      - INSIGHTMAP_AI_URL=${INSIGHTMAP_AI_URL:-https://insightmap.tr}
+      - INSIGHTMAP_AI_SERVICE_KEY=${INSIGHTMAP_AI_SERVICE_KEY:-}
     restart: unless-stopped
 
   nginx:

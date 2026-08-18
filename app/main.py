@@ -11,6 +11,8 @@ import markdown
 import bleach
 import shutil
 import base64
+
+from app.ai_client import ai_client, AIError
 from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, send_file, Response, abort, make_response
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
@@ -781,52 +783,20 @@ def uploaded_file(filename):
 
 AI_JOBS_DIR = os.path.join(UPLOAD_DIR, 'ai_jobs')
 os.makedirs(AI_JOBS_DIR, exist_ok=True)
-
 _gen_log = logging.getLogger('ai_gen')
-OLLAMA_HOST = "https://insightmap.tr"
-OLLAMA_VERIFY = False
 
-def _ollama_post(payload, timeout=180):
-    resp = httpx.post(f"{OLLAMA_HOST}/api/ollama/generate", json=payload, timeout=timeout, verify=OLLAMA_VERIFY)
-    resp.raise_for_status()
-    return resp.json()
 
 def _generate_content(job_id, topic, tone, length, url, file_path, orig_filename):
     try:
+        client = ai_client()
         context_parts = []
         if url:
-            text = ""
             try:
-                resp = httpx.post(f"{OLLAMA_HOST}/api/ollama/generate", json={
-                    "model": "reader-lm:latest",
-                    "prompt": url,
-                    "stream": False,
-                    "options": {"temperature": 0.1, "num_predict": 4096}
-                }, timeout=60, verify=OLLAMA_VERIFY)
-                if resp.status_code == 200:
-                    text = resp.json().get("response", "").strip()[:4000]
-            except:
-                pass
-            if not text:
-                try:
-                    jina_key = os.environ.get("JINA_API_KEY", "")
-                    if jina_key:
-                        resp = httpx.get(f"https://r.jina.ai/{url}", timeout=60,
-                            headers={"Authorization": f"Bearer {jina_key}"}, follow_redirects=True)
-                        if resp.status_code == 200:
-                            text = resp.text.strip()[:4000]
-                except Exception as e:
-                    _gen_log.error(f'url fetch jina error: {e}')
-            if not text:
-                try:
-                    resp = httpx.get(url, timeout=30, follow_redirects=True)
-                    if resp.status_code == 200:
-                        text = re.sub(r'<[^>]+>', '', resp.text)[:4000]
-                        text = '\n'.join(line for line in text.split('\n') if line.strip())[:4000]
-                except Exception as e:
-                    _gen_log.error(f'url fetch fallback error: {e}')
-            if text:
-                context_parts.append(f'[URL: {url}]\n{text}')
+                text = client.read_url(url)[:4000]
+                if text:
+                    context_parts.append(f'[URL: {url}]\n{text}')
+            except Exception as e:
+                _gen_log.error(f'url fetch error: {e}')
 
         if file_path and os.path.exists(file_path):
             try:
@@ -837,11 +807,10 @@ def _generate_content(job_id, topic, tone, length, url, file_path, orig_filename
                     with pdfplumber.open(file_path) as pdf:
                         text = '\n'.join(p.page_text or '' for p in pdf.pages)[:4000]
                 elif ext in ('jpg', 'jpeg', 'png', 'webp'):
+                    mime = 'image/jpeg' if ext in ('jpg', 'jpeg') else f'image/{ext}'
                     with open(file_path, 'rb') as imgf:
                         b64 = base64.b64encode(imgf.read()).decode()
-                    data = _ollama_post({"model": "glm-ocr:latest", "prompt": "Bu gorseldeki metni oldugu gibi cikar.",
-                        "images": [b64], "options": {"temperature": 0.1}}, timeout=120)
-                    text = data.get("response", "").strip()[:4000]
+                    text = client.ocr(b64, mime_type=mime)[:4000]
                 if text:
                     context_parts.append(f'[Dosya: {orig_filename}]\n{text}')
                 os.remove(file_path)
@@ -849,26 +818,13 @@ def _generate_content(job_id, topic, tone, length, url, file_path, orig_filename
                 _gen_log.error(f'file error: {e}')
 
         context_text = '\n\n---\n\n'.join(context_parts)[:8000]
-        sys_prompt = 'Sen profesyonel blog yazarisin. SADECE Turkce cevap ver, baska dil kullanma. Turkce, akici, SEO uyumlu icerik uret. Baslik ve alt basliklar kullan. Asla Cince veya baska bir dilde yazma.'
-        if context_text:
-            sys_prompt += f'\n\nIcerigini asagidaki kaynaktan yararlanarak olustur:\n{context_text[:6000]}'
-        prompt = f'{topic} hakkinda {tone} tonda, {length} kelimelik SEO uyumlu blog yazisi yaz.'
 
         _gen_log.info(f'generating for: {topic[:40]}')
-        data = _ollama_post({'model': 'qwen2.5:14b', 'system': sys_prompt, 'prompt': prompt,
-            'stream': False, 'options': {'temperature': 0.7, 'num_predict': 2048}}, timeout=180)
-        result = data.get('response', '')
+        result = client.generate_content(topic, tone, length, context=context_text or None)
         _gen_log.info(f'generated {len(result)} chars')
-        # Report token usage to PulseCapture
-        try:
-            import httpx
-            tokens = max((len(topic) + len(result)) // 4, 1)
-            httpx.post('http://172.16.16.215:8004/ai/report-usage',
-                data={'email': 'zeyna@admin.tr', 'tokens': str(tokens)},
-                timeout=5,
-            )
-        except:
-            pass
+    except AIError as e:
+        result = f'[HATA] {e}'
+        _gen_log.error(f'ai gateway failed: {e}')
     except Exception as e:
         result = f'[HATA] {str(e)}'
         _gen_log.error(f'failed: {e}', exc_info=True)
@@ -965,21 +921,11 @@ def admin_ai_image():
         info_path = os.path.join(img_dir, f'{job_id}.json')
 
         try:
-            resp = httpx.post(
-                f"{IMAGE_SERVICE_URL}/generate",
-                json={
-                    "prompt": prompt,
-                    "model": "Z-Image-Turbo",
-                    "steps": 8,
-                    "enhance_prompt": False,
-                    "width": width,
-                    "height": height,
-                    "style": style,
-                },
-                timeout=30,
-            )
-            resp.raise_for_status()
-            gen_id = resp.json().get('id')
+            client = ai_client()
+            gen = client.generate_image(prompt, width=width, height=height, style=style, steps=8, enhance_prompt=False)
+            gen_id = gen.get('id')
+            if not gen_id:
+                raise AIError('Görsel üretim job id döndürmedi')
 
             import time as _time
             done = False
