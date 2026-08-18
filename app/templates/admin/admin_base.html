@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/uploads/logoaq.png">
   <title>{% block title %}Panel{% endblock %} | {{ site_title }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -84,28 +85,34 @@
   <aside class="sidebar" id="adminSidebar">
     <div class="sidebar-logo"><img src="/uploads/logoaq.png" alt="Zeyna"><span>{{ site_title }}</span></div>
     <nav class="sidebar-nav">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#74906f;padding:8px 12px 4px">İçerik</div>
-      <a href="{{ url_for('admin_dashboard') }}">📋 Yazılar</a>
-      <a href="{{ url_for('admin_post_new') }}">➕ Yeni Yazı</a>
-      <a href="{{ url_for('admin_categories') }}">📂 Kategoriler</a>
-       <a href="{{ url_for('admin_gallery') }}">🖼️ Galeri</a>
-       <a href="{{ url_for('admin_about') }}">✏️ Hakkımda</a>
-       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#74906f;padding:8px 12px 4px;margin-top:8px">Sayfalar</div>
-      <a href="{{ url_for('admin_homepage') }}">🏠 Ana Sayfa</a>
-      <a href="{{ url_for('admin_sayfalar') }}">📄 Özel Sayfalar</a>
-      <a href="{{ url_for('admin_content_pages') }}">📝 Yazılar &amp; Sayfalar</a>
-      <a href="/anlati?edit=1" target="_blank">📋 Anlatı Formu</a>
-      <a href="/anlati#admin" target="_blank">📨 Randevular</a>
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#74906f;padding:8px 12px 4px;margin-top:8px">İletişim</div>
-      <a href="{{ url_for('admin_subscribers') }}">📧 Aboneler</a>
-      <a href="{{ url_for('admin_newsletter') }}">📨 Mail Gönder</a>
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#74906f;padding:8px 12px 4px;margin-top:8px">Sistem</div>
-      <a href="{{ url_for('admin_ai_content') }}">🤖 AI İçerik</a>
-      <a href="{{ url_for('admin_ai_image') }}">🎨 AI Görsel</a>
-      <a href="{{ url_for('admin_portal_users') }}">👥 Portal</a>
-      <a href="{{ url_for('admin_tenants_list') }}">🏢 Müşteriler</a>
-      <a href="{{ url_for('admin_stats') }}">📊 İstatistikler</a>
-      <a href="{{ url_for('admin_settings') }}">⚙️ Ayarlar</a>
+      {% set ep = request.endpoint or '' %}
+      <div class="section-label">İçerik</div>
+      <a href="{{ url_for('admin_dashboard') }}" class="{{ 'active' if ep in ['admin_dashboard','admin_post_new','admin_post_edit'] else '' }}">📋 Yazılar</a>
+      <a href="{{ url_for('admin_categories') }}" class="{{ 'active' if ep in ['admin_categories','admin_category_new','admin_category_edit'] else '' }}">📂 Kategoriler</a>
+      <a href="{{ url_for('admin_about') }}" class="{{ 'active' if ep == 'admin_about' else '' }}">✏️ Hakkımda</a>
+
+      <div class="section-label">Sayfalar</div>
+      <a href="{{ url_for('admin_homepage') }}" class="{{ 'active' if ep == 'admin_homepage' else '' }}">🏠 Ana Sayfa</a>
+      <a href="{{ url_for('admin_sayfalar') }}" class="{{ 'active' if ep and ep.startswith('admin_sayfa') else '' }}">📄 Özel Sayfalar</a>
+      <a href="{{ url_for('admin_content_pages') }}" class="{{ 'active' if ep and (ep.startswith('admin_content_page') or ep.startswith('admin_yazilar')) else '' }}">📝 Yazılar &amp; Sayfalar</a>
+      <a href="{{ url_for('admin_gallery') }}" class="{{ 'active' if ep and ep.startswith('admin_gallery') else '' }}">🖼️ Galeri</a>
+
+      <div class="section-label">AI Araçları</div>
+      <a href="{{ url_for('admin_ai_content') }}" class="{{ 'active' if ep and ep.startswith('admin_ai_content') else '' }}">✨ İçerik Oluştur</a>
+      <a href="{{ url_for('admin_ai_image') }}" class="{{ 'active' if ep and ep.startswith('admin_ai_image') else '' }}">🎨 Görsel Oluştur</a>
+
+      <div class="section-label">İletişim</div>
+      <a href="/anlati?edit=1" target="_blank">📋 Formlar / Randevular</a>
+      <a href="{{ url_for('admin_subscribers') }}" class="{{ 'active' if ep and ep.startswith('admin_subscriber') else '' }}">📧 Aboneler</a>
+      <a href="{{ url_for('admin_newsletter') }}" class="{{ 'active' if ep == 'admin_newsletter' else '' }}">📨 Mail Gönder</a>
+
+      <div class="section-label">Site</div>
+      <a href="{{ url_for('admin_stats') }}" class="{{ 'active' if ep == 'admin_stats' else '' }}">📊 İstatistikler</a>
+      <a href="{{ url_for('admin_settings') }}" class="{{ 'active' if ep in ['admin_settings','admin_change_password'] else '' }}">⚙️ Ayarlar</a>
+
+      <div class="section-label">Yönetim</div>
+      <a href="{{ url_for('admin_portal_users') }}" class="{{ 'active' if ep and ep.startswith('admin_portal') else '' }}">👥 Portal</a>
+      <a href="{{ url_for('admin_tenants_list') }}" class="{{ 'active' if ep and ep.startswith('admin_tenants') else '' }}">🏢 Müşteriler</a>
     </nav>
     <div class="sidebar-foot">
       <a href="{{ url_for('index') }}" target="_blank">🔗 Siteyi Gör</a>

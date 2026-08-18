@@ -1,7 +1,9 @@
 {% extends "admin/admin_base.html" %}
-{% block title %}Panel | {{ site_title }}{% endblock %}
-{% block breadcrumb %}Panel{% endblock %}
-{% block topbar_actions %}<a href="{{ url_for('admin_logout') }}" class="topbar-btn">🚪 Çıkış</a>{% endblock %}
+{% block title %}Yazılar | {{ site_title }}{% endblock %}
+{% block breadcrumb %}Yazılar{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('admin_post_new') }}" class="btn btn-primary" style="padding:8px 16px;font-size:13px">➕ Yeni Yazı</a>
+{% endblock %}
 {% block head %}
 <style>
 .stats{display:flex;gap:16px;margin-bottom:24px}

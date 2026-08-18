@@ -1,6 +1,6 @@
 {% extends "admin/admin_base.html" %}
-{% block title %}AI Görsel Üret | {{ site_title }}{% endblock %}
-{% block breadcrumb %}AI Görsel Üret{% endblock %}
+{% block title %}Görsel Oluştur | {{ site_title }}{% endblock %}
+{% block breadcrumb %}Görsel Oluştur{% endblock %}
 {% block head %}
 <style>
 .card{background:#fff;padding:24px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);margin-bottom:24px}
@@ -20,10 +20,18 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold,#b0
 .gallery-item .actions a{font-size:12px;color:var(--gold,#b08d57);text-decoration:none}
 .gallery-item .actions a:hover{text-decoration:underline}
 </style>
+<script>
+function setImageSize(v){
+  var m = {square:[1024,1024], landscape:[1280,768], portrait:[768,1280], banner:[1536,640]};
+  var d = m[v] || [1024,1024];
+  document.getElementById('imageWidth').value = d[0];
+  document.getElementById('imageHeight').value = d[1];
+}
+</script>
 {% endblock %}
 {% block content %}
 <div class="card">
-  <h2>AI Görsel Üret (Z-Image-Turbo)</h2>
+  <h2>Görsel Oluştur</h2>
   <form method="POST" action="{{ url_for('admin_ai_image') }}">
     <label>Görsel Promptu (Türkçe yazın, otomatik İngilizce'ye çevrilir)</label>
     <textarea name="prompt" placeholder="Örn: Kapadokya'da gün doğumunda onlarca balon, peri bacaları üzerinde, masalsı ışık" required></textarea>
@@ -42,28 +50,21 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold,#b0
         </select>
       </div>
       <div>
-        <label>Genişlik</label>
-        <select name="width">
-          <option value="1024">1024 (Kare)</option>
-          <option value="1024" selected>1024</option>
-          <option value="1280">1280 (Geniş)</option>
-          <option value="768">768 (Küçük)</option>
+        <label>Boyut</label>
+        <select name="size" onchange="setImageSize(this.value)">
+          <option value="square" selected>Kare (1024×1024)</option>
+          <option value="landscape">Yatay (1280×768)</option>
+          <option value="portrait">Dikey (768×1280)</option>
+          <option value="banner">Banner (1536×640)</option>
         </select>
-      </div>
-      <div>
-        <label>Yükseklik</label>
-        <select name="height">
-          <option value="1024">1024 (Kare)</option>
-          <option value="1024" selected>1024</option>
-          <option value="768">768 (Geniş banner)</option>
-          <option value="1280">1280 (Dikey)</option>
-        </select>
+        <input type="hidden" name="width" id="imageWidth" value="1024">
+        <input type="hidden" name="height" id="imageHeight" value="1024">
       </div>
     </div>
 
     <div style="margin-top:20px">
-      <button type="submit" class="btn btn-primary" onclick="this.disabled=true;this.innerText='Üretiliyor...';this.form.submit()">🎨 Görsel Üret</button>
-      <span class="help" style="margin-left:12px">~10-30 saniye sürer (Intel Arc A770 GPU)</span>
+      <button type="submit" class="btn btn-primary" onclick="this.disabled=true;this.innerText='Üretiliyor...';this.form.submit()">🎨 Görsel Oluştur</button>
+      <span class="help" style="margin-left:12px">~10-30 saniye sürer</span>
     </div>
   </form>
 </div>
